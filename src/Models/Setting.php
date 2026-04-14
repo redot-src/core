@@ -8,6 +8,66 @@ use Redot\Casts\Union;
 class Setting extends Model
 {
     /**
+     * Get the settings schema.
+     */
+    public static function schema(): array
+    {
+        return config('redot.settings', []);
+    }
+
+    /**
+     * Get the settings defaults.
+     */
+    public static function defaults(): array
+    {
+        return collect(static::schema())
+            ->filter(fn (array $definition): bool => array_key_exists('default', $definition))
+            ->map(fn (array $definition): mixed => $definition['default'])
+            ->all();
+    }
+
+    /**
+     * Get the settings validation rules.
+     */
+    public static function rules(): array
+    {
+        $rules = [];
+
+        foreach (static::schema() as $key => $definition) {
+            if (! array_key_exists('rules', $definition)) {
+                continue;
+            }
+
+            if (array_is_list($definition['rules'])) {
+                $rules[$key] = $definition['rules'];
+                continue;
+            }
+
+            $rules = array_merge($rules, $definition['rules']);
+        }
+
+        return $rules;
+    }
+
+    /**
+     * Get the default value for the specified setting key.
+     */
+    public static function default(string $key): mixed
+    {
+        if (config()->has("redot.settings.$key.default")) {
+            return config("redot.settings.$key.default");
+        }
+
+        if (! str_contains($key, '.')) {
+            return null;
+        }
+
+        [$settingKey, $jsonKey] = explode('.', $key, 2);
+
+        return data_get(config("redot.settings.$settingKey.default"), $jsonKey);
+    }
+
+    /**
      * The attributes that are mass assignable.
      *
      * @var array<int, string>
@@ -50,7 +110,7 @@ class Setting extends Model
         }
 
         return cache()->rememberForever('settings.' . $key, function () use ($key, $default) {
-            $default = $default ?? config('redot.default_settings.' . $key);
+            $default = $default ?? static::default($key);
 
             // Handle nested settings
             if (str_contains($key, '.')) {

@@ -56,76 +56,87 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Append Locale to URL
+    | Routing
     |--------------------------------------------------------------------------
     |
-    | This option determines if the locale should be appended to the URL.
+    | Route-level behavior that affects URL generation and fallback redirects.
     |
     */
 
-    'append_locale_to_url' => true,
-
-    /*
-    |--------------------------------------------------------------------------
-    | Redirect non-localized URLs
-    |--------------------------------------------------------------------------
-    |
-    | This option determines if the non-localized URLs should be redirected to
-    | same URL with the default locale.
-    |
-    */
-
-    'redirect_non_locale_urls' => true,
-
-    /*
-    |--------------------------------------------------------------------------
-    | Default Settings
-    |--------------------------------------------------------------------------
-    |
-    | The default settings for the application.
-    |
-    */
-
-    'default_settings' => [
-        'app_logo_dark' => 'assets/images/logo-dark.svg',
-        'app_logo_light' => 'assets/images/logo-light.svg',
-        'app_name' => [
-            'en' => 'Dashboard',
-            'ar' => 'لوحة التحكم',
-        ],
-        'website_locales' => ['en', 'ar'],
-        'dashboard_locales' => ['en', 'ar'],
-        'page_loader_enabled' => false,
-        'service_worker_enabled' => true,
-        'facebook_pixel_id' => '',
-        'google_analytics_property_id' => '',
-        'cloudflare_turnstile_site_key' => '',
-        'cloudflare_turnstile_secret_key' => '',
-        'head_code' => '',
-        'body_code' => '',
-        'dashboard_sidebar_theme' => 'inherit',
-
-        'theme' => [
-            'primary' => 'blue',
-            'base' => 'default',
-            'font' => 'sans-serif',
-            'radius' => 1,
-        ],
+    'routing' => [
+        'append_locale_to_url' => true,
+        'redirect_non_locale_urls' => true,
     ],
 
     /*
     |--------------------------------------------------------------------------
-    | Default Settings Validations
+    | Settings
     |--------------------------------------------------------------------------
     |
-    | The default settings validations.
+    | Persisted application settings schema. Each setting may define a default
+    | value and request validation rules for the dashboard settings form.
     |
     */
 
-    'default_settings_validations' => [
-        'app_name' => 'required|array',
-        'app_name.*' => 'required|string',
-        'website_locales' => 'required|array|min:1',
-        'dashboard_locales' => 'required|array|min:1',
+    'settings' => [
+        'app_logo_dark' => [
+            'default' => 'assets/images/logo-dark.svg',
+        ],
+        'app_logo_light' => [
+            'default' => 'assets/images/logo-light.svg',
+        ],
+        'app_name' => [
+            'default' => [
+                'en' => 'Dashboard',
+                'ar' => 'لوحة التحكم',
+            ],
+            'rules' => [
+                'app_name' => ['required', 'array'],
+                'app_name.*' => ['required', 'string'],
+            ],
+        ],
+        'website_locales' => [
+            'default' => ['en', 'ar'],
+            'rules' => ['required', 'array', 'min:1'],
+        ],
+        'dashboard_locales' => [
+            'default' => ['en', 'ar'],
+            'rules' => ['required', 'array', 'min:1'],
+        ],
+        'page_loader_enabled' => [
+            'default' => false,
+        ],
+        'service_worker_enabled' => [
+            'default' => true,
+        ],
+        'facebook_pixel_id' => [
+            'default' => '',
+        ],
+        'google_analytics_property_id' => [
+            'default' => '',
+        ],
+        'cloudflare_turnstile_site_key' => [
+            'default' => '',
+        ],
+        'cloudflare_turnstile_secret_key' => [
+            'default' => '',
+        ],
+        'head_code' => [
+            'default' => '',
+        ],
+        'body_code' => [
+            'default' => '',
+        ],
+        'dashboard_sidebar_theme' => [
+            'default' => 'inherit',
+        ],
+        'theme' => [
+            'default' => [
+                'primary' => 'blue',
+                'base' => 'default',
+                'font' => 'sans-serif',
+                'radius' => 1,
+            ],
+        ],
     ],
 ];
