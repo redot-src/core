@@ -1,0 +1,52 @@
+{
+    "$schema": "https://getcomposer.org/schema.json",
+    "name": "redot/core",
+    "type": "library",
+    "description": "Core package for Redot Dashboard that has all the packages and helpers for the dashboard.",
+    "keywords": [
+        "redot",
+        "dashboard",
+        "laravel"
+    ],
+    "require": {
+        "php": "^8.3",
+        "laravel/framework": "^13.0",
+        "livewire/livewire": "^4.2"
+    },
+    "require-dev": {
+        "laravel/pint": "^1.29"
+    },
+    "autoload": {
+        "psr-4": {
+            "Redot\\Auth\\": "src/packages/auth/src",
+            "Redot\\Sidebar\\": "src/packages/sidebar/src",
+            "Redot\\Toastify\\": "src/packages/toastify/src",
+            "Redot\\Datatables\\": "src/packages/datatables/src",
+            "Redot\\LangExtractor\\": "src/packages/lang-extractor/src"
+        },
+        "files": [
+            "src/packages/toastify/src/helpers.php",
+            "src/helpers.php"
+        ]
+    },
+    "scripts": {
+        "lint": [
+            "@php artisan lint --with-js"
+        ]
+    },
+    "extra": {
+        "laravel": {
+            "dont-discover": []
+        }
+    },
+    "config": {
+        "platform": {
+            "php": "8.3"
+        },
+        "optimize-autoloader": true,
+        "preferred-install": "dist",
+        "sort-packages": true
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true
+}
