@@ -2,6 +2,7 @@
     "$schema": "https://getcomposer.org/schema.json",
     "name": "redot/core",
     "type": "library",
+    "license": "proprietary",
     "description": "Core package for Redot Dashboard that has all the packages and helpers for the dashboard.",
     "keywords": [
         "redot",
