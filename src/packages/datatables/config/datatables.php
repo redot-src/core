@@ -1,5 +1,7 @@
 <?php
 
+use Redot\Datatables\Adapters\PDF\LaravelMpdf;
+
 return [
 
     /*
@@ -40,7 +42,7 @@ return [
         'pdf' => [
             'enabled' => true,
             'template' => 'datatables::pdf.default',
-            'adapter' => \Redot\Datatables\Adapters\PDF\LaravelMpdf::class,
+            'adapter' => LaravelMpdf::class,
             'options' => [
                 'format' => 'A4',
                 'orientation' => 'P',

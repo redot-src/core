@@ -29,7 +29,7 @@ class LangExtractCommand extends Command
         $language = $this->argument('language');
         $path = lang_path($language . '.json');
 
-        $extractor = new LangExtractor();
+        $extractor = new LangExtractor;
         $extractor->extract()->mergeWithFile($path)->save($path, true);
 
         $this->info('Translations saved to ' . str_replace(base_path(), '', $path));

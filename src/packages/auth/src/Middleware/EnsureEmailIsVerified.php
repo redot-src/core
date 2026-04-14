@@ -30,13 +30,13 @@ class EnsureEmailIsVerified
         $name = $request->route()?->getName() ?? '';
         $prefix = str($name)->before('.')->append('.');
 
-        $prefixed = $prefix.'verification.notice';
+        $prefixed = $prefix . 'verification.notice';
 
         return Route::has($prefixed) ? $prefixed : 'verification.notice';
     }
 
     public static function redirectTo(string $route): string
     {
-        return static::class.':'.$route;
+        return static::class . ':' . $route;
     }
 }

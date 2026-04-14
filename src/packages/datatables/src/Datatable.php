@@ -5,7 +5,9 @@ namespace Redot\Datatables;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Js;
+use Illuminate\Support\Str;
 use Illuminate\Support\Traits\Macroable;
+use Illuminate\View\View;
 use Livewire\Attributes\Url;
 use Livewire\Component;
 use Livewire\WithPagination;
@@ -15,6 +17,7 @@ use Redot\Datatables\Adapters\PDF\Adabter;
 use Redot\Datatables\Columns\Column;
 use Redot\Datatables\Filters\Filter;
 use Redot\Datatables\Traits\InteractsWithRelations;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
@@ -232,7 +235,7 @@ abstract class Datatable extends Component
     /**
      * Export the datatable to a XLSX file.
      */
-    public function toXlsx(): \Symfony\Component\HttpFoundation\BinaryFileResponse
+    public function toXlsx(): BinaryFileResponse
     {
         if (! class_exists('Maatwebsite\Excel\Excel')) {
             throw new Exceptions\MissingDependencyException('Please install the "maatwebsite/excel" package to use the toXlsx method.');
@@ -252,7 +255,7 @@ abstract class Datatable extends Component
     /**
      * Export the datatable to a CSV file.
      */
-    public function toCsv(): \Symfony\Component\HttpFoundation\BinaryFileResponse
+    public function toCsv(): BinaryFileResponse
     {
         if (! class_exists('Maatwebsite\Excel\Excel')) {
             throw new Exceptions\MissingDependencyException('Please install the "maatwebsite/excel" package to use the toCsv method.');
@@ -329,7 +332,7 @@ abstract class Datatable extends Component
     /**
      * Render the component.
      */
-    public function render(): \Illuminate\View\View
+    public function render(): View
     {
         return view('datatables::datatable', $this->viewData());
     }
@@ -547,7 +550,7 @@ abstract class Datatable extends Component
         $field = array_pop($relations);
 
         // The name of the aggregate column
-        $name = \Illuminate\Support\Str::snake(implode('', $relations)) . '_' . $field;
+        $name = Str::snake(implode('', $relations)) . '_' . $field;
 
         $query->withAggregate($relations, $field);
         $query->orderBy($name, $this->sortDirection);

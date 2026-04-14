@@ -3,6 +3,7 @@
 namespace Redot\Datatables\Filters;
 
 use Closure;
+use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Traits\Macroable;
 use Redot\Datatables\Traits\BuildAttributes;
@@ -147,7 +148,7 @@ abstract class Filter
     /**
      * Render the filter view.
      */
-    public function render(): \Illuminate\Contracts\View\View
+    public function render(): View
     {
         return view($this->view, ['filter' => $this]);
     }

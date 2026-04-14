@@ -4,6 +4,7 @@ namespace Redot\Datatables\Columns;
 
 use Closure;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
 
 class TextColumn extends Column
 {
@@ -224,11 +225,11 @@ class TextColumn extends Column
         }
 
         if ($this->truncate !== null) {
-            return \Illuminate\Support\Str::limit($value, $this->truncate);
+            return Str::limit($value, $this->truncate);
         }
 
         if ($this->wordCount !== null) {
-            return \Illuminate\Support\Str::words($value, $this->wordCount);
+            return Str::words($value, $this->wordCount);
         }
 
         if ($this->pad !== null) {

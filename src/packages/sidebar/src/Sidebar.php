@@ -3,7 +3,6 @@
 namespace Redot\Sidebar;
 
 use Illuminate\Support\Arr;
-use Illuminate\Support\Facades\Auth;
 
 class Sidebar
 {
