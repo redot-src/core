@@ -19,6 +19,7 @@
     },
     "autoload": {
         "psr-4": {
+            "Redot\\": "src/",
             "Redot\\Auth\\": "src/packages/auth/src",
             "Redot\\Sidebar\\": "src/packages/sidebar/src",
             "Redot\\Toastify\\": "src/packages/toastify/src",
@@ -37,6 +38,9 @@
     },
     "extra": {
         "laravel": {
+            "providers": [
+                "Redot\\RedotServiceProvider"
+            ],
             "dont-discover": []
         }
     },
