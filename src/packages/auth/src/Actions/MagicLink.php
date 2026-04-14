@@ -13,15 +13,17 @@ use Redot\Auth\Concerns\QueriesUsers;
 use Redot\Auth\Concerns\RateLimitsRequests;
 use Redot\Auth\Concerns\RespondsWithJson;
 use Redot\Auth\Contracts\MagicLinkAction;
+use Redot\Models\LoginToken;
+use Redot\Notifications\MagicLinkNotification;
 use RuntimeException;
 
 class MagicLink implements MagicLinkAction
 {
     use QueriesUsers, RateLimitsRequests, RespondsWithJson;
 
-    protected static ?string $loginTokenModel = null;
+    protected static ?string $loginTokenModel = LoginToken::class;
 
-    protected static ?string $notificationClass = null;
+    protected static ?string $notificationClass = MagicLinkNotification::class;
 
     public static function useLoginTokenModel(string $class): void
     {
