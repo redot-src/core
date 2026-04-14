@@ -15,12 +15,12 @@ return [
 
     'assets' => [
         'css' => [
-            'file' => base_path('vendor/redot/datatables/resources/css/datatables.css'),
+            'file' => dirname(__DIR__) . '/resources/css/datatables.css',
             'uri' => 'datatables/datatables.css',
             'route' => 'datatables.css',
         ],
         'js' => [
-            'file' => base_path('vendor/redot/datatables/resources/js/datatables.js'),
+            'file' => dirname(__DIR__) . '/resources/js/datatables.js',
             'uri' => 'datatables/datatables.js',
             'route' => 'datatables.js',
         ],
