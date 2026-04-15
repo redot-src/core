@@ -40,6 +40,7 @@ class Setting extends Model
 
             if (array_is_list($definition['rules'])) {
                 $rules[$key] = $definition['rules'];
+
                 continue;
             }
 

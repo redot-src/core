@@ -6,12 +6,14 @@ use Closure;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
-use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\URL;
+use Redot\Auth\Concerns\ResolvesRoute;
 use Symfony\Component\HttpFoundation\Response;
 
 class EnsureEmailIsVerified
 {
+    use ResolvesRoute;
+
     public function handle(Request $request, Closure $next, ?string $redirectToRoute = null): Response
     {
         $user = $request->user();
@@ -22,17 +24,7 @@ class EnsureEmailIsVerified
 
         return $request->expectsJson()
             ? abort(403, 'Your email address is not verified.')
-            : Redirect::guest(URL::route($redirectToRoute ?? $this->resolveRoute($request)));
-    }
-
-    protected function resolveRoute(Request $request): string
-    {
-        $name = $request->route()?->getName() ?? '';
-        $prefix = str($name)->before('.')->append('.');
-
-        $prefixed = $prefix . 'verification.notice';
-
-        return Route::has($prefixed) ? $prefixed : 'verification.notice';
+            : Redirect::guest(URL::route($redirectToRoute ?? $this->resolveRoute('verification.notice')));
     }
 
     public static function redirectTo(string $route): string
