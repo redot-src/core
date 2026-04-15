@@ -45,7 +45,7 @@ class ViewMakeCommand extends Command
             $templatesPath = str_replace(
                 base_path(),
                 '',
-                resource_path('stubs/dashboard/view-templates'),
+                resource_path('stubs/view-templates'),
             );
 
             // Normalize the template path
