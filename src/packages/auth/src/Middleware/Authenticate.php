@@ -7,6 +7,7 @@ use Illuminate\Auth\AuthenticationException;
 use Illuminate\Contracts\Auth\Factory;
 use Illuminate\Contracts\Auth\Factory as Auth;
 use Illuminate\Contracts\Auth\Middleware\AuthenticatesRequests;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Redot\Auth\Concerns\ResolvesRoute;
 
@@ -106,16 +107,14 @@ class Authenticate implements AuthenticatesRequests
 
     /**
      * Get the path the user should be redirected to when they are not authenticated.
-     *
-     * @return string|null
      */
-    protected function redirectTo(Request $request)
+    protected function redirectTo(Request $request): RedirectResponse
     {
         if (static::$redirectToCallback) {
             return call_user_func(static::$redirectToCallback, $request);
         }
 
-        return $this->resolveRoute('login');
+        return redirect()->route($this->resolveRoute('login'));
     }
 
     /**
