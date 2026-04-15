@@ -1,6 +1,9 @@
 <?php
 
+use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Auth\AuthenticationException;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Database\Query\Builder as QueryBuilder;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
@@ -11,11 +14,14 @@ use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Str;
+use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
 use libphonenumber\PhoneNumberFormat;
 use libphonenumber\PhoneNumberUtil;
 use Redot\Models\Setting;
 use Spatie\Permission\Models\Permission;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 /**
  * Get the specified setting value.
@@ -88,6 +94,73 @@ function url_allowed(string $url, string $guard = 'admins'): bool
     }
 
     return route_allowed(route_from_url($url) ?: '', $guard);
+}
+
+function throw_api_exception(Throwable $e): JsonResponse
+{
+    $code = match (true) {
+        $e instanceof HttpException => $e->getStatusCode(),
+        $e instanceof ModelNotFoundException => 404,
+        $e instanceof ValidationException => 422,
+        $e instanceof AuthenticationException => 401,
+        $e instanceof AuthorizationException => 403,
+        default => 500,
+    };
+
+    $message = $e->getMessage() ?: match ($code) {
+        400 => 'Bad Request',
+        401 => 'Unauthorized',
+        403 => 'Forbidden',
+        404 => 'Not Found',
+        405 => 'Method Not Allowed',
+        406 => 'Not Acceptable',
+        408 => 'Request Timeout',
+        409 => 'Conflict',
+        410 => 'Gone',
+        411 => 'Length Required',
+        412 => 'Precondition Failed',
+        413 => 'Payload Too Large',
+        414 => 'URI Too Long',
+        415 => 'Unsupported Media Type',
+        416 => 'Range Not Satisfiable',
+        417 => 'Expectation Failed',
+        418 => 'I\'m a teapot',
+        421 => 'Misdirected Request',
+        422 => 'Unprocessable Entity',
+        423 => 'Locked',
+        424 => 'Failed Dependency',
+        425 => 'Too Early',
+        426 => 'Upgrade Required',
+        428 => 'Precondition Required',
+        429 => 'Too Many Requests',
+        431 => 'Request Header Fields Too Large',
+        451 => 'Unavailable For Legal Reasons',
+        500 => 'Internal Server Error',
+        501 => 'Not Implemented',
+        502 => 'Bad Gateway',
+        503 => 'Service Unavailable',
+        504 => 'Gateway Timeout',
+        505 => 'HTTP Version Not Supported',
+        506 => 'Variant Also Negotiates',
+        507 => 'Insufficient Storage',
+        508 => 'Loop Detected',
+        510 => 'Not Extended',
+        511 => 'Network Authentication Required',
+        default => 'Something went wrong',
+    };
+
+    $payload = match (true) {
+        $e instanceof ValidationException => $e->validator->errors()->toArray(),
+        config('app.debug') => ['message' => $e->getMessage(), 'file' => $e->getFile(), 'line' => $e->getLine(), 'trace' => $e->getTrace()],
+        default => [],
+    };
+
+    return response()->json([
+        'code' => $code,
+        'success' => false,
+        'message' => $message,
+        'payload' => $payload,
+    ], $code);
 }
 
 /**
