@@ -56,8 +56,8 @@ class ModelPopulateCommand extends Command
         $models = collect(scandir(app_path('Models')))
             ->filter(fn ($file) => ! in_array($file, ['.', '..']))
             ->map(fn ($file) => $this->laravel->getNamespace() . 'Models\\' . str_replace('.php', '', $file))
-            ->merge($this->include)
-            ->filter(fn ($class) => class_exists($class) && method_exists($class, 'factory') && ! in_array($class, $this->execlude));
+            ->merge(self::$include)
+            ->filter(fn ($class) => class_exists($class) && method_exists($class, 'factory') && ! in_array($class, self::$execlude));
 
         $model = $this->option('model');
 
