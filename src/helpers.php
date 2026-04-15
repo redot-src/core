@@ -266,7 +266,7 @@ function component(string $name, array $data = []): string|View
 /**
  * Search the given model.
  */
-function search_model(Builder|QueryBuilder $query, array $columns = [], ?string $term = null): Builder
+function search_model(Builder|QueryBuilder $query, array $columns = [], ?string $term = null): Builder|QueryBuilder
 {
     $term = trim($term);
 
@@ -274,13 +274,19 @@ function search_model(Builder|QueryBuilder $query, array $columns = [], ?string 
         return $query;
     }
 
-    $handleRelation = function (&$query, string $column, string $term) {
+    $handleRelation = function (Builder|QueryBuilder $query, string $column, string $term): void {
         $relation = Str::beforeLast($column, '.');
         $column = Str::afterLast($column, '.');
 
-        $query->orWhereHas($relation, function ($query) use ($column, $term) {
-            $query->where($column, 'like', "%{$term}%");
-        });
+        if ($query instanceof Builder && method_exists($query->getModel(), $relation)) {
+            $query->orWhereHas($relation, function ($query) use ($column, $term) {
+                $query->where($column, 'like', "%{$term}%");
+            });
+
+            return;
+        }
+
+        $query->orWhere($column, 'like', "%{$term}%");
     };
 
     return $query->where(function ($query) use ($columns, $term, $handleRelation) {
