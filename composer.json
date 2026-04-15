@@ -12,9 +12,11 @@
     "require": {
         "php": "^8.3",
         "giggsey/libphonenumber-for-php": "^9.0",
+        "intervention/image-laravel": "^4.0",
         "laravel/framework": "^13.0",
         "laravel/sanctum": "^4.3",
         "livewire/livewire": "^4.2",
+        "spatie/laravel-image-optimizer": "^1.8",
         "spatie/laravel-permission": "^7.3"
     },
     "require-dev": {
