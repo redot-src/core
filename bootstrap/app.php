@@ -1,7 +1,5 @@
 <?php
 
-use Redot\Http\Controllers\FallbackController;
-use Redot\Http\Middleware\Localization;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -10,7 +8,9 @@ use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Support\Facades\Route;
 use Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful;
 use Redot\Auth\Middleware\Locked;
+use Redot\Http\Controllers\FallbackController;
 use Redot\Http\Middleware\EnsureDependenciesBuilt;
+use Redot\Http\Middleware\Localization;
 use Redot\Http\Middleware\RoutePermission;
 
 return Application::configure(isset($basePath) ? $basePath : null)
