@@ -14,12 +14,12 @@ use Illuminate\Validation\ValidationException;
 use Redot\Auth\AuthContext;
 use Redot\Auth\Concerns\QueriesUsers;
 use Redot\Auth\Concerns\RateLimitsRequests;
-use Redot\Auth\Concerns\RespondsWithJson;
 use Redot\Auth\Contracts\LoginAction;
+use Redot\Traits\RespondAsApi;
 
 class Login implements LoginAction
 {
-    use QueriesUsers, RateLimitsRequests, RespondsWithJson;
+    use QueriesUsers, RateLimitsRequests, RespondAsApi;
 
     protected static array $identifiers = [];
 

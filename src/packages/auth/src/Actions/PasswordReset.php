@@ -11,12 +11,12 @@ use Illuminate\Support\Str;
 use Illuminate\Validation\Rules;
 use Illuminate\Validation\ValidationException;
 use Redot\Auth\AuthContext;
-use Redot\Auth\Concerns\RespondsWithJson;
 use Redot\Auth\Contracts\PasswordResetAction;
+use Redot\Traits\RespondAsApi;
 
 class PasswordReset implements PasswordResetAction
 {
-    use RespondsWithJson;
+    use RespondAsApi;
 
     public function sendResetLink(Request $request, AuthContext $context): RedirectResponse|JsonResponse
     {

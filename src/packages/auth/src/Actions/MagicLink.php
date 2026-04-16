@@ -11,15 +11,15 @@ use Illuminate\View\View;
 use Redot\Auth\AuthContext;
 use Redot\Auth\Concerns\QueriesUsers;
 use Redot\Auth\Concerns\RateLimitsRequests;
-use Redot\Auth\Concerns\RespondsWithJson;
 use Redot\Auth\Contracts\MagicLinkAction;
 use Redot\Models\LoginToken;
 use Redot\Notifications\MagicLinkNotification;
+use Redot\Traits\RespondAsApi;
 use RuntimeException;
 
 class MagicLink implements MagicLinkAction
 {
-    use QueriesUsers, RateLimitsRequests, RespondsWithJson;
+    use QueriesUsers, RateLimitsRequests, RespondAsApi;
 
     protected static ?string $loginTokenModel = LoginToken::class;
 

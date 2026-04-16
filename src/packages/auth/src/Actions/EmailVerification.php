@@ -8,12 +8,12 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 use Redot\Auth\AuthContext;
-use Redot\Auth\Concerns\RespondsWithJson;
 use Redot\Auth\Contracts\EmailVerificationAction;
+use Redot\Traits\RespondAsApi;
 
 class EmailVerification implements EmailVerificationAction
 {
-    use RespondsWithJson;
+    use RespondAsApi;
 
     public function prompt(Request $request, AuthContext $context): RedirectResponse|View
     {

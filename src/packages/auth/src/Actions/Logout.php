@@ -7,12 +7,12 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Redot\Auth\AuthContext;
-use Redot\Auth\Concerns\RespondsWithJson;
 use Redot\Auth\Contracts\LogoutAction;
+use Redot\Traits\RespondAsApi;
 
 class Logout implements LogoutAction
 {
-    use RespondsWithJson;
+    use RespondAsApi;
 
     public function logout(Request $request, AuthContext $context): RedirectResponse|JsonResponse
     {

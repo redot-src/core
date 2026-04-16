@@ -11,12 +11,12 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rules;
 use Redot\Auth\AuthContext;
-use Redot\Auth\Concerns\RespondsWithJson;
 use Redot\Auth\Contracts\RegistrationAction;
+use Redot\Traits\RespondAsApi;
 
 class Registration implements RegistrationAction
 {
-    use RespondsWithJson;
+    use RespondAsApi;
 
     protected static array $rules = [];
 

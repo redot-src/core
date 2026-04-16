@@ -9,12 +9,12 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\View\View;
 use Redot\Auth\AuthContext;
-use Redot\Auth\Concerns\RespondsWithJson;
 use Redot\Auth\Contracts\LockAction;
+use Redot\Traits\RespondAsApi;
 
 class Lock implements LockAction
 {
-    use RespondsWithJson;
+    use RespondAsApi;
 
     public static function sessionKey(string $guard): string
     {
