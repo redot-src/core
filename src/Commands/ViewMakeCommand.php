@@ -42,21 +42,30 @@ class ViewMakeCommand extends Command
     protected function getStub()
     {
         if ($template = $this->option('template')) {
-            $templatesPath = str_replace(
-                base_path(),
-                '',
-                resource_path('stubs/view-templates'),
-            );
-
-            // Normalize the template path
-            $template = str_replace('.', '/', $template);
-
-            return $this->resolveStubPath(
-                "$templatesPath/$template.stub",
-            );
+            return $this->resolveStubPath($template . '.stub');
         }
 
         return $this->resolveStubPath('/stubs/view.stub');
+    }
+
+    /**
+     * Resolve the fully-qualified path to the stub.
+     *
+     * @param  string  $stub
+     * @return string
+     */
+    protected function resolveStubPath($stub)
+    {
+        $customPath = base_path('stubs/' . $stub);
+        $packagePath = __DIR__ . '/../../stubs/' . $stub;
+
+        $path = file_exists($customPath) ? $customPath : $packagePath;
+
+        if (! file_exists($path)) {
+            throw new FileNotFoundException("Stub file not found: $stub");
+        }
+
+        return $path;
     }
 
     /**

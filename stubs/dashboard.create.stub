@@ -1,0 +1,16 @@
+<x-layouts::dashboard>
+    <x-form class="card" :action="route('dashboard.{{ resource }}.store')" method="POST">
+        <div class="card-header">
+            <p class="card-title">{{ __('Create') }}</p>
+        </div>
+
+        <div class="card-body">
+            <!-- {{ quote }} -->
+        </div>
+
+        <div class="card-footer text-end">
+            <a href="{{ back_or_route('dashboard.{{ resource }}.index') }}" class="btn">{{ __('Back') }}</a>
+            <button type="submit" class="btn btn-primary">{{ __('Create') }}</button>
+        </div>
+    </x-form>
+</x-layouts::dashboard>

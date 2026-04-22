@@ -1,0 +1,3 @@
+<x-layouts::dashboard>
+    <x-page-header :create="route('dashboard.{{ resource }}.create')" />
+</x-layouts::dashboard>

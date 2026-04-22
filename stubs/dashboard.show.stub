@@ -1,0 +1,15 @@
+<x-layouts::dashboard>
+    <div class="card">
+        <div class="card-header">
+            <p class="card-title">{{ __('Title') }}</p>
+        </div>
+
+        <div class="card-body">
+            <!-- {{ quote }} -->
+        </div>
+
+        <div class="card-footer text-end">
+            <a href="{{ back_or_route('dashboard.{{ resource }}.index') }}" class="btn">{{ __('Back') }}</a>
+        </div>
+    </div>
+</x-layouts::dashboard>

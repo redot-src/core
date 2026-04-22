@@ -1,0 +1,16 @@
+<x-layouts::dashboard>
+    <x-form class="card" :action="route('dashboard.{{ resource }}.update', ${{ entity }})" method="PUT">
+        <div class="card-header">
+            <p class="card-title">{{ __('Edit') }}</p>
+        </div>
+
+        <div class="card-body">
+            <!-- {{ quote }} -->
+        </div>
+
+        <div class="card-footer text-end">
+            <a href="{{ back_or_route('dashboard.{{ resource }}.index') }}" class="btn">{{ __('Back') }}</a>
+            <button type="submit" class="btn btn-primary">{{ __('Update') }}</button>
+        </div>
+    </x-form>
+</x-layouts::dashboard>

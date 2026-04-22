@@ -42,6 +42,7 @@ class RedotServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->config();
+        $this->stubs();
 
         $this->commands([
             BuildDependenciesCommand::class,
@@ -80,6 +81,16 @@ class RedotServiceProvider extends ServiceProvider
         $this->publishes([
             dirname(__DIR__) . '/config/redot.php' => config_path('redot.php'),
         ], 'redot::config');
+    }
+
+    /**
+     * Register the package stubs.
+     */
+    protected function stubs(): void
+    {
+        $this->publishes([
+            __DIR__ . '/../stubs/' => base_path('stubs/'),
+        ], 'redot::stubs');
     }
 
     /**

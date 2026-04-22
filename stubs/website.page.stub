@@ -1,0 +1,3 @@
+<x-layouts::website>
+    <!-- {{ quote }} -->
+</x-layouts::website>
