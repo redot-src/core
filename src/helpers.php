@@ -96,6 +96,9 @@ function url_allowed(string $url, string $guard = 'admins'): bool
     return route_allowed(route_from_url($url) ?: '', $guard);
 }
 
+/**
+ * Throw an API exception.
+ */
 function throw_api_exception(Throwable $e): JsonResponse
 {
     $code = match (true) {
@@ -107,7 +110,7 @@ function throw_api_exception(Throwable $e): JsonResponse
         default => 500,
     };
 
-    $message = $e->getMessage() ?: match ($code) {
+    $default = match ($code) {
         400 => 'Bad Request',
         401 => 'Unauthorized',
         403 => 'Forbidden',
@@ -148,6 +151,10 @@ function throw_api_exception(Throwable $e): JsonResponse
         511 => 'Network Authentication Required',
         default => 'Something went wrong',
     };
+
+    $message = (config('app.debug') || $code < 500)
+        ? ($e->getMessage() ?: $default)
+        : $default;
 
     $payload = match (true) {
         $e instanceof ValidationException => $e->validator->errors()->toArray(),
