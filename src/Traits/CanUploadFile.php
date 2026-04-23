@@ -34,7 +34,7 @@ trait CanUploadFile
         $file->move(public_path($path), $filename);
 
         if ($optimize && is_image($absolutePath)) {
-            Image::read($absolutePath)->orient()->save($absolutePath);
+            Image::decode($absolutePath)->orient()->save($absolutePath);
             ImageOptimizer::optimize($absolutePath);
         }
 
