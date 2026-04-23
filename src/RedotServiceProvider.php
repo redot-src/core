@@ -2,9 +2,11 @@
 
 namespace Redot;
 
+use Composer\InstalledVersions;
 use Exception;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Database\Eloquent\Casts\Json;
+use Illuminate\Foundation\Console\AboutCommand;
 use Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\Paginator;
@@ -43,6 +45,7 @@ class RedotServiceProvider extends ServiceProvider
     {
         $this->config();
         $this->stubs();
+        $this->migrations();
 
         $this->commands([
             BuildDependenciesCommand::class,
@@ -94,10 +97,22 @@ class RedotServiceProvider extends ServiceProvider
     }
 
     /**
+     * Register the package migrations.
+     */
+    protected function migrations(): void
+    {
+        $this->publishesMigrations([
+            __DIR__ . '/../database/migrations/' => database_path('migrations/'),
+        ], 'redot::migrations');
+    }
+
+    /**
      * Bootstrap any application services.
      */
     public function boot(): void
     {
+        $this->configureAboutCommand();
+
         $this->configureBlade();
         $this->configurePaginatorView();
 
@@ -109,6 +124,17 @@ class RedotServiceProvider extends ServiceProvider
 
         $this->configureValidationRules();
         $this->configureJsonCast();
+    }
+
+    /**
+     * Configure the about command.
+     */
+    protected function configureAboutCommand(): void
+    {
+        AboutCommand::add('Redot', [
+            'Version' => InstalledVersions::getPrettyVersion('redot/core'),
+            'Website' => 'https://redot.dev',
+        ]);
     }
 
     /**
