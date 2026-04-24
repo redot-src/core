@@ -1,7 +1,7 @@
 # Repository Guidelines
 
 ## Project Structure & Module Organization
-`src/` contains the package code, organized by Laravel-style domains such as `Commands/`, `Http/`, `Jobs/`, `Models/`, `Rules/`, and `Traits/`. In-repo subpackages live under `src/packages/` (`auth`, `datatables`, `lang-extractor`, `sidebar`, `toastify`) and are PSR-4 autoloaded from `composer.json`. Package configuration lives in `config/redot.php`, bootstrap wiring in `bootstrap/app.php`, and generator templates in `stubs/`. Treat `storage/` as runtime output, not source.
+`src/` contains the package code, organized by Laravel-style domains such as `Commands/`, `Http/`, `Jobs/`, `Models/`, `Rules/`, and `Traits/`. In-repo subpackages live under `src/packages/` (`auth`, `datatables`, `lang-extractor`, `sidebar`, `toastify`) and are PSR-4 autoloaded from `composer.json`. Package configuration lives in `config/redot.php`, and generator templates in `stubs/`. Treat `storage/` as runtime output, not source.
 
 ## Build, Test, and Development Commands
 Run `composer install` to install dependencies for PHP 8.3+ and Laravel 13+. Use `composer lint` or `vendor/bin/pint` to apply the repository formatting rules before pushing. This repository is a library, not a standalone app, so there is no local web server command here; validate behavior through the consuming Laravel application when changing service providers, middleware, or stubs.
