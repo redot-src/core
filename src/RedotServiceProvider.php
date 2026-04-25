@@ -32,7 +32,6 @@ use Redot\Commands\SyncLanguageTokensCommand;
 use Redot\Commands\SyncPermissionsCommand;
 use Redot\Commands\ViewMakeCommand;
 use Redot\Datatables\DatatablesServiceProvider;
-use Redot\LangExtractor\LaravelLangExtractorServiceProvider;
 use Redot\Models\Language;
 use Redot\Rules\Captcha;
 use Redot\Rules\Phone;
@@ -67,7 +66,6 @@ class RedotServiceProvider extends ServiceProvider
 
         $this->app->register(RedotAuthServiceProvider::class);
         $this->app->register(DatatablesServiceProvider::class);
-        $this->app->register(LaravelLangExtractorServiceProvider::class);
         $this->app->register(LaravelToastifyServiceProvider::class);
     }
 
