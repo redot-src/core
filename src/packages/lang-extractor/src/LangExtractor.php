@@ -39,7 +39,7 @@ class LangExtractor
         }
 
         if (count($extensions) > 0) {
-            $this->withExtensions('php');
+            $this->withExtensions(...$extensions);
         }
 
         $this->pattern = $this->generatePatternUsing('__', 'trans', '@lang');
@@ -83,7 +83,9 @@ class LangExtractor
         $ignore = glob(lang_path(config('app.fallback_locale')) . '/*.php');
         $ignore = array_map(fn ($file) => basename($file, '.php') . '\.[^\s]', $ignore);
 
-        return '/(?:' . implode('|', $functions) . ")\((['\"])(?<translation>(?!" . implode('|', $ignore) . ")(?:[^']|\\\')+?)(?<!\\\\)\\1/s";
+        $ignore = count($ignore) > 0 ? '(?!' . implode('|', $ignore) . ')' : '';
+
+        return '/(?:' . implode('|', $functions) . ")\((['\"])(?<translation>{$ignore}(?:[^']|\\\')+?)(?<!\\\\)\\1/s";
     }
 
     /**
