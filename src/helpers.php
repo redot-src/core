@@ -437,5 +437,5 @@ function parse_csv(string|array $csv, ?string $separator = ',', ?callable $callb
         $csv = explode($separator, $csv);
     }
 
-    return array_filter(array_map($callback ?: 'trim', $csv));
+    return array_values(array_filter(array_map($callback ?: 'trim', $csv)));
 }
