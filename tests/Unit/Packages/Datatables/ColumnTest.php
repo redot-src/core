@@ -1,8 +1,8 @@
 <?php
 
-use Illuminate\Database\Eloquent\Model;
 use Redot\Datatables\Columns\Column;
 use Redot\Datatables\Columns\TextColumn;
+use Tests\Fixtures\Datatables\DatatableColumnRow;
 
 it('configures column state fluently', function () {
     $column = Column::make('author.name', 'Author')
@@ -28,13 +28,7 @@ it('configures column state fluently', function () {
 });
 
 it('escapes plain values and preserves html columns', function () {
-    $row = new class extends Model
-    {
-        protected $attributes = [
-            'name' => '<strong>Taylor</strong>',
-            'email' => 'taylor@example.com',
-        ];
-    };
+    $row = new DatatableColumnRow;
 
     expect(Column::make('name')->get($row))->toBe('&lt;strong&gt;Taylor&lt;/strong&gt;')
         ->and(TextColumn::make('email')->email()->get($row))
