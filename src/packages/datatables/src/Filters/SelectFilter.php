@@ -33,7 +33,7 @@ class SelectFilter extends Filter
     /**
      * Set the filter's placeholder.
      */
-    public function placeholder(string $placeholder): self
+    public function placeholder(string $placeholder): static
     {
         $this->placeholder = $placeholder;
 
@@ -43,7 +43,7 @@ class SelectFilter extends Filter
     /**
      * Set the filter's options.
      */
-    public function options(array|Collection $options): self
+    public function options(array|Collection $options): static
     {
         $this->options = $options;
 

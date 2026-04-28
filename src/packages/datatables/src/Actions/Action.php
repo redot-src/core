@@ -193,7 +193,7 @@ class Action
     /**
      * Set the label of the action.
      */
-    public function label(string $label): self
+    public function label(string $label): static
     {
         $this->label = $label;
 
@@ -203,7 +203,7 @@ class Action
     /**
      * Set the icon of the action.
      */
-    public function icon(string $icon): self
+    public function icon(string $icon): static
     {
         $this->icon = $icon;
 
@@ -213,7 +213,7 @@ class Action
     /**
      * Set the route of the action.
      */
-    public function route(string $route, array $parameters = [], ?string $method = null, ?bool $bounded = null): self
+    public function route(string $route, array $parameters = [], ?string $method = null, ?bool $bounded = null): static
     {
         $this->route = $route;
         $this->parameters = array_merge($this->parameters, $parameters);
@@ -232,7 +232,7 @@ class Action
     /**
      * Set the href of the action.
      */
-    public function href(string|Closure $href): self
+    public function href(string|Closure $href): static
     {
         $this->href = $href;
 
@@ -242,7 +242,7 @@ class Action
     /**
      * Set the parameters of the action.
      */
-    public function parameters(array $parameters): self
+    public function parameters(array $parameters): static
     {
         $this->parameters = $parameters;
 
@@ -252,7 +252,7 @@ class Action
     /**
      * Set the bounded flag of the action.
      */
-    public function bounded(bool $bounded = true): self
+    public function bounded(bool $bounded = true): static
     {
         $this->bounded = $bounded;
 
@@ -262,7 +262,7 @@ class Action
     /**
      * Set the body of the form request.
      */
-    public function body(array $body = []): self
+    public function body(array $body = []): static
     {
         $this->body = array_merge($this->body, $body);
 
@@ -272,7 +272,7 @@ class Action
     /**
      * Set the method of the action.
      */
-    public function method(string $method): self
+    public function method(string $method): static
     {
         $allowedMethods = ['get', 'post', 'put', 'patch', 'delete'];
         $method = strtolower($method);
@@ -307,7 +307,7 @@ class Action
     /**
      * Set the action to be grouped.
      */
-    public function grouped(bool $grouped = true): self
+    public function grouped(bool $grouped = true): static
     {
         $this->grouped = $grouped;
 
@@ -317,7 +317,7 @@ class Action
     /**
      * Set the action to be expanded.
      */
-    public function expanded(bool $expanded = true): self
+    public function expanded(bool $expanded = true): static
     {
         $this->expanded = $expanded;
 
@@ -327,7 +327,7 @@ class Action
     /**
      * Set the condition callback of the action.
      */
-    public function condition(Closure $condition): self
+    public function condition(Closure $condition): static
     {
         $this->condition = $condition;
 
@@ -337,7 +337,7 @@ class Action
     /**
      * Set the action to be opened in a new tab.
      */
-    public function newTab(bool $newTab = true): self
+    public function newTab(bool $newTab = true): static
     {
         $this->newTab = $newTab;
 
@@ -347,7 +347,7 @@ class Action
     /**
      * Set the action to be opened in fancybox.
      */
-    public function fancybox(bool $fancybox = true): self
+    public function fancybox(bool $fancybox = true): static
     {
         $this->fancybox = $fancybox;
 
@@ -357,7 +357,7 @@ class Action
     /**
      * Set the action to be confirmable.
      */
-    public function confirmable(bool $confirmable = true, ?string $message = null): self
+    public function confirmable(bool $confirmable = true, ?string $message = null): static
     {
         $this->confirmable = $confirmable;
 
@@ -371,7 +371,7 @@ class Action
     /**
      * Set the confirm message for the action.
      */
-    public function confirmMessage(string $confirmMessage): self
+    public function confirmMessage(string $confirmMessage): static
     {
         $this->confirmMessage = $confirmMessage;
 

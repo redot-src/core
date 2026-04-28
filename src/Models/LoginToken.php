@@ -32,7 +32,7 @@ class LoginToken extends Model
     /**
      * Generate a new login token for the given email and guard.
      */
-    public static function generate(string $email, string $guard): self
+    public static function generate(string $email, string $guard): static
     {
         // Delete any existing tokens for this email and guard
         static::where('email', $email)->where('guard', $guard)->delete();

@@ -24,7 +24,7 @@ class StatusColumn extends Column
     /**
      * Set the status labels map.
      */
-    public function labels(array $labels): self
+    public function labels(array $labels): static
     {
         $this->labels = $labels;
 
@@ -34,7 +34,7 @@ class StatusColumn extends Column
     /**
      * Set the status classes map.
      */
-    public function classes(array $classes): self
+    public function classes(array $classes): static
     {
         $this->classes = $classes;
 

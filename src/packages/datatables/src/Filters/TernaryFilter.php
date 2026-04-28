@@ -55,7 +55,7 @@ class TernaryFilter extends Filter
     /**
      * Set the filter's queries.
      */
-    public function queries(?Closure $yes = null, ?Closure $no = null, ?Closure $empty = null): self
+    public function queries(?Closure $yes = null, ?Closure $no = null, ?Closure $empty = null): static
     {
         if ($yes) {
             $this->queries['yes'] = $yes;
@@ -75,7 +75,7 @@ class TernaryFilter extends Filter
     /**
      * Set the filter's labels.
      */
-    public function labels(?string $yes = null, ?string $no = null, ?string $empty = null): self
+    public function labels(?string $yes = null, ?string $no = null, ?string $empty = null): static
     {
         if ($yes) {
             $this->labels['yes'] = $yes;
@@ -95,7 +95,7 @@ class TernaryFilter extends Filter
     /**
      * Set the filter's placeholder.
      */
-    public function placeholder(string $placeholder): self
+    public function placeholder(string $placeholder): static
     {
         $this->placeholder = $placeholder;
 
@@ -105,7 +105,7 @@ class TernaryFilter extends Filter
     /**
      * Set the filter's null option.
      */
-    public function empty(bool $empty = true): self
+    public function empty(bool $empty = true): static
     {
         $this->empty = $empty;
 

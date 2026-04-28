@@ -24,7 +24,7 @@ class TagsColumn extends Column
     /**
      * Set the tags limit per row.
      */
-    public function limit(int $limit): self
+    public function limit(int $limit): static
     {
         $this->limit = $limit;
 
@@ -34,7 +34,7 @@ class TagsColumn extends Column
     /**
      * Set the tags ellipsis text.
      */
-    public function ellipsis(string $ellipsis): self
+    public function ellipsis(string $ellipsis): static
     {
         $this->ellipsis = $ellipsis;
 

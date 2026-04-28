@@ -28,7 +28,7 @@ class Language extends Model
     /**
      * Get the current language.
      */
-    public static function current(): self
+    public static function current(): static
     {
         return self::where('code', app()->getLocale())->first();
     }

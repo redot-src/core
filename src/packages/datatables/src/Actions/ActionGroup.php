@@ -129,7 +129,7 @@ class ActionGroup
     /**
      * Set the condition callback of the action group.
      */
-    public function condition(Closure $condition): self
+    public function condition(Closure $condition): static
     {
         $this->condition = $condition;
 

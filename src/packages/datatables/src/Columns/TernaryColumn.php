@@ -29,7 +29,7 @@ class TernaryColumn extends Column
     /**
      * Set the value to display when the value is true.
      */
-    public function true(string $true): self
+    public function true(string $true): static
     {
         $this->true = $true;
 
@@ -39,7 +39,7 @@ class TernaryColumn extends Column
     /**
      * Set the value to display when the value is false.
      */
-    public function false(string $false): self
+    public function false(string $false): static
     {
         $this->false = $false;
 

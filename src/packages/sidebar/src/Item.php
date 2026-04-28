@@ -67,7 +67,7 @@ class Item
     /**
      * Set the title of the item.
      */
-    public function title(string $title): self
+    public function title(string $title): static
     {
         $this->title = $title;
 
@@ -77,7 +77,7 @@ class Item
     /**
      * Set the icon of the item.
      */
-    public function icon(string $icon): self
+    public function icon(string $icon): static
     {
         $this->icon = $icon;
 
@@ -87,7 +87,7 @@ class Item
     /**
      * Set the route of the item.
      */
-    public function route(string $route, array $parameters = []): self
+    public function route(string $route, array $parameters = []): static
     {
         $this->route = $route;
         $this->parameters = $parameters;
@@ -98,7 +98,7 @@ class Item
     /**
      * Set the URL of the item.
      */
-    public function url(string $url): self
+    public function url(string $url): static
     {
         $this->url = $url;
 
@@ -108,7 +108,7 @@ class Item
     /**
      * Set the external status of the item.
      */
-    public function external(bool $external): self
+    public function external(bool $external): static
     {
         $this->external = $external;
 
@@ -118,7 +118,7 @@ class Item
     /**
      * Set the children of the item.
      */
-    public function children(array $children): self
+    public function children(array $children): static
     {
         $this->children = $children;
 
@@ -133,7 +133,7 @@ class Item
     /**
      * Set the hidden status of the item.
      */
-    public function hidden(bool|Closure $hidden): self
+    public function hidden(bool|Closure $hidden): static
     {
         $this->hidden = $hidden;
 
