@@ -18,7 +18,7 @@ class AuthContext
         public readonly bool $api,
         public readonly string $namePrefix,
         public readonly array $views,
-        public readonly string $home,
+        public readonly mixed $home,
         public readonly array $identifiers = ['email'],
         array $disable = [],
     ) {
@@ -37,7 +37,13 @@ class AuthContext
 
     public function homeUrl(): string
     {
-        return route($this->home);
+        if (is_callable($this->home)) {
+            return call_user_func($this->home);
+        }
+
+        $route = is_string($this->home) ? $this->home : $this->routeName('index');
+
+        return route($route);
     }
 
     public function identifierInputName(): string

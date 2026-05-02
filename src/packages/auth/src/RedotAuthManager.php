@@ -32,7 +32,7 @@ class RedotAuthManager
         array $views = [],
         array $disable = [],
         array $registrars = [],
-        ?string $home = null,
+        mixed $home = null,
     ): void {
         $context = $this->resolveContext($guard, $scope, $views, $disable, $home);
 
@@ -46,7 +46,7 @@ class RedotAuthManager
         }
     }
 
-    protected function resolveContext(string $guard, ?Closure $scope, array $views, array $disable, ?string $home): AuthContext
+    protected function resolveContext(string $guard, ?Closure $scope, array $views, array $disable, mixed $home): AuthContext
     {
         $guardConfig = config('auth.guards.' . $guard);
 
@@ -79,7 +79,7 @@ class RedotAuthManager
             api: $api,
             namePrefix: $namePrefix,
             views: $views,
-            home: $home ?? $namePrefix . 'index',
+            home: $home,
             identifiers: Login::getIdentifiers($provider),
             disable: $disable,
         );
