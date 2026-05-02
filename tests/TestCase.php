@@ -55,7 +55,7 @@ abstract class TestCase extends Orchestra
         $app['config']->set('permission.testing', true);
         $app['config']->set('queue.default', 'sync');
         $app['config']->set('session.driver', 'array');
-        $app['config']->set('view.compiled', __DIR__ . '/../storage/framework/views');
+        $app['config']->set('view.compiled', sys_get_temp_dir() . '/redot-core-tests/views');
     }
 
     /**

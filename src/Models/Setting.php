@@ -3,6 +3,7 @@
 namespace Redot\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Arr;
 use Redot\Casts\Union;
 
 class Setting extends Model
@@ -93,12 +94,30 @@ class Setting extends Model
     protected static function booted()
     {
         static::created(function ($setting) {
-            cache()->forget('settings.' . $setting->key);
+            static::forgetCachedValue($setting);
         });
 
         static::updated(function ($setting) {
-            cache()->forget('settings.' . $setting->key);
+            static::forgetCachedValue($setting);
         });
+    }
+
+    /**
+     * Forget cached setting values, including nested keys cached separately.
+     */
+    protected static function forgetCachedValue(self $setting): void
+    {
+        cache()->forget('settings.' . $setting->key);
+
+        foreach (array_keys(Arr::dot(Arr::wrap(static::default($setting->key)))) as $key) {
+            cache()->forget('settings.' . $setting->key . '.' . $key);
+        }
+
+        if (is_array($setting->value)) {
+            foreach (array_keys(Arr::dot($setting->value)) as $key) {
+                cache()->forget('settings.' . $setting->key . '.' . $key);
+            }
+        }
     }
 
     /**
