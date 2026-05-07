@@ -180,16 +180,18 @@ abstract class Datatable extends Component
      */
     public static function defaultActionGroup(array $actions, ?string $label = null, ?string $icon = null): array
     {
-        // Display first two actions directly, group the rest if there are more than 3 total
-        $mainActions = array_slice($actions, 0, 2);
-        $remainingActions = array_slice($actions, 2);
+        $offset = is_mobile() ? 0 : 2;
 
-        // If we have 3 actions total, just show all of them directly
-        if (count($actions) <= 3) {
+        // Display the first $offset actions directly, group the rest if there are more than $offset + 1 total
+        $mainActions = array_slice($actions, 0, $offset);
+        $remainingActions = array_slice($actions, $offset);
+
+        // If we have $offset + 1 actions total, just show all of them directly
+        if (count($actions) <= $offset + 1) {
             return $actions;
         }
 
-        // Otherwise, show first two and group the rest
+        // Otherwise, show the first $offset actions and group the rest
         return array_merge(
             $mainActions,
             [ActionGroup::make($label, $icon ?? 'fas fa-ellipsis-v')->actions($remainingActions)]
