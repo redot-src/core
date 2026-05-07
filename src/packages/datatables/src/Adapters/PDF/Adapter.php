@@ -6,7 +6,7 @@ use Illuminate\Support\Collection;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
-abstract class Adabter
+abstract class Adapter
 {
     /**
      * Download the PDF file.

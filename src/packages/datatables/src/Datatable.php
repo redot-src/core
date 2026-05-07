@@ -13,7 +13,7 @@ use Livewire\Component;
 use Livewire\WithPagination;
 use Redot\Datatables\Actions\Action;
 use Redot\Datatables\Actions\ActionGroup;
-use Redot\Datatables\Adapters\PDF\Adabter;
+use Redot\Datatables\Adapters\PDF\Adapter;
 use Redot\Datatables\Columns\Column;
 use Redot\Datatables\Filters\Filter;
 use Redot\Datatables\Traits\InteractsWithRelations;
@@ -300,7 +300,7 @@ abstract class Datatable extends Component
     {
         $pdfAdapter = new $this->pdfAdapter;
 
-        if (! $pdfAdapter instanceof Adabter || ! $pdfAdapter->supported()) {
+        if (! $pdfAdapter instanceof Adapter || ! $pdfAdapter->supported()) {
             throw new Exceptions\MissingDependencyException(sprintf('The PDF adapter "%s" is not supported.', $this->pdfAdapter));
         }
 

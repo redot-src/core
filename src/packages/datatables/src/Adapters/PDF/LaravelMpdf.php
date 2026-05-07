@@ -7,7 +7,7 @@ use Mccarlosen\LaravelMpdf\Facades\LaravelMpdf as PDF;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
-class LaravelMpdf extends Adabter
+class LaravelMpdf extends Adapter
 {
     /**
      * Download the PDF file.
