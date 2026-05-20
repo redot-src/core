@@ -90,10 +90,6 @@ class AuthContext
             }
         }
 
-        if (! is_subclass_of($this->model, MustVerifyEmail::class)) {
-            $disabled['email-verification'] = true;
-        }
-
         if ($this->api || ! isset($this->views['unlock'])) {
             $disabled['lock-screen'] = true;
         }
