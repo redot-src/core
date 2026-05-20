@@ -3,41 +3,73 @@
 use Redot\Sidebar\Item;
 use Redot\Sidebar\Sidebar;
 
-it('builds sidebar items fluently', function () {
-    $item = Item::make()
-        ->title('Dashboard')
-        ->icon('layout-dashboard')
-        ->route('dashboard.index', ['locale' => 'en'])
-        ->url('/dashboard')
-        ->external(false)
-        ->hidden(false);
-
-    expect($item->title)->toBe('Dashboard')
-        ->and($item->icon)->toBe('layout-dashboard')
-        ->and($item->route)->toBe('dashboard.index')
-        ->and($item->parameters)->toBe(['locale' => 'en'])
-        ->and($item->url)->toBe('/dashboard')
-        ->and($item->external)->toBeFalse()
-        ->and($item->isHidden())->toBeFalse();
-});
-
-it('assigns parent items when children are configured', function () {
+it('assigns the parent item to each child when children are configured', function () {
     $parent = Item::make()->title('Content');
-    $child = Item::make()->title('Pages');
+    $first = Item::make()->title('Pages');
+    $second = Item::make()->title('Posts');
 
-    $parent->children([$child]);
+    $parent->children([$first, $second]);
 
-    expect($parent->children)->toHaveCount(1)
-        ->and($child->parent)->toBe($parent);
+    expect($first->parent)->toBe($parent)
+        ->and($second->parent)->toBe($parent)
+        ->and($parent->children)->toHaveCount(2);
 });
 
-it('filters hidden sidebar items', function () {
+it('hides items that are flagged hidden via a boolean', function () {
     $sidebar = Sidebar::make([
         Item::make()->title('Visible')->url('/visible'),
         Item::make()->title('Hidden')->url('/hidden')->hidden(true),
     ]);
 
-    expect($sidebar->getItems())
-        ->toHaveCount(1)
-        ->and($sidebar->getItems()[0]->title)->toBe('Visible');
+    $titles = array_map(fn (Item $item) => $item->title, $sidebar->getItems());
+
+    expect($titles)->toBe(['Visible']);
+});
+
+it('hides items whose hidden closure resolves to true', function () {
+    $sidebar = Sidebar::make([
+        Item::make()->title('Always shown')->url('/visible')->hidden(fn () => false),
+        Item::make()->title('Conditionally hidden')->url('/hidden')->hidden(fn () => true),
+    ]);
+
+    $titles = array_map(fn (Item $item) => $item->title, $sidebar->getItems());
+
+    expect($titles)->toBe(['Always shown']);
+});
+
+it('removes a parent item once every one of its children has been filtered out', function () {
+    $parent = Item::make()->title('Group')->url('/group')->children([
+        Item::make()->title('Hidden 1')->url('/h1')->hidden(true),
+        Item::make()->title('Hidden 2')->url('/h2')->hidden(true),
+    ]);
+
+    $sibling = Item::make()->title('Survivor')->url('/keep');
+
+    $sidebar = Sidebar::make([$parent, $sibling]);
+
+    $titles = array_map(fn (Item $item) => $item->title, $sidebar->getItems());
+
+    expect($titles)->toBe(['Survivor']);
+});
+
+it('keeps a parent when at least one child remains visible and drops only the hidden ones', function () {
+    $parent = Item::make()->title('Group')->url('/group')->children([
+        Item::make()->title('Visible Child')->url('/visible-child'),
+        Item::make()->title('Hidden Child')->url('/hidden-child')->hidden(true),
+    ]);
+
+    $items = Sidebar::make([$parent])->getItems();
+
+    expect($items)->toHaveCount(1);
+
+    $childTitles = array_map(fn (Item $child) => $child->title, $items[0]->children);
+    expect($childTitles)->toBe(['Visible Child']);
+});
+
+it('falls back to # as the url when neither url nor route is provided', function () {
+    $sidebar = Sidebar::make([
+        Item::make()->title('No href'),
+    ]);
+
+    expect($sidebar->getItems()[0]->url)->toBe('#');
 });

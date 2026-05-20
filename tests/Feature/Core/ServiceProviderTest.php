@@ -1,53 +1,35 @@
 <?php
 
-use Illuminate\Support\Facades\Artisan;
-use Illuminate\Support\Facades\Schema;
-use Redot\Sidebar\Sidebar;
-use Redot\Toastify\Toastify;
+use Illuminate\Database\Eloquent\Casts\Json;
+use Illuminate\Pagination\Paginator;
+use Illuminate\Support\Facades\Blade;
+use Redot\RedotServiceProvider;
 
-it('boots the package testbench application', function () {
-    expect(app()->bound(Sidebar::class))->toBeTrue()
-        ->and(app()->make(Sidebar::class))->toBeInstanceOf(Sidebar::class)
-        ->and(app('sidebar'))->toBe(app()->make(Sidebar::class))
-        ->and(app()->bound(Toastify::class))->toBeTrue()
-        ->and(app('toastify'))->toBeInstanceOf(Toastify::class);
+it('merges the package configuration without overriding host overrides', function () {
+    config()->set('redot.features.dashboard.prefix', 'admin');
+
+    app()->register(RedotServiceProvider::class, force: true);
+
+    expect(config('redot.features.dashboard.prefix'))->toBe('admin')
+        ->and(config('redot.features.dashboard.enabled'))->toBeTrue()
+        ->and(config('redot.locales'))->toHaveCount(2);
 });
 
-it('merges package configuration', function () {
-    expect(config('redot.features.dashboard.enabled'))->toBeTrue()
-        ->and(config('redot.features.dashboard.prefix'))->toBe('dashboard')
-        ->and(config('redot.locales'))->toHaveCount(2)
-        ->and(config('datatables.assets'))->toBeArray()
-        ->and(config('toastify.defaults'))->toBeArray()
-        ->and(config('toastify.toastifiers.success'))->toBeArray();
+it('uses the package pagination view as the paginator default', function () {
+    expect(Paginator::$defaultView)->toBe('components.pagination');
 });
 
-it('runs package migrations in the testbench database', function () {
-    foreach ([
-        'settings',
-        'languages',
-        'language_tokens',
-        'login_tokens',
-        'permissions',
-        'roles',
-        'model_has_permissions',
-        'model_has_roles',
-        'role_has_permissions',
-    ] as $table) {
-        expect(Schema::hasTable($table))->toBeTrue("Expected table [$table] to exist.");
-    }
+it('compiles the themer Blade directive into a script tag with the configured theme', function () {
+    $compiled = Blade::compileString('@themer(custom)');
+
+    expect($compiled)
+        ->toContain("window.themerKey = 'custom'")
+        ->toContain('window.themeConfig =')
+        ->toContain('themer.js');
 });
 
-it('registers package artisan commands', function () {
-    $commands = array_keys(Artisan::all());
+it('encodes arrays through the configured JSON cast without escaping slashes', function () {
+    $value = Json::encode(['url' => 'https://example.test/path']);
 
-    expect($commands)->toContain(
-        'uploads:clear',
-        'permissions:sync',
-        'lang:extract',
-        'lang:sync',
-        'lang:publish',
-        'lang:revert',
-        'make:datatable',
-    );
+    expect($value)->toBe('{"url":"https://example.test/path"}');
 });

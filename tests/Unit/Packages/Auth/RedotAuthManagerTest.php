@@ -1,37 +1,57 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use Redot\Auth\AuthContext;
 use Redot\Auth\RedotAuthManager;
-use Tests\Fixtures\Auth\CapturingLoginRoutes;
-use Tests\Fixtures\Auth\VerifiableAuthContextUser;
 
-it('resolves route context for configured guards and custom registrars', function () {
-    CapturingLoginRoutes::$context = null;
-
-    config()->set('auth.guards.admins', ['driver' => 'session', 'provider' => 'admins']);
-    config()->set('auth.providers.admins', ['driver' => 'eloquent', 'model' => VerifiableAuthContextUser::class]);
-    config()->set('auth.passwords.admins', ['provider' => 'admins']);
-
+it('registers login, registration, logout, and email-verification routes for a configured guard by default', function () {
     Route::name('dashboard.')->group(function () {
         app(RedotAuthManager::class)->routes(
             guard: 'admins',
-            views: ['login' => 'auth.login'],
-            disable: ['register', 'password-reset', 'magic-link', 'email-verification', 'logout', 'lock-screen'],
-            registrars: ['login' => CapturingLoginRoutes::class],
+            views: [
+                'login' => 'auth.login',
+                'register' => 'auth.register',
+                'forgot-password' => 'auth.forgot-password',
+                'reset-password' => 'auth.reset-password',
+                'magic-link' => 'auth.magic-link',
+            ],
             home: 'dashboard.index',
         );
     });
 
-    expect(CapturingLoginRoutes::$context)->toBeInstanceOf(AuthContext::class)
-        ->guard->toBe('admins')
-        ->provider->toBe('admins')
-        ->broker->toBe('admins')
-        ->api->toBeFalse()
-        ->namePrefix->toBe('dashboard.')
-        ->home->toBe('dashboard.index');
+    Route::getRoutes()->refreshNameLookups();
+
+    expect(Route::has('dashboard.login.store'))->toBeTrue()
+        ->and(Route::has('dashboard.register.store'))->toBeTrue()
+        ->and(Route::has('dashboard.logout'))->toBeTrue()
+        ->and(Route::has('dashboard.verification.send'))->toBeTrue();
 });
 
-it('rejects missing auth guard configuration', function () {
+it('skips registering routes for explicitly disabled features', function () {
+    Route::name('dashboard.')->group(function () {
+        app(RedotAuthManager::class)->routes(
+            guard: 'admins',
+            views: ['login' => 'auth.login'],
+            disable: ['register', 'magic-link', 'email-verification', 'lock-screen'],
+            home: 'dashboard.index',
+        );
+    });
+
+    Route::getRoutes()->refreshNameLookups();
+
+    expect(Route::has('dashboard.login.store'))->toBeTrue()
+        ->and(Route::has('dashboard.logout'))->toBeTrue()
+        ->and(Route::has('dashboard.register.store'))->toBeFalse()
+        ->and(Route::has('dashboard.verification.send'))->toBeFalse()
+        ->and(Route::has('dashboard.unlock'))->toBeFalse();
+});
+
+it('throws when the requested guard is not configured', function () {
     app(RedotAuthManager::class)->routes('missing');
 })->throws(InvalidArgumentException::class, 'Guard [missing] is not configured.');
+
+it('throws when the guard provider does not point at a real model class', function () {
+    config()->set('auth.guards.broken', ['driver' => 'session', 'provider' => 'broken']);
+    config()->set('auth.providers.broken', ['driver' => 'eloquent', 'model' => 'App\\Does\\Not\\Exist']);
+
+    app(RedotAuthManager::class)->routes('broken');
+})->throws(InvalidArgumentException::class, 'Provider [broken] model is invalid.');

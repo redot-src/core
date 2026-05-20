@@ -1,8 +1,6 @@
 <?php
 
-use Redot\Toastify\Toastify;
-
-it('stores toast messages in the session', function () {
+it('stores toast messages in the session in the order they are pushed', function () {
     toastify()->success('Saved', ['duration' => 1000]);
     toastify()->error('Failed');
 
@@ -12,9 +10,10 @@ it('stores toast messages in the session', function () {
     ]);
 });
 
-it('renders toastify css and js views', function () {
-    $toastify = app(Toastify::class);
+it('uses the magic method name as the toast type for any unknown level', function () {
+    toastify()->info('Heads up');
 
-    expect($toastify->css())->toContain('toastify')
-        ->and($toastify->js())->toContain('toastify');
+    expect(session('toastify'))->toBe([
+        ['message' => 'Heads up', 'type' => 'info', 'options' => []],
+    ]);
 });

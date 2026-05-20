@@ -1,56 +1,109 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\URL;
 use Redot\Auth\AuthContext;
-use Redot\Auth\Middleware\Locked;
-use Tests\Fixtures\Auth\VerifiableAuthContextUser;
 
-it('builds route names middleware and identifier input names from context', function () {
-    Route::get('/home', fn () => 'home')->name('dashboard.index');
-    Route::getRoutes()->refreshNameLookups();
-    URL::setRoutes(Route::getRoutes());
-
-    $context = new AuthContext(
-        guard: 'admins',
-        provider: 'admins',
-        broker: 'admins',
-        model: VerifiableAuthContextUser::class,
-        scope: null,
-        api: false,
-        namePrefix: 'dashboard.',
-        views: ['unlock' => 'auth.unlock'],
-        home: 'dashboard.index',
-        identifiers: ['email', 'phone'],
+function make_auth_context(array $overrides = []): AuthContext
+{
+    return new AuthContext(
+        guard: $overrides['guard'] ?? 'admins',
+        provider: $overrides['provider'] ?? 'admins',
+        broker: $overrides['broker'] ?? 'admins',
+        model: $overrides['model'] ?? config('auth.providers.admins.model'),
+        scope: $overrides['scope'] ?? null,
+        api: $overrides['api'] ?? false,
+        namePrefix: $overrides['namePrefix'] ?? 'dashboard.',
+        views: $overrides['views'] ?? ['unlock' => 'auth.unlock'],
+        home: $overrides['home'] ?? 'dashboard.index',
+        identifiers: $overrides['identifiers'] ?? ['email'],
+        disable: $overrides['disable'] ?? [],
     );
+}
+
+it('prefixes feature route names with the configured name prefix', function () {
+    $context = make_auth_context(['namePrefix' => 'dashboard.']);
 
     expect($context->routeName('login'))->toBe('dashboard.login')
-        ->and($context->identifierInputName())->toBe('identifier')
-        ->and($context->guest())->toBe(['guest:admins'])
-        ->and($context->auth())->toBe([
-            'auth:admins',
-            Locked::class . ':admins,dashboard.unlock',
-        ])
-        ->and($context->homeUrl())->toBe(route('dashboard.index'));
+        ->and($context->routeName('logout'))->toBe('dashboard.logout');
 });
 
-it('disables unsupported auth features from context configuration', function () {
-    $context = new AuthContext(
-        guard: 'web',
-        provider: 'users',
-        broker: 'users',
-        model: stdClass::class,
-        scope: null,
-        api: true,
-        namePrefix: '',
-        views: [],
-        home: 'home',
-        disable: ['register', 'magic-link'],
-    );
+it('uses the single identifier as the input name when only one identifier is configured', function () {
+    $context = make_auth_context(['identifiers' => ['email']]);
+
+    expect($context->identifierInputName())->toBe('email');
+});
+
+it('uses the generic "identifier" input name when multiple identifiers are configured', function () {
+    $context = make_auth_context(['identifiers' => ['email', 'phone']]);
+
+    expect($context->identifierInputName())->toBe('identifier');
+});
+
+it('builds a guest middleware list scoped to the configured guard', function () {
+    $context = make_auth_context(['guard' => 'admins']);
+
+    expect($context->guest())->toBe(['guest:admins']);
+});
+
+it('appends the locked middleware to the auth list when the lock screen is enabled', function () {
+    $context = make_auth_context([
+        'guard' => 'admins',
+        'namePrefix' => 'dashboard.',
+        'views' => ['unlock' => 'auth.unlock'],
+    ]);
+
+    expect($context->auth())->toBe([
+        'auth:admins',
+        $context->lockedMiddleware(),
+    ]);
+});
+
+it('omits the locked middleware when the unlock view is not configured', function () {
+    $context = make_auth_context([
+        'guard' => 'admins',
+        'views' => [],
+    ]);
+
+    expect($context->auth())->toBe(['auth:admins'])
+        ->and($context->featureEnabled('lock-screen'))->toBeFalse();
+});
+
+it('omits the locked middleware when the context is an api context', function () {
+    $context = make_auth_context([
+        'api' => true,
+        'views' => ['unlock' => 'auth.unlock'],
+    ]);
+
+    expect($context->featureEnabled('lock-screen'))->toBeFalse()
+        ->and($context->auth())->toBe(['auth:' . $context->guard]);
+});
+
+it('honours the explicit feature disable list', function () {
+    $context = make_auth_context([
+        'disable' => ['register', 'magic-link'],
+    ]);
 
     expect($context->featureEnabled('register'))->toBeFalse()
         ->and($context->featureEnabled('magic-link'))->toBeFalse()
-        ->and($context->featureEnabled('email-verification'))->toBeFalse()
-        ->and($context->featureEnabled('lock-screen'))->toBeFalse()
-        ->and($context->auth())->toBe(['auth:web']);
+        ->and($context->featureEnabled('logout'))->toBeTrue();
+});
+
+it('ignores unsupported feature names passed through the disable list', function () {
+    $context = make_auth_context(['disable' => ['something-not-real']]);
+
+    expect($context->featureEnabled('something-not-real'))->toBeTrue();
+});
+
+it('resolves the home url via the route name when home is a string', function () {
+    Route::name('dashboard.index')->get('/home', fn () => 'home');
+
+    $context = make_auth_context(['home' => 'dashboard.index']);
+
+    expect($context->homeUrl())->toBe(route('dashboard.index'));
+});
+
+it('resolves the home url via the supplied closure when home is callable', function () {
+    $context = make_auth_context(['home' => fn () => 'https://example.test/welcome']);
+
+    expect($context->homeUrl())->toBe('https://example.test/welcome');
 });

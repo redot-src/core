@@ -2,6 +2,7 @@
 
 namespace Tests;
 
+use Illuminate\Foundation\Auth\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\File;
 use Laravel\Sanctum\SanctumServiceProvider;
@@ -19,6 +20,7 @@ abstract class TestCase extends Orchestra
         parent::setUp();
 
         File::ensureDirectoryExists($this->app['config']->get('view.compiled'));
+        File::ensureDirectoryExists(dist_path());
     }
 
     /**
@@ -56,6 +58,10 @@ abstract class TestCase extends Orchestra
         $app['config']->set('queue.default', 'sync');
         $app['config']->set('session.driver', 'array');
         $app['config']->set('view.compiled', sys_get_temp_dir() . '/redot-core-tests/views');
+
+        $app['config']->set('auth.guards.admins', ['driver' => 'session', 'provider' => 'admins']);
+        $app['config']->set('auth.providers.admins', ['driver' => 'eloquent', 'model' => User::class]);
+        $app['config']->set('auth.passwords.admins', ['provider' => 'admins']);
     }
 
     /**

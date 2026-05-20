@@ -16,7 +16,7 @@ it('sets the application locale from the route parameter', function () {
         ->and(app()->getLocale())->toBe('ar');
 });
 
-it('redirects unsupported route locales to the fallback locale', function () {
+it('redirects unsupported route locales to the fallback locale and preserves the query string', function () {
     Route::middleware(Localization::class)
         ->get('/{locale}/fallback-probe', fn () => response('ok'))
         ->name('website.fallback-probe');
@@ -34,4 +34,17 @@ it('lets the locale query string override the route locale', function () {
     $this->get('/en/query-locale-probe?locale=ar')
         ->assertRedirect('/ar/query-locale-probe?locale=ar')
         ->assertStatus(301);
+});
+
+it('stores the active locale in the dashboard-scoped session key when the route is in the dashboard scope', function () {
+    Route::middleware(Localization::class)
+        ->get('/{locale}/dashboard/scope-probe', fn () => response(app()->getLocale()))
+        ->name('dashboard.scope-probe');
+
+    $this->get('/ar/dashboard/scope-probe')
+        ->assertOk()
+        ->assertSee('ar');
+
+    expect(session('dashboard_locale'))->toBe('ar')
+        ->and(session('website_locale'))->toBeNull();
 });
