@@ -185,8 +185,7 @@ function format_phone(string $phone, string $country = 'EG'): string
  */
 function trigger_dependencies_build(): void
 {
-    File::deleteDirectories(public_path('assets/dist'));
-    File::delete(public_path('assets/dist/lock'));
+    File::deleteDirectories(dist_path());
 }
 
 /**
@@ -202,6 +201,14 @@ function hashed_asset(string $path, ?bool $secure = null): string
     }
 
     return asset($path, $secure) . ($hash ? '?v=' . $hash : '');
+}
+
+/**
+ * Get the path to the distribution directory.
+ */
+function dist_path(?string $suffix = null): string
+{
+    return public_path('assets/dist' . ($suffix ? '/' . $suffix : ''));
 }
 
 /**

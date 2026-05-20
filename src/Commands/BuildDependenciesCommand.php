@@ -88,7 +88,7 @@ class BuildDependenciesCommand extends Command
         $javascriptFile .= 'window.__translations = ' . $translations . ";\n";
 
         // Write the JavaScript file.
-        $path = public_path('assets/dist/translations');
+        $path = dist_path('translations');
 
         File::ensureDirectoryExists($path);
         File::put($path . '/' . $locale . '.js', $javascriptFile);
@@ -118,7 +118,7 @@ class BuildDependenciesCommand extends Command
         }
 
         // Write the JavaScript file.
-        $path = public_path('assets/dist');
+        $path = dist_path();
 
         File::ensureDirectoryExists($path);
         File::put($path . '/init.js', $javascriptFile);
@@ -145,7 +145,7 @@ class BuildDependenciesCommand extends Command
      */
     protected function buildLockFile()
     {
-        $path = public_path('assets/dist/lock.json');
+        $path = dist_path('lock.json');
 
         // Remove the lock file if it exists.
         if (file_exists($path)) {

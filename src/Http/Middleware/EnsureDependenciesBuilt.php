@@ -16,7 +16,7 @@ class EnsureDependenciesBuilt
      */
     public function handle(Request $request, Closure $next): Response
     {
-        $lockFile = public_path('assets/dist/lock.json');
+        $lockFile = dist_path('lock.json');
 
         if (! file_exists($lockFile)) {
             Artisan::call('dependencies:build');
