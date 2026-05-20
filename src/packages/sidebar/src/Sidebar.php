@@ -17,19 +17,25 @@ class Sidebar
     public array $activeItems = [];
 
     /**
+     * Sidebar guard.
+     */
+    public string $guard = 'admins';
+
+    /**
      * Create a new sidebar instance.
      */
-    public function __construct(array $items = [])
+    public function __construct(array $items = [], string $guard = 'admins')
     {
         $this->items = $items;
+        $this->guard = $guard;
     }
 
     /**
      * Create a new sidebar instance statically.
      */
-    public static function make(array $items = []): static
+    public static function make(array $items = [], string $guard = 'admins'): static
     {
-        return new static($items);
+        return new static($items, $guard);
     }
 
     /**
@@ -107,7 +113,7 @@ class Sidebar
             return false;
         }
 
-        if (is_callable($item->hidden) ? call_user_func($item->hidden, current_admin()) : $item->hidden) {
+        if (is_callable($item->hidden) ? call_user_func($item->hidden, auth($this->guard)->user()) : $item->hidden) {
             return false;
         }
 
