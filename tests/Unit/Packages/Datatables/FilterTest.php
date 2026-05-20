@@ -7,7 +7,15 @@ use Redot\Datatables\Filters\NumberFilter;
 use Redot\Datatables\Filters\SelectFilter;
 use Redot\Datatables\Filters\StringFilter;
 use Redot\Datatables\Filters\TernaryFilter;
-use Tests\Fixtures\Datatables\DatatableFilterFixture;
+use Tests\Fixtures\EmptyModel;
+
+function datatableFilterModel(): EmptyModel
+{
+    return tap(new EmptyModel, function (EmptyModel $model): void {
+        $model->setTable('datatable_filter_fixtures');
+        $model->timestamps = false;
+    });
+}
 
 beforeEach(function () {
     Schema::dropIfExists('datatable_filter_fixtures');
@@ -20,7 +28,7 @@ beforeEach(function () {
         $table->date('published_on')->nullable();
     });
 
-    DatatableFilterFixture::insert([
+    datatableFilterModel()->insert([
         ['name' => 'Alpha', 'score' => 10, 'status' => 'draft', 'active' => true, 'published_on' => '2026-01-01'],
         ['name' => 'Beta', 'score' => 20, 'status' => 'published', 'active' => false, 'published_on' => '2026-02-01'],
         ['name' => 'Gamma', 'score' => 30, 'status' => 'published', 'active' => null, 'published_on' => '2026-03-01'],
@@ -28,7 +36,7 @@ beforeEach(function () {
 });
 
 it('applies string filters to query columns', function () {
-    $query = DatatableFilterFixture::query();
+    $query = datatableFilterModel()->newQuery();
 
     StringFilter::make('name')->apply($query, ['operator' => 'contains', 'value' => 'amm']);
 
@@ -36,7 +44,7 @@ it('applies string filters to query columns', function () {
 });
 
 it('applies number filters to query columns', function () {
-    $query = DatatableFilterFixture::query();
+    $query = datatableFilterModel()->newQuery();
 
     NumberFilter::make('score')->apply($query, ['operator' => 'greater_than_or_equals', 'value' => 20]);
 
@@ -44,10 +52,10 @@ it('applies number filters to query columns', function () {
 });
 
 it('applies select and ternary filters', function () {
-    $select = DatatableFilterFixture::query();
+    $select = datatableFilterModel()->newQuery();
     SelectFilter::make('status')->apply($select, 'published');
 
-    $ternary = DatatableFilterFixture::query();
+    $ternary = datatableFilterModel()->newQuery();
     TernaryFilter::make('active')->empty()->apply($ternary, 'empty');
 
     expect($select->pluck('name')->all())->toBe(['Beta', 'Gamma'])
@@ -55,7 +63,7 @@ it('applies select and ternary filters', function () {
 });
 
 it('applies date filters with ranges', function () {
-    $query = DatatableFilterFixture::query();
+    $query = datatableFilterModel()->newQuery();
 
     DateFilter::make('published_on')->apply($query, [
         'from' => '2026-01-15',

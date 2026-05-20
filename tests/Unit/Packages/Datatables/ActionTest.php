@@ -4,8 +4,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Route;
 use Redot\Datatables\Actions\Action;
 use Redot\Datatables\Actions\ActionGroup;
-use Tests\Fixtures\Core\EmptyModel;
-use Tests\Fixtures\Datatables\DatatableActionRow;
+use Tests\Fixtures\EmptyModel;
 
 it('rejects unknown http methods at configuration time', function () {
     Action::make()->method('trace');
@@ -18,7 +17,7 @@ it('rejects confirmable get actions when attributes are built', function () {
 it('uses an explicit href closure to compute the action url per row', function () {
     $action = Action::make('Edit')->href(fn (Model $row) => '/users/' . $row->getAttribute('id') . '/edit');
 
-    $attributes = $action->buildAttributes(new DatatableActionRow)->getAttributes();
+    $attributes = $action->buildAttributes(new EmptyModel(['id' => 5]))->getAttributes();
 
     expect($attributes['href'])->toBe('/users/5/edit');
 });
@@ -28,7 +27,7 @@ it('resolves the href and method from a named route binding the row as the first
 
     $action = Action::make('Edit')->route('admins.edit')->method('post');
 
-    $attributes = $action->buildAttributes(new DatatableActionRow(['id' => 12]))->getAttributes();
+    $attributes = $action->buildAttributes(new EmptyModel(['id' => 12]))->getAttributes();
 
     expect($attributes['href'])->toContain('/admins/12/edit')
         ->and($attributes['method'])->toBe('post')
@@ -43,7 +42,7 @@ it('opens links in a new tab when newTab is enabled', function () {
 });
 
 it('renders only when the visible flag is set and the condition callback returns true', function () {
-    $row = new DatatableActionRow(['active' => false]);
+    $row = new EmptyModel(['active' => false]);
 
     $visible = Action::make('Edit');
     $conditionFails = Action::make('Edit')->condition(fn ($row) => $row->getAttribute('active'));
@@ -62,14 +61,14 @@ it('exposes a delete factory that defaults to a confirmable delete request', fun
     expect($action->method)->toBe('delete')
         ->and($action->confirmable)->toBeTrue();
 
-    $attributes = $action->buildAttributes(new DatatableActionRow(['id' => 7]))->getAttributes();
+    $attributes = $action->buildAttributes(new EmptyModel(['id' => 7]))->getAttributes();
 
     expect($attributes['method'])->toBe('delete')
         ->and($attributes)->toHaveKey('confirm');
 });
 
 it('flags grouped actions and renders the group only when at least one child can render', function () {
-    $row = new DatatableActionRow(['id' => 1]);
+    $row = new EmptyModel(['id' => 1]);
 
     $visible = Action::make('Visible');
     $hidden = Action::make('Hidden')->hidden();

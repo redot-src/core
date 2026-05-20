@@ -1,7 +1,7 @@
 <?php
 
 use Redot\Casts\Union;
-use Tests\Fixtures\Core\EmptyModel;
+use Tests\Fixtures\EmptyModel;
 
 it('casts stored strings back to primitive and structured values', function (mixed $stored, mixed $expected) {
     $cast = new Union;
