@@ -2,7 +2,6 @@
 
 namespace Redot\Auth;
 
-use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Redot\Auth\Middleware\Locked;
 
 class AuthContext
