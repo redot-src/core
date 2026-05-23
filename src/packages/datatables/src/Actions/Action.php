@@ -74,6 +74,16 @@ class Action
     public ?Closure $condition = null;
 
     /**
+     * The unique name of the inline action.
+     */
+    public ?string $name = null;
+
+    /**
+     * The inline callback of the action.
+     */
+    public ?Closure $callback = null;
+
+    /**
      * Determine if the action should be opened in a new tab.
      */
     public bool $newTab = false;
@@ -335,6 +345,21 @@ class Action
     }
 
     /**
+     * Set the inline callback of the action.
+     */
+    public function action(string $name, Closure $callback): static
+    {
+        if (trim($name) === '') {
+            throw new InvalidArgumentException('Inline action requires a non-empty name.');
+        }
+
+        $this->name = $name;
+        $this->callback = $callback;
+
+        return $this;
+    }
+
+    /**
      * Set the action to be opened in a new tab.
      */
     public function newTab(bool $newTab = true): static
@@ -391,8 +416,20 @@ class Action
      */
     protected function prepareAttributes(?Model $row = null): void
     {
-        if ($this->confirmable && $this->method === 'get') {
+        if ($this->callback && ($this->route || $this->href)) {
+            throw new InvalidArgumentException('Inline actions cannot be combined with route or href.');
+        }
+
+        if ($this->confirmable && $this->method === 'get' && ! $this->callback) {
             throw new InvalidArgumentException('Confirmable actions must have a method other than "get".');
+        }
+
+        if ($this->callback) {
+            $this->attributes([
+                'href' => '#',
+                'action-name' => $this->name,
+                'action-key' => $row?->getKey(),
+            ]);
         }
 
         if ($this->route) {

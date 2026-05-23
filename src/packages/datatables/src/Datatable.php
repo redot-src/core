@@ -138,7 +138,7 @@ abstract class Datatable extends Component
         // Set the PDF adapter and options
         $this->pdfTemplate ??= config('datatables.export.pdf.template');
         $this->pdfAdapter ??= config('datatables.export.pdf.adapter');
-        $this->pdfOptions = array_merge(config('datatables.export.pdf.options'), $this->pdfOptions);
+        $this->pdfOptions = array_merge(config('datatables.export.pdf.options') ?? [], $this->pdfOptions);
 
         // Set the assets urls
         $this->cssAssetsUrl = route(config('datatables.assets.css.route'), ['v' => md5(filemtime(config('datatables.assets.css.file')))]);
@@ -146,7 +146,7 @@ abstract class Datatable extends Component
 
         // Set the allowed export formats
         if (! isset($this->allowedExports)) {
-            $this->allowedExports = array_keys(array_filter(config('datatables.export'), fn ($export) => $export['enabled']));
+            $this->allowedExports = array_keys(array_filter(config('datatables.export') ?? [], fn ($export) => $export['enabled']));
         }
     }
 
@@ -329,6 +329,50 @@ abstract class Datatable extends Component
     public function refresh(): void
     {
         $this->resetPage();
+    }
+
+    /**
+     * Run an inline action against a row.
+     */
+    public function runAction(string $name, mixed $key): mixed
+    {
+        $action = $this->findActionByName($name);
+
+        if (! $action || ! $action->callback) {
+            throw new Exceptions\InvalidActionException("Action [$name] not found.");
+        }
+
+        $row = $this->query()->findOrFail($key);
+
+        if (! $action->shouldRender($row)) {
+            throw new Exceptions\InvalidActionException("Action [$name] is not available for this row.");
+        }
+
+        return call_user_func($action->callback, $row, $this);
+    }
+
+    /**
+     * Find an action by its unique name.
+     */
+    protected function findActionByName(string $name): ?Action
+    {
+        foreach ($this->actions() as $action) {
+            if ($action->isActionGroup) {
+                foreach ($action->actions as $groupAction) {
+                    if ($groupAction->name === $name) {
+                        return $groupAction;
+                    }
+                }
+
+                continue;
+            }
+
+            if ($action->name === $name) {
+                return $action;
+            }
+        }
+
+        return null;
     }
 
     /**

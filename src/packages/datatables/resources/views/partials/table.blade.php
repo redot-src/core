@@ -40,7 +40,7 @@
 
         <tbody wire:loading.class="opacity-50">
             @forelse($rows as $row)
-                <tr>
+                <tr wire:key="{{ $id }}-row-{{ $row->getKey() }}">
                     @foreach ($columns as $column)
                         <td {{ $column->buildAttributes($row) }}>
                             {!! $column->get($row) !!}

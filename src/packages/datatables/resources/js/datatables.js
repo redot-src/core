@@ -56,3 +56,28 @@ $(document).on('click', '.datatable-action[method]:not([method="get"])', (event)
         callback();
     }
 });
+
+// Handle inline datatable action click
+$(document).on('click', '.datatable-action[action-name]', (event) => {
+    event.preventDefault();
+
+    const $action = $(event.target).closest('.datatable-action');
+    const name = $action.attr('action-name');
+    const key = $action.attr('action-key');
+    const $root = $action.closest('[wire\\:id]');
+    const wire = window.Livewire.find($root.attr('wire:id'));
+
+    const run = () => wire.call('runAction', name, key);
+
+    if ($action.hasAttr('confirm') === false) {
+        return run();
+    }
+
+    if (typeof warnBeforeAction !== 'undefined') {
+        return warnBeforeAction(run, { content: $action.attr('confirm') });
+    }
+
+    if (confirm($action.attr('confirm'))) {
+        run();
+    }
+});

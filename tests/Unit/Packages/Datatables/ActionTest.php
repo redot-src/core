@@ -81,3 +81,37 @@ it('flags grouped actions and renders the group only when at least one child can
         ->and($populatedGroup->shouldRender($row))->toBeTrue()
         ->and($emptyGroup->shouldRender($row))->toBeFalse();
 });
+
+it('registers an inline action with a mandatory name and callback', function () {
+    $callback = fn () => null;
+
+    $action = Action::make('Approve')->action('approve', $callback);
+
+    expect($action->name)->toBe('approve')
+        ->and($action->callback)->toBe($callback);
+});
+
+it('rejects empty inline action names at configuration time', function () {
+    Action::make('Approve')->action('   ', fn () => null);
+})->throws(InvalidArgumentException::class, 'Inline action requires a non-empty name.');
+
+it('rejects combining inline actions with route or href when attributes are built', function () {
+    Action::make('Approve')
+        ->route('admins.edit')
+        ->action('approve', fn () => null)
+        ->buildAttributes(new EmptyModel(['id' => 1]));
+})->throws(InvalidArgumentException::class, 'Inline actions cannot be combined with route or href.');
+
+it('builds inline action attributes for livewire execution', function () {
+    $action = Action::make('Approve', 'fas fa-check')
+        ->action('approve', fn () => null)
+        ->confirmable(message: 'Are you sure?');
+
+    $attributes = $action->buildAttributes(new EmptyModel(['id' => 9]))->getAttributes();
+
+    expect($attributes['href'])->toBe('#')
+        ->and($attributes['action-name'])->toBe('approve')
+        ->and($attributes['action-key'])->toBe(9)
+        ->and($attributes)->not->toHaveKey('method')
+        ->and($attributes['confirm'])->toBe('Are you sure?');
+});
