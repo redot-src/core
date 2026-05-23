@@ -80,8 +80,11 @@ $(document).on('click', '.datatable-action[action-name]', (event) => {
     const $action = $(event.target).closest('.datatable-action');
     const name = $action.attr('action-name');
     const key = $action.attr('action-key');
-    const id = $action.closest('[parent-wire-id]').attr('parent-wire-id');
-    const wire = window.Livewire.find(id);
+
+    let wireId = $action.closest('[parent-wire-id]').attr('parent-wire-id');
+    if (!wireId) wireId = $action.closest('[wire\\:id]').attr('wire:id');
+
+    const wire = window.Livewire.find(wireId);
 
     const run = () => wire.call('runAction', name, key);
 
