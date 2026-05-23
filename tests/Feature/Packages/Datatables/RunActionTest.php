@@ -25,6 +25,14 @@ class RunActionDatatable extends Datatable
 {
     protected string $model = RunActionPost::class;
 
+    public bool $successCallbackFired = false;
+
+    public bool $failureCallbackFired = false;
+
+    public mixed $successResult = null;
+
+    public ?string $failureExceptionMessage = null;
+
     public function columns(): array
     {
         return [
@@ -39,6 +47,21 @@ class RunActionDatatable extends Datatable
             Action::make('Approve', 'fas fa-check')
                 ->action('approve', fn (RunActionPost $row) => $row->update(['approved' => true]))
                 ->condition(fn (RunActionPost $row) => ! $row->approved),
+            Action::make('Fail', 'fas fa-times')
+                ->action('fail', fn () => throw new RuntimeException('Action failed'))
+                ->success(fn () => null)
+                ->failure(function ($row, $exception, RunActionDatatable $datatable) {
+                    $datatable->failureCallbackFired = true;
+                    $datatable->failureExceptionMessage = $exception->getMessage();
+                }),
+            Action::make('Succeed', 'fas fa-check-double')
+                ->action('succeed', fn (RunActionPost $row) => 'done')
+                ->success(function ($row, $result, RunActionDatatable $datatable) {
+                    $datatable->successCallbackFired = true;
+                    $datatable->successResult = $result;
+                }),
+            Action::make('Explode', 'fas fa-bomb')
+                ->action('explode', fn () => throw new RuntimeException('Unhandled failure')),
             ActionGroup::make('More', 'fas fa-ellipsis-v')->actions([
                 Action::make('Archive', 'fas fa-archive')
                     ->action('archive', fn (RunActionPost $row) => $row->update(['approved' => false])),
@@ -87,3 +110,28 @@ it('throws when the inline action is not available for the row', function () {
     Livewire::test(RunActionDatatable::class)
         ->call('runAction', 'approve', $post->getKey());
 })->throws(InvalidActionException::class, 'Action [approve] is not available for this row.');
+
+it('fires the success callback after a successful inline action', function () {
+    $post = RunActionPost::query()->create(['approved' => false]);
+
+    Livewire::test(RunActionDatatable::class)
+        ->call('runAction', 'succeed', $post->getKey())
+        ->assertSet('successCallbackFired', true)
+        ->assertSet('successResult', 'done');
+});
+
+it('fires the failure callback when an inline action throws and suppresses the exception', function () {
+    $post = RunActionPost::query()->create(['approved' => false]);
+
+    Livewire::test(RunActionDatatable::class)
+        ->call('runAction', 'fail', $post->getKey())
+        ->assertSet('failureCallbackFired', true)
+        ->assertSet('failureExceptionMessage', 'Action failed');
+});
+
+it('rethrows inline action exceptions when no failure callback is registered', function () {
+    $post = RunActionPost::query()->create(['approved' => false]);
+
+    Livewire::test(RunActionDatatable::class)
+        ->call('runAction', 'explode', $post->getKey());
+})->throws(RuntimeException::class, 'Unhandled failure');

@@ -91,6 +91,19 @@ it('registers an inline action with a mandatory name and callback', function () 
         ->and($action->callback)->toBe($callback);
 });
 
+it('registers success and failure callbacks for inline actions', function () {
+    $success = fn () => null;
+    $failure = fn () => null;
+
+    $action = Action::make('Approve')
+        ->action('approve', fn () => null)
+        ->success($success)
+        ->failure($failure);
+
+    expect($action->successCallback)->toBe($success)
+        ->and($action->failureCallback)->toBe($failure);
+});
+
 it('rejects empty inline action names at configuration time', function () {
     Action::make('Approve')->action('   ', fn () => null);
 })->throws(InvalidArgumentException::class, 'Inline action requires a non-empty name.');

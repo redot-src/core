@@ -84,6 +84,16 @@ class Action
     public ?Closure $callback = null;
 
     /**
+     * The success callback of the inline action.
+     */
+    public ?Closure $successCallback = null;
+
+    /**
+     * The failure callback of the inline action.
+     */
+    public ?Closure $failureCallback = null;
+
+    /**
      * Determine if the action should be opened in a new tab.
      */
     public bool $newTab = false;
@@ -355,6 +365,26 @@ class Action
 
         $this->name = $name;
         $this->callback = $callback;
+
+        return $this;
+    }
+
+    /**
+     * Set the success callback of the inline action.
+     */
+    public function success(Closure $callback): static
+    {
+        $this->successCallback = $callback;
+
+        return $this;
+    }
+
+    /**
+     * Set the failure callback of the inline action.
+     */
+    public function failure(Closure $callback): static
+    {
+        $this->failureCallback = $callback;
 
         return $this;
     }

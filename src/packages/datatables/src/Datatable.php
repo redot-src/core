@@ -17,13 +17,16 @@ use Redot\Datatables\Adapters\PDF\Adapter;
 use Redot\Datatables\Columns\Column;
 use Redot\Datatables\Filters\Filter;
 use Redot\Datatables\Traits\InteractsWithRelations;
+use Redot\Datatables\Traits\InteractsWithToasts;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\StreamedResponse;
+use Throwable;
 
 abstract class Datatable extends Component
 {
     use InteractsWithRelations;
+    use InteractsWithToasts;
     use Macroable;
     use WithPagination;
 
@@ -348,7 +351,23 @@ abstract class Datatable extends Component
             throw new Exceptions\InvalidActionException("Action [$name] is not available for this row.");
         }
 
-        return call_user_func($action->callback, $row, $this);
+        try {
+            $result = call_user_func($action->callback, $row, $this);
+
+            if ($action->successCallback) {
+                call_user_func($action->successCallback, $row, $result, $this);
+            }
+
+            return $result;
+        } catch (Throwable $exception) {
+            if ($action->failureCallback) {
+                call_user_func($action->failureCallback, $row, $exception, $this);
+
+                return null;
+            }
+
+            throw $exception;
+        }
     }
 
     /**
