@@ -345,7 +345,11 @@ abstract class Datatable extends Component
             throw new Exceptions\InvalidActionException("Action [$name] not found.");
         }
 
-        $row = $this->query()->findOrFail($key);
+        $row = $this->query()->findOr($key, fn () => $this->query()->withTrashed()->find($key));
+
+        if (! $row) {
+            throw new Exceptions\InvalidActionException("Row [$key] not found.");
+        }
 
         if (! $action->shouldRender($row)) {
             throw new Exceptions\InvalidActionException("Action [$name] is not available for this row.");
