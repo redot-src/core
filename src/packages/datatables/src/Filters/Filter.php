@@ -90,7 +90,7 @@ abstract class Filter
     /**
      * Make a new filter instance.
      */
-    public static function make(string|array|null $column = null, ?string $label = null): Filter
+    public static function make(string|array|null $column = null, ?string $label = null): static
     {
         return new static($column, $label);
     }
@@ -98,7 +98,7 @@ abstract class Filter
     /**
      * Set the filter's label.
      */
-    public function label(string $label): Filter
+    public function label(string $label): static
     {
         $this->label = $label;
 
@@ -108,7 +108,7 @@ abstract class Filter
     /**
      * Set the filter's column(s).
      */
-    public function column(string|array $column): Filter
+    public function column(string|array $column): static
     {
         $this->column = $column;
 
@@ -118,7 +118,7 @@ abstract class Filter
     /**
      * Set the filter's columns (alias for column with array).
      */
-    public function columns(array $columns): Filter
+    public function columns(array $columns): static
     {
         $this->column = $columns;
 
@@ -128,7 +128,7 @@ abstract class Filter
     /**
      * Set the filter's columns to be applied with OR logic.
      */
-    public function or(bool $or = true): Filter
+    public function or(bool $or = true): static
     {
         $this->or = $or;
 
@@ -138,7 +138,7 @@ abstract class Filter
     /**
      * Set the filter's query.
      */
-    public function query(Closure $query): Filter
+    public function query(Closure $query): static
     {
         $this->query = $query;
 

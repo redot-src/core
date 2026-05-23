@@ -115,7 +115,7 @@ class Action
     /**
      * Create a new action instance.
      */
-    public static function make(?string $label = null, ?string $icon = null): Action
+    public static function make(?string $label = null, ?string $icon = null): static
     {
         return new static($label, $icon);
     }
@@ -123,7 +123,7 @@ class Action
     /**
      * Create a new view action instance.
      */
-    public static function view(?string $route = null, array $parameters = []): Action
+    public static function view(?string $route = null, array $parameters = []): static
     {
         $action = static::make(__('datatables::datatable.actions.view'), 'fas fa-eye')->fancybox();
 
@@ -137,7 +137,7 @@ class Action
     /**
      * Create a new edit action instance.
      */
-    public static function edit(?string $route = null, array $parameters = []): Action
+    public static function edit(?string $route = null, array $parameters = []): static
     {
         $action = static::make(__('datatables::datatable.actions.edit'), 'fas fa-edit');
 
@@ -151,7 +151,7 @@ class Action
     /**
      * Create a new delete action instance.
      */
-    public static function delete(?string $route = null, array $parameters = []): Action
+    public static function delete(?string $route = null, array $parameters = []): static
     {
         $action = static::make(__('datatables::datatable.actions.delete'), 'fas fa-trash-alt')->method('delete')->confirmable();
 
@@ -165,7 +165,7 @@ class Action
     /**
      * Create a new restore action instance.
      */
-    public static function restore(?string $route = null, array $parameters = []): Action
+    public static function restore(?string $route = null, array $parameters = []): static
     {
         $action = static::make(__('datatables::datatable.actions.restore'), 'fas fa-trash-restore')->method('post')->confirmable();
 
@@ -179,7 +179,7 @@ class Action
     /**
      * Create a new export action instance.
      */
-    public static function export(?string $route = null, array $parameters = []): Action
+    public static function export(?string $route = null, array $parameters = []): static
     {
         $action = static::make(__('datatables::datatable.actions.export'), 'fas fa-file-export');
 
@@ -289,7 +289,7 @@ class Action
     /**
      * Set the visibility of the action.
      */
-    public function visible(bool $visible = true): Action
+    public function visible(bool $visible = true): static
     {
         $this->visible = $visible;
 
@@ -299,7 +299,7 @@ class Action
     /**
      * Set the visibility of the action to hidden.
      */
-    public function hidden(bool $hidden = true): Action
+    public function hidden(bool $hidden = true): static
     {
         return $this->visible(! $hidden);
     }

@@ -72,7 +72,7 @@ class TextColumn extends Column
     /**
      * Set the column's prefix.
      */
-    public function prefix(string $prefix): Column
+    public function prefix(string $prefix): static
     {
         $this->prefix = $prefix;
 
@@ -82,7 +82,7 @@ class TextColumn extends Column
     /**
      * Set the column's suffix.
      */
-    public function suffix(string $suffix): Column
+    public function suffix(string $suffix): static
     {
         $this->suffix = $suffix;
 
@@ -92,7 +92,7 @@ class TextColumn extends Column
     /**
      * Set the column's as an email.
      */
-    public function email(bool $email = true): Column
+    public function email(bool $email = true): static
     {
         $this->email = $email;
 
@@ -106,7 +106,7 @@ class TextColumn extends Column
     /**
      * Set the column's as a phone number.
      */
-    public function phone(bool $phone = true): Column
+    public function phone(bool $phone = true): static
     {
         $this->phone = $phone;
 
@@ -120,7 +120,7 @@ class TextColumn extends Column
     /**
      * Set the column's as a URL.
      */
-    public function url(bool $url = true, string|Closure|null $text = null, bool $fancybox = false, string $target = '_self'): Column
+    public function url(bool $url = true, string|Closure|null $text = null, bool $fancybox = false, string $target = '_self'): static
     {
         $this->url = $url;
         $this->urlOptions['text'] = $text;
@@ -137,7 +137,7 @@ class TextColumn extends Column
     /**
      * Set the column's URL route.
      */
-    public function route(string $route, array $parameters = [], string|Closure|null $text = null, bool $fancybox = false, string $target = '_self'): Column
+    public function route(string $route, array $parameters = [], string|Closure|null $text = null, bool $fancybox = false, string $target = '_self'): static
     {
         $this->urlOptions['route'] = $route;
         $this->urlOptions['parameters'] = $parameters;
@@ -148,7 +148,7 @@ class TextColumn extends Column
     /**
      * Set the column's truncate length.
      */
-    public function truncate(int $length): Column
+    public function truncate(int $length): static
     {
         $this->truncate = $length;
 
@@ -158,7 +158,7 @@ class TextColumn extends Column
     /**
      * Set the column's truncate length based on word count.
      */
-    public function wordCount(int $wordCount): Column
+    public function wordCount(int $wordCount): static
     {
         $this->wordCount = $wordCount;
 
@@ -168,7 +168,7 @@ class TextColumn extends Column
     /**
      * Set the column's padding.
      */
-    public function pad(int $length, string $char = ' ', int $dir = STR_PAD_RIGHT): Column
+    public function pad(int $length, string $char = ' ', int $dir = STR_PAD_RIGHT): static
     {
         $this->pad = $length;
         $this->padChar = $char;

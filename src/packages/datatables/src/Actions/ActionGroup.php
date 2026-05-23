@@ -59,7 +59,7 @@ class ActionGroup
     /**
      * Create a new action group instance.
      */
-    public static function make(?string $label = null, ?string $icon = null): ActionGroup
+    public static function make(?string $label = null, ?string $icon = null): static
     {
         return new static($label, $icon);
     }
@@ -67,7 +67,7 @@ class ActionGroup
     /**
      * Set the label of the action group.
      */
-    public function label(string $label): ActionGroup
+    public function label(string $label): static
     {
         $this->label = $label;
 
@@ -77,7 +77,7 @@ class ActionGroup
     /**
      * Set the icon of the action group.
      */
-    public function icon(string $icon): ActionGroup
+    public function icon(string $icon): static
     {
         $this->icon = $icon;
 
@@ -87,7 +87,7 @@ class ActionGroup
     /**
      * Set the actions of the action group.
      */
-    public function actions(array $actions): ActionGroup
+    public function actions(array $actions): static
     {
         $this->actions = $actions;
 
@@ -101,7 +101,7 @@ class ActionGroup
     /**
      * Add an action to the action group.
      */
-    public function add(Action $action): ActionGroup
+    public function add(Action $action): static
     {
         $this->actions[] = $action->grouped(true);
 
@@ -111,7 +111,7 @@ class ActionGroup
     /**
      * Set the visibility of the action group.
      */
-    public function visible(bool $visible = true): ActionGroup
+    public function visible(bool $visible = true): static
     {
         $this->visible = $visible;
 
@@ -121,7 +121,7 @@ class ActionGroup
     /**
      * Set the visibility of the action group to hidden.
      */
-    public function hidden(bool $hidden = true): ActionGroup
+    public function hidden(bool $hidden = true): static
     {
         return $this->visible(! $hidden);
     }

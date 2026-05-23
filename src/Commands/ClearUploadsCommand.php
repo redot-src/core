@@ -53,7 +53,6 @@ class ClearUploadsCommand extends Command
      * Delete the files in the uploads directory.
      *
      * @param  Collection  $files
-     * @return void
      */
     protected function deleteFiles($files)
     {

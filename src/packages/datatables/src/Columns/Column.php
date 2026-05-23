@@ -134,7 +134,7 @@ class Column
     /**
      * Make a new column instance.
      */
-    public static function make(?string $name = null, ?string $label = null): Column
+    public static function make(?string $name = null, ?string $label = null): static
     {
         return new static($name, $label);
     }
@@ -142,7 +142,7 @@ class Column
     /**
      * Set the column's name.
      */
-    public function name(string $name): Column
+    public function name(string $name): static
     {
         $this->name = $name;
         $this->relationship = str_contains($name, '.');
@@ -153,7 +153,7 @@ class Column
     /**
      * Set the column's label.
      */
-    public function label(string $label): Column
+    public function label(string $label): static
     {
         $this->label = $label;
 
@@ -163,7 +163,7 @@ class Column
     /**
      * Set the column's empty value if null.
      */
-    public function empty(string|Closure $empty): Column
+    public function empty(string|Closure $empty): static
     {
         $this->empty = $empty;
 
@@ -173,7 +173,7 @@ class Column
     /**
      * Set the column's width.
      */
-    public function width(string $width, ?string $min = null, ?string $max = null): Column
+    public function width(string $width, ?string $min = null, ?string $max = null): static
     {
         $this->width = $width;
 
@@ -191,7 +191,7 @@ class Column
     /**
      * Set the column's max width.
      */
-    public function maxWidth(string $maxWidth): Column
+    public function maxWidth(string $maxWidth): static
     {
         $this->maxWidth = $maxWidth;
 
@@ -201,7 +201,7 @@ class Column
     /**
      * Set the column's min width.
      */
-    public function minWidth(string $minWidth): Column
+    public function minWidth(string $minWidth): static
     {
         $this->minWidth = $minWidth;
 
@@ -211,7 +211,7 @@ class Column
     /**
      * Set the column as fixed.
      */
-    public function fixed(bool $fixed = true, string $direction = 'start'): Column
+    public function fixed(bool $fixed = true, string $direction = 'start'): static
     {
         $this->fixed = $fixed;
         $this->fixedDirection = $direction;
@@ -222,7 +222,7 @@ class Column
     /**
      * Set the column's whitespace as nowrap.
      */
-    public function nowrap(bool $nowrap = true): Column
+    public function nowrap(bool $nowrap = true): static
     {
         $this->nowrap = $nowrap;
 
@@ -232,7 +232,7 @@ class Column
     /**
      * Set the column as HTML.
      */
-    public function html(bool $html = true): Column
+    public function html(bool $html = true): static
     {
         $this->html = $html;
 
@@ -242,7 +242,7 @@ class Column
     /**
      * Set the column's default value.
      */
-    public function default(mixed $default): Column
+    public function default(mixed $default): static
     {
         $this->default = $default;
 
@@ -252,7 +252,7 @@ class Column
     /**
      * Set the column as sortable.
      */
-    public function sortable(bool $sortable = true): Column
+    public function sortable(bool $sortable = true): static
     {
         $this->sortable = $sortable;
 
@@ -262,7 +262,7 @@ class Column
     /**
      * Set the sorting method for the column.
      */
-    public function sorter(Closure $sorter): Column
+    public function sorter(Closure $sorter): static
     {
         $this->sorter = $sorter;
         $this->sortable = true;
@@ -273,7 +273,7 @@ class Column
     /**
      * Set the column as searchable.
      */
-    public function searchable(bool $searchable = true): Column
+    public function searchable(bool $searchable = true): static
     {
         $this->searchable = $searchable;
 
@@ -283,7 +283,7 @@ class Column
     /**
      * Set the searching method for the column.
      */
-    public function searcher(Closure $searcher): Column
+    public function searcher(Closure $searcher): static
     {
         $this->searcher = $searcher;
         $this->searchable = true;
@@ -294,7 +294,7 @@ class Column
     /**
      * Set the column as visible.
      */
-    public function visible(bool $visible = true): Column
+    public function visible(bool $visible = true): static
     {
         $this->visible = $visible;
 
@@ -304,7 +304,7 @@ class Column
     /**
      * Set the column as hidden.
      */
-    public function hidden(bool $hidden = true): Column
+    public function hidden(bool $hidden = true): static
     {
         $this->visible = ! $hidden;
 
@@ -314,7 +314,7 @@ class Column
     /**
      * Set the column as exportable.
      */
-    public function exportable(bool $exportable = true): Column
+    public function exportable(bool $exportable = true): static
     {
         $this->exportable = $exportable;
 
@@ -324,7 +324,7 @@ class Column
     /**
      * Set the getter method for the column.
      */
-    public function getter(Closure $getter): Column
+    public function getter(Closure $getter): static
     {
         $this->getter = $getter;
 

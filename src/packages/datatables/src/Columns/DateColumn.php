@@ -35,7 +35,7 @@ class DateColumn extends Column
     /**
      * Set the column's date format.
      */
-    public function format(string $format): Column
+    public function format(string $format): static
     {
         $this->format = $format;
 
@@ -45,7 +45,7 @@ class DateColumn extends Column
     /**
      * Set the column's date format to datetime.
      */
-    public function datetime(): Column
+    public function datetime(): static
     {
         $this->format = self::DATETIME_FORMAT;
 
@@ -55,7 +55,7 @@ class DateColumn extends Column
     /**
      * Set the column's date format to date only.
      */
-    public function date(): Column
+    public function date(): static
     {
         $this->format = self::DATE_FORMAT;
 
@@ -65,7 +65,7 @@ class DateColumn extends Column
     /**
      * Set the column's date format to time only.
      */
-    public function time(): Column
+    public function time(): static
     {
         $this->format = self::TIME_FORMAT;
 
@@ -75,7 +75,7 @@ class DateColumn extends Column
     /**
      * Set the column's date format to relative time.
      */
-    public function relative(): Column
+    public function relative(): static
     {
         $this->format = 'relative';
 

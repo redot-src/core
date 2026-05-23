@@ -14,7 +14,7 @@ class NumericColumn extends Column
     /**
      * Set the column's precision.
      */
-    public function precision(int $precision): Column
+    public function precision(int $precision): static
     {
         $this->precision = $precision;
 
