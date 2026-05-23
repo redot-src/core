@@ -3,6 +3,10 @@ $(document).on('show.bs.dropdown', '.datatable-actions .dropdown', (event) => {
     const $dropdown = $(event.target).closest('.dropdown');
     const $menu = $dropdown.find('.dropdown-menu');
 
+    // Append the wire:id to the dropdown menu to keep the context as wire-context
+    const $root = $dropdown.closest('[wire\\:id]');
+    $menu.attr('parent-wire-id', $root.attr('wire:id'));
+
     // Append the dropdown menu to the body
     $menu.appendTo('body');
 });
@@ -64,8 +68,8 @@ $(document).on('click', '.datatable-action[action-name]', (event) => {
     const $action = $(event.target).closest('.datatable-action');
     const name = $action.attr('action-name');
     const key = $action.attr('action-key');
-    const $root = $action.closest('[wire\\:id]');
-    const wire = window.Livewire.find($root.attr('wire:id'));
+    const id = $action.closest('[parent-wire-id]').attr('parent-wire-id');
+    const wire = window.Livewire.find(id);
 
     const run = () => wire.call('runAction', name, key);
 
