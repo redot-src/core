@@ -13,9 +13,7 @@ use Livewire\Component;
  */
 class LivewireToastifier
 {
-    public function __construct(protected Component $component)
-    {
-    }
+    public function __construct(protected Component $component) {}
 
     /**
      * Dispatch a toast to the browser from the Livewire component.
