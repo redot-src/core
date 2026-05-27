@@ -61,18 +61,6 @@ $(document).on('click', '.datatable-action[method]:not([method="get"])', (event)
     }
 });
 
-// Forward datatable toast events to the toastify helper if it is available
-document.addEventListener('livewire:init', () => {
-    window.Livewire.on('datatable-toast', ({ type, message, options }) => {
-        if (typeof window.toastify !== 'function') return;
-
-        const toastifiers = window.toastify();
-        const toastifier = toastifiers[type] || toastifiers.toast;
-
-        toastifier(message, options || {});
-    });
-});
-
 // Handle inline datatable action click
 $(document).on('click', '.datatable-action[action-name]', (event) => {
     event.preventDefault();

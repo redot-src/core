@@ -17,7 +17,7 @@ use Redot\Datatables\Adapters\PDF\Adapter;
 use Redot\Datatables\Columns\Column;
 use Redot\Datatables\Filters\Filter;
 use Redot\Datatables\Traits\InteractsWithRelations;
-use Redot\Datatables\Traits\InteractsWithToasts;
+use Redot\Toastify\Concerns\InteractsWithToastify;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\StreamedResponse;
@@ -26,7 +26,7 @@ use Throwable;
 abstract class Datatable extends Component
 {
     use InteractsWithRelations;
-    use InteractsWithToasts;
+    use InteractsWithToastify;
     use Macroable;
     use WithPagination;
 
