@@ -118,9 +118,12 @@ class QueryFilters
         $hasValuesKey = isset($definition['values']);
         $values = $this->resolveValues($definition);
 
+        $prefix = isset($definition['query']) ? 'query:' : 'field:';
+        $field = $prefix . (isset($definition['query']) ? $definition['query'] : $key);
+
         $filter = [
             'id' => hash('sha256', $key),
-            'field' => encrypt($key),
+            'field' => encrypt($field),
             'label' => $definition['title'],
             'type' => $type,
             'input' => $hasValuesKey ? 'select' : $this->defaultInputFor($type),
@@ -221,9 +224,12 @@ class QueryFilters
      */
     private function applyRule(EloquentBuilder|BaseQueryBuilder $query, array $rule, string $boolean): void
     {
-        $field = $this->decryptField($rule);
+        [$prefix, $field] = explode(':', $this->decryptField($rule), 2);
         $operator = $rule['operator'] ?? null;
         $value = $rule['value'] ?? null;
+
+        // If the field is a query, evaluate it as a raw SQL expression.
+        if ($prefix === 'query') $field = DB::raw("({$field})");
 
         match ($operator) {
             'equal' => $query->where($field, '=', $value, $boolean),
