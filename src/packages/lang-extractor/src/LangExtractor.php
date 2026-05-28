@@ -107,7 +107,7 @@ class LangExtractor
         $replacements = ['\"' => '"', '\\\'' => '\''];
         $translations = $translations->map(fn ($translation) => trim(strtr($translation, $replacements)));
 
-        $this->translations = $translations->filter()->unique()->values()->toArray();
+        $this->translations = $translations->filter()->unique(strict: true)->values()->toArray();
         $this->translations = array_combine($this->translations, $this->translations);
 
         return $this;
