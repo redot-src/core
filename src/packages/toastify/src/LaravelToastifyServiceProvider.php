@@ -35,7 +35,7 @@ class LaravelToastifyServiceProvider extends ServiceProvider
         );
 
         $this->publishes([
-            __DIR__ . '/../config/toastify.php' => $this->app->configPath('toastify.php'),
-        ], 'toastify-config');
+            __DIR__ . '/../config/toastify.php' => config_path('toastify.php'),
+        ], 'toastify::config');
     }
 }

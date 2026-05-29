@@ -12,6 +12,7 @@
 /.vscode
 /.cursor
 /.zed
+/.claude
 /auth.json
 /node_modules
 /public/build
