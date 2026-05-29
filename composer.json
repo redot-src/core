@@ -76,6 +76,11 @@
             "pestphp/pest-plugin": true
         }
     },
+    "archive": {
+        "exclude": [
+            "/docs"
+        ]
+    },
     "minimum-stability": "stable",
     "prefer-stable": true
 }
