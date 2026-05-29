@@ -11,10 +11,19 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('language_tokens', function (Blueprint $table) {
+        $default = config('database.default');
+        $driver = config("database.connections.$default.driver");
+
+        Schema::create('language_tokens', function (Blueprint $table) use ($driver) {
             $table->id();
             $table->foreignId('language_id')->constrained()->cascadeOnDelete();
-            $table->text('key')->charset('utf8mb4')->collation('utf8mb4_bin'); // case-sensitive
+
+            if ($driver === 'mysql' || $driver === 'mariadb') {
+                $table->text('key')->charset('utf8mb4')->collation('utf8mb4_bin'); // case-sensitive
+            } else {
+                $table->text('key');
+            }
+
             $table->text('value');
             $table->text('original_translation');
             $table->boolean('from_json')->default(false);
