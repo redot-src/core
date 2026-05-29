@@ -22,7 +22,7 @@ return Application::configure($basePath)->create();
 ### What `configure()` wires up
 
 - **Routing** (`->withRouting(...)`): registers API routes (`routes/api/website.php`, `routes/api/dashboard.php`), global web routes (`routes/global.php`), the website/dashboard web routes (`routes/website.php`, `routes/dashboard.php`), and a fallback route (`FallbackController`). Which groups load is driven by `config('redot.features.*')` flags. When running unit tests, all four feature flags are force-enabled. If `config('redot.routing.append_locale_to_url')` is set, the website/dashboard web group is prefixed with a 2-letter `{locale}` segment.
-- **Console** (`->withCommands([__DIR__ . '/../routes/console.php'])`): loads the package's console route file.
+- **Console** (`->withCommands([base_path('routes/console.php')])`): loads the package's console route file.
 - **Middleware** (`->withMiddleware(...)`): rebuilds the `web` group, registers the `dashboard` middleware group, and appends API middleware. This is where the dependency-build enforcement is hooked in (see below).
 - **Exceptions** (`->withExceptions(...)`): renders JSON for any request that `expectsJson()` or matches `api/*`, delegating to the `throw_api_exception()` helper.
 
