@@ -9,17 +9,17 @@ Call `RedotAuth::routes()` inside the route group whose **name prefix and middle
 ```php
 use Redot\Auth\Facades\RedotAuth;
 
-Route::name('dashboard.')->group(function () {
+Route::name('admin.')->group(function () {
     RedotAuth::routes(
-        guard: 'admins',
+        guard: 'admin',
         scope: fn ($query) => $query->where('active', true),
         views: [
-            'login' => 'dashboard.auth.login',
-            'forgot-password' => 'dashboard.auth.forgot-password',
-            'reset-password' => 'dashboard.auth.reset-password',
-            'magic-link' => 'dashboard.auth.magic-link',
-            'magic-link-code' => 'dashboard.auth.magic-link-code',
-            'unlock' => 'dashboard.auth.unlock',
+            'login' => 'admin.auth.login',
+            'forgot-password' => 'admin.auth.forgot-password',
+            'reset-password' => 'admin.auth.reset-password',
+            'magic-link' => 'admin.auth.magic-link',
+            'magic-link-code' => 'admin.auth.magic-link-code',
+            'unlock' => 'admin.auth.unlock',
         ],
         disable: ['register', 'email-verification'],
     );
@@ -39,19 +39,19 @@ Route::name('dashboard.')->group(function () {
 
 ### A web guard with everything enabled
 
-The public website keeps registration, magic links, and email verification on — just map every screen and pass no `disable`:
+The public-facing `web` guard keeps registration, magic links, and email verification on — just map every screen and pass no `disable`:
 
 ```php
 RedotAuth::routes(
-    guard: 'users',
+    guard: 'web',
     views: [
-        'login' => 'website.auth.login',
-        'register' => 'website.auth.register',
-        'forgot-password' => 'website.auth.forgot-password',
-        'reset-password' => 'website.auth.reset-password',
-        'magic-link' => 'website.auth.magic-link',
-        'magic-link-code' => 'website.auth.magic-link-code',
-        'verify-email' => 'website.auth.verify-email',
+        'login' => 'auth.login',
+        'register' => 'auth.register',
+        'forgot-password' => 'auth.forgot-password',
+        'reset-password' => 'auth.reset-password',
+        'magic-link' => 'auth.magic-link',
+        'magic-link-code' => 'auth.magic-link-code',
+        'verify-email' => 'auth.verify-email',
     ],
 );
 ```
@@ -61,10 +61,10 @@ RedotAuth::routes(
 For a token-based guard (Sanctum, Passport, JWT) no views are needed — only the JSON endpoints are registered, and the login flow returns a bearer token instead of starting a session. The magic-link and lock-screen features are skipped automatically.
 
 ```php
-// routes/api/website.php
+// routes/api/web.php
 RedotAuth::routes(guard: 'users-api');
 
-// routes/api/dashboard.php
+// routes/api/admin.php
 RedotAuth::routes(
     guard: 'admins-api',
     scope: fn ($query) => $query->where('active', true),

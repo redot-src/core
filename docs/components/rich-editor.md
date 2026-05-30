@@ -1,12 +1,12 @@
 # Rich Editor
 
 `<x-rich-editor>` is a WYSIWYG rich-text field. Use it wherever you need
-formatted HTML content (page bodies, memos, descriptions) instead of plain text.
+formatted HTML content (post bodies, page content, descriptions) instead of plain text.
 
 ## Usage
 
 ```blade
-<x-rich-editor name="content" :title="__('Content')" :value="old('content', $entry?->content)" />
+<x-rich-editor name="body" :title="__('Body')" :value="old('body', $post?->body)" />
 ```
 
 It shares the [common form-field attributes](/components/overview#shared-form-field-conventions)
@@ -26,7 +26,7 @@ It shares the [common form-field attributes](/components/overview#shared-form-fi
 ### Content field, preserving old input
 
 ```blade
-<x-rich-editor name="content" :title="__('Content')" :value="old('content', $entry?->content)" />
+<x-rich-editor name="body" :title="__('Body')" :value="old('body', $post?->body)" />
 ```
 
 ### Required body with a hint

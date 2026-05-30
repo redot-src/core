@@ -52,25 +52,25 @@ of listing them inline:
 ### Clearable single select bound to a relationship
 
 ```blade
-<x-select name="role" :title="__('Role')" :options="$roles" :value="old('role', $entry?->roles()->first()?->name)" removable />
+<x-select name="category_id" :title="__('Category')" :options="$categories" :value="old('category_id', $post?->category_id)" removable />
 ```
 
 ### Multiple, taggable select
 
 ```blade
-<x-select name="tags[]" :title="__('Tags')" :options="$tags" :value="old('tags', $entry?->tags)" tags multiple />
+<x-select name="tags[]" :title="__('Tags')" :options="$tags" :value="old('tags', $post?->tags)" tags multiple />
 ```
 
 ### Remote search across multiple columns
 
 ```blade
-<x-select name="user_id" :title="__('User')" :query="$users" text="full_name" search="full_name, email" template="user" validation="required" />
+<x-select name="author_id" :title="__('Author')" :query="\App\Models\User::class" text="name" search="name, email" template="author" validation="required" />
 ```
 
 ### Remote options from a model class
 
 ```blade
-<x-select name="country" :title="__('Country')" :query="\App\Models\Country::class" key="code" template="country" same-template />
+<x-select name="category_id" :title="__('Category')" :query="\App\Models\Category::class" text="title" template="category" same-template />
 ```
 
 ## Related

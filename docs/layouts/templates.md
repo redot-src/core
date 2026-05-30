@@ -1,6 +1,6 @@
 # Templates
 
-The dashboard ships a set of reusable Blade *templates* — small named partials
+Redot Core ships a set of reusable Blade *templates* — small named partials
 you wire into a feature by name rather than render directly. There are two
 families: the **PDF datatable export** markup and the **remote select** option
 markup.
@@ -45,7 +45,7 @@ template as `$item`.
 ### Built-in templates
 
 - **`admin`** — avatar + name + email.
-- **`user`** — avatar (initials) + full name + email.
+- **`user`** — avatar (initials) + name + email.
 - **`country`** — a flag icon + country name.
 
 ### Make sure your fields are loaded
@@ -55,8 +55,8 @@ relation your template references in the select's `key`, `text`, `search`, or
 `appends` so it is eager-loaded:
 
 ```blade
-<x-select name="user_id" :title="__('User')" :query="$users" text="full_name"
-    search="full_name, email" template="user" validation="required" />
+<x-select name="user_id" :title="__('User')" :query="$users" text="name"
+    search="name, email" template="user" validation="required" />
 ```
 
 ### Writing your own

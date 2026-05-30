@@ -13,11 +13,11 @@ trait:
 ```php
 use Redot\Traits\Taggable;
 
-class ShortenedUrl extends Model
+class Post extends Model
 {
     use Taggable;
 
-    protected $fillable = ['url', 'slug', 'title', 'tags'];
+    protected $fillable = ['title', 'body', 'tags'];
     protected $casts = ['tags' => 'array'];
 }
 ```
@@ -42,22 +42,22 @@ $tagsAttribute = 'labels';` on the model.
 ### Querying by tag
 
 ```php
-ShortenedUrl::tagged('marketing')->get();
-ShortenedUrl::tagged(['marketing', 'launch'])->get();
-ShortenedUrl::tagged(request('tag'))->get(); // null is ignored
+Post::tagged('laravel')->get();
+Post::tagged(['laravel', 'php'])->get();
+Post::tagged(request('tag'))->get(); // null is ignored
 ```
 
 ### Feeding a tag select from existing tags
 
 ```php
-return view('dashboard.shortened-urls.create', [
-    'tags' => ShortenedUrl::tags(),
+return view('posts.create', [
+    'tags' => Post::tags(),
 ]);
 ```
 
 ```blade
 <x-select name="tags[]" :title="__('Tags')" :options="$tags"
-    :value="old('tags', $entry?->tags)" tags multiple />
+    :value="old('tags', $post?->tags)" tags multiple />
 ```
 
 ### Saving tags through mass assignment
@@ -66,18 +66,18 @@ Because the column is fillable and array-cast, submitted tags save without any
 trait method:
 
 ```php
-ShortenedUrl::create($request->validate([
-    'url'  => 'required|url',
-    'tags' => 'nullable|array',
+Post::create($request->validate([
+    'title' => 'required|string',
+    'tags'  => 'nullable|array',
 ]));
 ```
 
 Use the mutator helpers when you need to change tags imperatively:
 
 ```php
-$url->attachTag('marketing', 'q2');
-$url->detachTag('launch');
-$url->syncTags(['marketing', 'q2']);
+$post->attachTag('laravel', 'php');
+$post->detachTag('draft');
+$post->syncTags(['laravel', 'php']);
 ```
 
 ## Notes

@@ -8,14 +8,14 @@ counterpart to the [Uploader](/components/uploader).
 ## Usage
 
 ```blade
-<x-attachments :attachments="$memo->attachments" />
+<x-attachments :attachments="$post->attachments" />
 ```
 
 `attachments` is required, so guard the component when the source can be empty:
 
 ```blade
-@if ($memo->attachments)
-    <x-attachments :attachments="$memo->attachments" />
+@if ($post->attachments)
+    <x-attachments :attachments="$post->attachments" />
 @endif
 ```
 
@@ -37,9 +37,9 @@ File sizes are formatted automatically (e.g. `1.5 KB`).
 ### Files attached to a record
 
 ```blade
-@if ($memo->attachments)
+@if ($post->attachments)
     <div class="card-footer">
-        <x-attachments :attachments="$memo->attachments" />
+        <x-attachments :attachments="$post->attachments" />
     </div>
 @endif
 ```
@@ -47,7 +47,7 @@ File sizes are formatted automatically (e.g. `1.5 KB`).
 ### With a title
 
 ```blade
-<x-attachments :title="__('Attached files')" :attachments="$memo->attachments" />
+<x-attachments :title="__('Attached files')" :attachments="$post->attachments" />
 ```
 
 ## Related

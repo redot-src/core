@@ -8,7 +8,7 @@ chooses a matching colour and default icon for you.
 
 ```blade
 <x-alert type="info">
-    {{ __('This token has been modified.') }}
+    {{ __('This post has unsaved changes.') }}
 </x-alert>
 ```
 
@@ -31,7 +31,7 @@ The body can be a slot (as above) or the `title` / `description` attributes.
 ```blade
 <x-alert type="info" :icon="false">
     <ul class="m-0">
-        <li>{{ __(':count token(s) need to be published.', ['count' => $count]) }}</li>
+        <li>{{ __(':count post(s) need to be published.', ['count' => $count]) }}</li>
     </ul>
 </x-alert>
 ```

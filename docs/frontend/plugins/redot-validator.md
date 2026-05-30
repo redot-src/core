@@ -75,7 +75,7 @@ A few sibling attributes tune how a field is validated:
 ### Opting a form out
 
 ```blade
-<x-form id="logout-form" :action="route('dashboard.logout')" method="POST" disable-validation />
+<x-form id="logout-form" :action="route('logout')" method="POST" disable-validation />
 ```
 
 ### Adding your own rule

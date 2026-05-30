@@ -1,6 +1,6 @@
 # Layouts
 
-Redot Dashboard ships a small family of page layouts that every view wraps
+Redot Core ships a small family of page layouts that every view wraps
 itself in. You pick one by writing its tag at the top of a view — they are all
 exposed under the `layouts` component namespace.
 
@@ -76,7 +76,7 @@ The scaffold and PDF layouts also accept:
 
 ```blade
 <x-layouts::dashboard.auth :title="__('Login to your account')">
-    <x-form class="card card-md" :action="route('dashboard.login.store')" method="POST">
+    <x-form class="card card-md" :action="route('login.store')" method="POST">
         {{-- ... --}}
     </x-form>
 </x-layouts::dashboard.auth>
@@ -85,8 +85,8 @@ The scaffold and PDF layouts also accept:
 ### Website page
 
 ```blade
-<x-layouts::website :title="$staticPage->title">
-    {{-- static-pages/show.blade.php --}}
+<x-layouts::website :title="$post->title">
+    {{-- posts/show.blade.php --}}
 </x-layouts::website>
 ```
 

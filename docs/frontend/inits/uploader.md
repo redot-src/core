@@ -7,7 +7,7 @@
 You don't enable this by hand — render the [`<x-uploader>` component](/components/uploader), whose hidden field carries `init="uploader"`:
 
 ```blade
-<x-uploader name="attachments" :title="__('Attachments')" :value="old('attachments', $entry?->attachments)" directory="memos" />
+<x-uploader name="attachments" :title="__('Attachments')" :value="old('attachments', $post?->attachments)" directory="posts" />
 ```
 
 See [Asset & Init System](/frontend/asset-system) for how the `init` attribute is wired.

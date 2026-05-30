@@ -1,6 +1,6 @@
 # Runtime & Dependency Build
 
-A Redot Dashboard app boots on the package's own application kernel, which wires
+A `redot/core` app boots on the package's own application kernel, which wires
 routing, middleware, and exception handling for you, plus a **dependency-build
 pipeline** that compiles translations and component initializers into the static
 JavaScript bundles the front-end loads at runtime. This page covers the
@@ -19,7 +19,7 @@ phone-number library — so you don't add them yourself. See
 
 ## What boots for you
 
-A Redot Dashboard app boots from the package's application kernel instead of
+A `redot/core` app boots from the package's application kernel instead of
 Laravel's stock one. That gives you, with no setup:
 
 - **Routing** — the API, global, website, and dashboard route groups plus a

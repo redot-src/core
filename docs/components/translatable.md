@@ -7,7 +7,7 @@ side. It wraps any other field component (input, rich editor, …) you choose.
 ## Usage
 
 ```blade
-<x-translatable component="input" name="title" :title="__('Title')" :value="$entry?->getTranslations('title') ?? old('title')" validation="required" />
+<x-translatable component="input" name="title" :title="__('Title')" :value="$post?->getTranslations('title') ?? old('title')" validation="required" />
 ```
 
 Each locale gets its own field with the name suffixed by the locale
@@ -38,12 +38,12 @@ field's locale at once.
 
 ```blade
 <x-translatable component="input" name="title"
-    :value="$entry ? $entry->getTranslations('title') : old('title')"
+    :value="$post ? $post->getTranslations('title') : old('title')"
     :title="__('Title')" validation="required" />
 
-<x-translatable component="rich-editor" name="content"
-    :value="$entry ? $entry->getTranslations('content') : old('content')"
-    :title="__('Content')" />
+<x-translatable component="rich-editor" name="body"
+    :value="$post ? $post->getTranslations('body') : old('body')"
+    :title="__('Body')" />
 ```
 
 ### Restricting the locales

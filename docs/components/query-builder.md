@@ -8,7 +8,7 @@ advanced search screens.
 ## Usage
 
 ```blade
-<x-query-builder name="builder" :title="__('Filters')" :model="\App\Models\User::class" :value="old('builder')" />
+<x-query-builder name="builder" :title="__('Filters')" :model="\App\Models\Post::class" :value="old('builder')" />
 ```
 
 Give it a `name` so the rule tree is submitted with the form, and either a
@@ -39,8 +39,8 @@ the [asset & init system](/frontend/asset-system).
 ### Derive filters from a model
 
 ```blade
-<x-form :action="route('reports.run')" method="POST">
-    <x-query-builder name="builder" :title="__('Filters')" :model="\App\Models\User::class" />
+<x-form :action="route('posts.index')" method="GET">
+    <x-query-builder name="builder" :title="__('Filters')" :model="\App\Models\Post::class" />
     <button type="submit" class="btn btn-primary">{{ __('Run') }}</button>
 </x-form>
 ```
@@ -50,19 +50,19 @@ the [asset & init system](/frontend/asset-system).
 ```blade
 <x-query-builder
     name="builder"
-    :title="__('Order filters')"
+    :title="__('Post filters')"
     :filters="[
         'status' => [
             'title' => __('Status'),
             'type' => 'string',
-            'values' => ['paid' => __('Paid'), 'pending' => __('Pending')],
+            'values' => ['published' => __('Published'), 'draft' => __('Draft')],
         ],
-        'total' => ['title' => __('Total'), 'type' => 'double'],
+        'published_at' => ['title' => __('Published at'), 'type' => 'datetime'],
         'created_at' => ['title' => __('Created'), 'type' => 'datetime'],
-        'full_name' => [
-            'title' => __('Full name'),
+        'author' => [
+            'title' => __('Author'),
             'type' => 'string',
-            'query' => "concat(first_name, ' ', last_name)",
+            'query' => 'concat(first_name, \' \', last_name)',
         ],
     ]"
     :value="old('builder')"
@@ -78,7 +78,7 @@ use Redot\Support\QueryFilters;
 
 $rules = json_decode($request->input('builder'), true) ?? [];
 
-$users = QueryFilters::query($rules, User::query())->get();
+$posts = QueryFilters::query($rules, Post::query())->get();
 ```
 
 ## Related

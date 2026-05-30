@@ -7,7 +7,7 @@ optional "Create" button and any extra buttons you add.
 ## Usage
 
 ```blade
-<x-page-header :create="route('dashboard.users.create')" class="mb-3" />
+<x-page-header :create="route('posts.create')" class="mb-3" />
 ```
 
 ## Options
@@ -29,7 +29,7 @@ Put extra actions (dropdowns, filters, buttons) in the slot — they render in t
 right-aligned action area:
 
 ```blade
-<x-page-header :title="__('Language Tokens')" :pretitle="$language->name" class="mb-3">
+<x-page-header :title="__('Posts')" :pretitle="$category->title" class="mb-3">
     <div class="dropdown">
         <a href="#" class="btn dropdown-toggle" data-bs-toggle="dropdown">
             <i class="fas fa-cog me-2"></i>
@@ -38,9 +38,9 @@ right-aligned action area:
 
         <div class="dropdown-menu">
             <a class="dropdown-item" action-confirm
-               href="{{ route('dashboard.languages.tokens.publish', ['language' => $language]) }}">
+               href="{{ route('posts.publish', ['category' => $category]) }}">
                 <span class="dropdown-item-icon"><i class="fas fa-upload me-2"></i></span>
-                <span class="dropdown-item-title">{{ __('Publish Tokens') }}</span>
+                <span class="dropdown-item-title">{{ __('Publish Posts') }}</span>
             </a>
         </div>
     </div>

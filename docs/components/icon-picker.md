@@ -8,7 +8,7 @@ written back into the field.
 ## Usage
 
 ```blade
-<x-icon-picker name="icon" :title="__('Icon')" :value="old('icon', $entry?->icon)" />
+<x-icon-picker name="icon" :title="__('Icon')" :value="old('icon', $category?->icon)" />
 ```
 
 It shares the [common form-field attributes](/components/overview#shared-form-field-conventions)
@@ -28,7 +28,7 @@ picker initializes itself through the [asset & init system](/frontend/asset-syst
 ### Icon field with a default
 
 ```blade
-<x-icon-picker name="icon" :title="__('Icon')" :value="old('icon', $entry?->icon ?? 'far fa-note-sticky')" />
+<x-icon-picker name="icon" :title="__('Icon')" :value="old('icon', $category?->icon ?? 'far fa-note-sticky')" />
 ```
 
 ### With a hint and required marker

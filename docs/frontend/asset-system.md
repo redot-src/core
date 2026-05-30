@@ -49,8 +49,8 @@ helper instead of `asset()`. It appends a version query string that changes
 whenever the file changes, so browsers always pick up edits:
 
 ```blade
-<link rel="stylesheet" href="{{ hashed_asset('assets/css/dashboard.css') }}">
-<script src="{{ hashed_asset('assets/js/dashboard.js') }}"></script>
+<link rel="stylesheet" href="{{ hashed_asset('assets/css/app.css') }}">
+<script src="{{ hashed_asset('assets/js/app.js') }}"></script>
 ```
 
 ## Automatic rebuilds

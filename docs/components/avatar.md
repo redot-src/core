@@ -6,7 +6,7 @@ image; leave it off and it falls back to the first letter of `name`.
 ## Usage
 
 ```blade
-<x-avatar :name="$admin->name" :image="$admin->profile_picture" />
+<x-avatar :name="$user->name" :image="$user->avatar" />
 ```
 
 ## Options
@@ -24,13 +24,13 @@ Any other attribute or class you pass falls through to the element.
 Omit `image` to render the first letter of the name:
 
 ```blade
-<x-avatar class="flex-shrink-0" :name="$item->full_name" />
+<x-avatar class="flex-shrink-0" :name="$user->name" />
 ```
 
 ### Larger avatar
 
 ```blade
-<x-avatar size="xl" :name="$user->name" :image="$user->profile_picture" />
+<x-avatar size="xl" :name="$user->name" :image="$user->avatar" />
 ```
 
 ### Live preview on file upload
@@ -40,9 +40,9 @@ Add an `avatar-preview` marker attribute and wire a file input to the global
 chosen:
 
 ```blade
-<x-avatar :name="$user->name" :image="$user->profile_picture" size="xl" avatar-preview />
+<x-avatar :name="$user->name" :image="$user->avatar" size="xl" avatar-preview />
 
-<x-input type="file" name="profile_picture" :title="__('Profile picture')"
+<x-input type="file" name="avatar" :title="__('Avatar')"
     onchange="applyAvatarPreview(this, '[avatar-preview]')" />
 ```
 

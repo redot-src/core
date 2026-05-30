@@ -18,8 +18,8 @@ To trigger a message, flash one of those keys before redirecting:
 
 ```php
 return redirect()
-    ->route('login')
-    ->with('success', __('Your password has been reset.'));
+    ->route('posts.index')
+    ->with('success', __('The post has been saved.'));
 ```
 
 ## Options
@@ -36,8 +36,8 @@ validation-style message bags:
 
 ```php
 return back()->with('error', [
-    __('The email is invalid.'),
-    __('The token has expired.'),
+    __('The title is required.'),
+    __('The body is too long.'),
 ]);
 ```
 

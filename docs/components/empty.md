@@ -26,9 +26,9 @@ Extra classes and attributes are merged onto the card.
 
 ```blade
 <x-empty
-    icon="fas fa-user-slash"
-    :title="__('No admins found')"
-    :subtitle="__('You need to create an admin first to be able to impersonate him.')"
+    icon="fas fa-file-lines"
+    :title="__('No posts found')"
+    :subtitle="__('Create your first post to get started.')"
 />
 ```
 

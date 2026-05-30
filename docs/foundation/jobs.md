@@ -2,9 +2,8 @@
 
 Redot Core ships four jobs that drive the database-backed translation workflow.
 They move translations between your application's source code, the translation
-table the dashboard edits, and the published Laravel language files. You usually
-trigger them through artisan commands or the dashboard UI, but you can also
-dispatch them yourself.
+table you edit, and the published Laravel language files. You usually trigger
+them through artisan commands, but you can also dispatch them yourself.
 
 ## Usage
 
@@ -49,9 +48,9 @@ php artisan lang:revert       # undo unpublished edits in the DB
 
 ## Examples
 
-### Wiring a job to a dashboard action
+### Wiring a job to a controller action
 
-The dashboard exposes these as single-action controllers, running the job inline
+Expose these as single-action controllers, running the job inline
 and redirecting back with a flash message:
 
 ```php
@@ -61,7 +60,7 @@ public function __invoke(Language $language)
 
     return $this->success(
         __('Language tokens published successfully.'),
-        'dashboard.languages.tokens.index',
+        'languages.index',
         $language,
     );
 }

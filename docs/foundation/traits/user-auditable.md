@@ -10,9 +10,9 @@ by hand.
 Add the audit columns to your table:
 
 ```php
-$table->foreignId('created_by')->nullable()->constrained('admins');
-$table->foreignId('updated_by')->nullable()->constrained('admins');
-$table->foreignId('deleted_by')->nullable()->constrained('admins');
+$table->foreignId('created_by')->nullable()->constrained('users');
+$table->foreignId('updated_by')->nullable()->constrained('users');
+$table->foreignId('deleted_by')->nullable()->constrained('users');
 ```
 
 Then use the trait on the model:
@@ -20,7 +20,7 @@ Then use the trait on the model:
 ```php
 use Redot\Traits\UserAuditable;
 
-class ShortenedUrl extends Model
+class Post extends Model
 {
     use SoftDeletes, UserAuditable;
 }
@@ -29,15 +29,15 @@ class ShortenedUrl extends Model
 With that in place the columns fill themselves:
 
 ```php
-// Authenticated as admin #5
-$url = ShortenedUrl::create(['url' => 'https://example.com']);
-$url->created_by; // 5
+// Authenticated as user #5
+$post = Post::create(['title' => 'Hello World']);
+$post->created_by; // 5
 
-$url->update(['title' => 'Example']);
-$url->updated_by; // 5
+$post->update(['status' => 'published']);
+$post->updated_by; // 5
 
-$url->delete();   // soft delete
-$url->deleted_by; // 5
+$post->delete();   // soft delete
+$post->deleted_by; // 5
 ```
 
 ## What the trait gives you
@@ -49,16 +49,16 @@ $url->deleted_by; // 5
   responsible users:
 
   ```php
-  $url->load(['createdBy', 'updatedBy', 'deletedBy']);
-  $url->createdBy?->name;
+  $post->load(['createdBy', 'updatedBy', 'deletedBy']);
+  $post->createdBy?->name;
   ```
 
 - **Manual override** — set a stamp yourself before saving and the trait won't
   overwrite it:
 
   ```php
-  $url->created_by = 99; // wins
-  $url->save();
+  $post->created_by = 99; // wins
+  $post->save();
   ```
 
 ## Options

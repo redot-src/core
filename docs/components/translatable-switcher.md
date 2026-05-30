@@ -28,7 +28,7 @@ Any extra `class` is added to the dropdown styling.
 
 ```blade
 <x-layouts::dashboard>
-    <x-form-card resource="static-pages">
+    <x-form-card resource="posts">
         <x-slot:header>
             <x-translatable-switcher />
         </x-slot:header>

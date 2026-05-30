@@ -1,6 +1,6 @@
 # Toastify
 
-Toastify flashes toast notifications in the dashboard — small pop-up messages in styled success, error, info, and warning variants. You can flash one from a controller so it appears after a redirect, push one live from a Livewire component, or fire one straight from JavaScript.
+Toastify flashes toast notifications — small pop-up messages in styled success, error, info, and warning variants. You can flash one from a controller so it appears after a redirect, push one live from a Livewire component, or fire one straight from JavaScript.
 
 ## Quick start
 
@@ -39,9 +39,9 @@ Flashed toasts are stored in the session, so they survive a redirect and show on
 ### From a controller, after a redirect
 
 ```php
-toastify()->success(__('Impersonating :name', ['name' => $user->full_name]));
+toastify()->success(__('Post ":title" published', ['title' => $post->title]));
 
-return redirect()->route('website.index');
+return redirect()->route('posts.index');
 ```
 
 ### Live from a Livewire component
@@ -69,7 +69,7 @@ class SaveProfile extends Component
 The page exposes a global `toastify()` you can call from inline scripts. Each call takes the text and optional settings:
 
 ```js
-toastify().error('{{ __('Please enter text to generate the QR code') }}');
+toastify().error('{{ __('Please enter a title before saving') }}');
 ```
 
 ## Customizing toast types
@@ -80,7 +80,7 @@ The available types and their styling live in `config/toastify.php`. Publish it 
 php artisan vendor:publish --tag=toastify::config
 ```
 
-- **`toastifiers`** — the map of toast types. Out of the box: `toast`, `error`, `success`, `info`, and `warning`, each styled with the dashboard's Tabler color variables. Add a key here to create a new type — it becomes callable as `toastify()->yourType(...)` and from JavaScript.
+- **`toastifiers`** — the map of toast types. Out of the box: `toast`, `error`, `success`, `info`, and `warning`, each styled with a color variant. Add a key here to create a new type — it becomes callable as `toastify()->yourType(...)` and from JavaScript.
 - **`defaults`** — settings applied to every toast, such as its on-screen position and whether it shows a close button.
 
 ## Notes

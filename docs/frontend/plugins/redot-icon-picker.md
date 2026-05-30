@@ -7,7 +7,7 @@ The client-side picker that powers the [`<x-icon-picker>` component](/components
 Render the component; it loads the script and wires the [`icon-picker` init](/frontend/inits/icon-picker) for you. Pass the starting icon as the value:
 
 ```blade
-<x-icon-picker name="icon" :title="__('Icon')" :value="old('icon', $entry?->icon ?? 'far fa-note-sticky')" />
+<x-icon-picker name="icon" :title="__('Icon')" :value="old('icon', $post?->icon ?? 'far fa-note-sticky')" />
 ```
 
 ## Options

@@ -47,7 +47,7 @@ StringFilter::make('title', __('Title'));
 A number box with comparison operators — equals, not equals, greater/less than (or equal).
 
 ```php
-NumberFilter::make('clicks', __('Clicks'));
+NumberFilter::make('views', __('Views'));
 ```
 
 ### DateFilter
@@ -55,7 +55,7 @@ NumberFilter::make('clicks', __('Clicks'));
 A from/to date range. Supply either bound or both.
 
 ```php
-DateFilter::make('date', __('Date'));
+DateFilter::make('published_at', __('Published'));
 ```
 
 ### SelectFilter
@@ -128,9 +128,9 @@ TernaryFilter::make(label: __('Verified'))
 ```php
 use Illuminate\Database\Eloquent\Builder;
 
-SelectFilter::make('role', __('Role'))
-    ->options(['admin' => 'Admin', 'editor' => 'Editor'])
-    ->query(fn (Builder $query, $value) => $query->whereRelation('roles', 'name', $value));
+SelectFilter::make('category', __('Category'))
+    ->options(['news' => 'News', 'tutorials' => 'Tutorials'])
+    ->query(fn (Builder $query, $value) => $query->whereRelation('category', 'slug', $value));
 ```
 
 ## Related

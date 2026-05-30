@@ -1,6 +1,6 @@
 # Installation & Publishing
 
-`redot/core` is the foundation package for the Redot Dashboard. Installing it
+`redot/core` is a foundation package for Laravel admin applications. Installing it
 brings the dashboard, website, authentication, sidebar, toastify, datatables, and
 language-extractor features online and wires them into your Laravel app.
 

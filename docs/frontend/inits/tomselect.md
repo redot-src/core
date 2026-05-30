@@ -7,7 +7,7 @@
 You rarely write `init="tomselect"` yourself — render the [`<x-select>` component](/components/select). It adds the attribute (and, for remote selects, the `select-*` attributes) for you:
 
 ```blade
-<x-select name="role" :title="__('Role')" :options="$roles" :value="old('role', $current)" removable />
+<x-select name="category_id" :title="__('Category')" :options="$categories" :value="old('category_id', $post?->category_id)" removable />
 ```
 
 See [Asset & Init System](/frontend/asset-system) for how the `init` attribute is wired.
@@ -33,7 +33,7 @@ Use `bind-*` attributes to make one select depend on another field (the dependen
 
 ```blade
 {{-- Tags + multiple --}}
-<x-select name="tags[]" :title="__('Tags')" :options="$tags" :value="old('tags', $entry?->tags)" tags multiple />
+<x-select name="tags[]" :title="__('Tags')" :options="$tags" :value="old('tags', $post?->tags)" tags multiple />
 
 {{-- Remote, query-backed --}}
 <x-select :query="\App\Models\Country::class" key="code" template="country" same-template />

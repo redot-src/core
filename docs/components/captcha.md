@@ -32,7 +32,7 @@ theme and the page language by default.
 ### In a registration form
 
 ```blade
-<x-form :action="route('website.register.store')" method="POST">
+<x-form :action="route('register.store')" method="POST">
     <!-- other fields -->
     @if (setting('cloudflare_turnstile_site_key'))
         <x-captcha :title="__('Captcha')" name="captcha" />

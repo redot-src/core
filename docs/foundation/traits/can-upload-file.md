@@ -19,12 +19,12 @@ class ProfileController extends Controller
 
     public function update(Request $request)
     {
-        $request->validate(['profile_picture' => ['nullable', 'image', 'max:1024']]);
+        $request->validate(['avatar' => ['nullable', 'image', 'max:1024']]);
 
-        if ($request->hasFile('profile_picture')) {
-            $user->profile_picture = $this->uploadFile(
-                $request->file('profile_picture'),
-                'dashboard/profile_pictures',
+        if ($request->hasFile('avatar')) {
+            $user->avatar = $this->uploadFile(
+                $request->file('avatar'),
+                'avatars',
             );
         }
 
@@ -64,7 +64,7 @@ if ($config->thumbnail && is_image(public_path($path))) {
 ### Deleting a stored file
 
 ```php
-$this->deleteFileFromUrl($user->profile_picture);
+$this->deleteFileFromUrl($user->avatar);
 ```
 
 ## Notes

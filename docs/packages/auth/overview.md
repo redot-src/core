@@ -10,17 +10,17 @@ Inside the route group whose name prefix and middleware you want the auth routes
 use Redot\Auth\Facades\RedotAuth;
 
 RedotAuth::routes(
-    guard: 'admins',
+    guard: 'admin',
     views: [
-        'login' => 'dashboard.auth.login',
-        'forgot-password' => 'dashboard.auth.forgot-password',
-        'reset-password' => 'dashboard.auth.reset-password',
+        'login' => 'admin.auth.login',
+        'forgot-password' => 'admin.auth.forgot-password',
+        'reset-password' => 'admin.auth.reset-password',
     ],
     disable: ['register', 'email-verification'],
 );
 ```
 
-That registers login, logout, and password-reset routes for the `admins` guard and renders your views for the matching screens. An API guard needs no views at all — a bare `RedotAuth::routes(guard: 'users-api')` registers JSON endpoints that issue tokens.
+That registers login, logout, and password-reset routes for the `admin` guard and renders your views for the matching screens. An API guard needs no views at all — a bare `RedotAuth::routes(guard: 'api')` registers JSON endpoints that issue tokens.
 
 ## Common tasks
 

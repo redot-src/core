@@ -2,7 +2,7 @@
 
 `<x-checkboxes>` renders a group of related checkboxes from an `options` map,
 with an optional label, hint, inline layout, and group-level validation. Use it
-for array fields like `permissions[]` or `website_locales[]`.
+for array fields like `tags[]` or `categories[]`.
 
 ## Usage
 
@@ -32,29 +32,27 @@ posts an array. It shares the
 
 ## Examples
 
-### Inline language selector
+### Inline tag selector
 
 ```blade
 <x-checkboxes
-    name="website_locales[]"
-    :title="__('Website Languages')"
-    :options="config('app.locales')"
-    :value="setting('website_locales', [])"
+    name="tags[]"
+    :title="__('Tags')"
+    :options="$tags"
+    :value="old('tags', $post?->tags)"
     :inline="true"
     validation="required|min:1"
 />
 ```
 
-### Permissions grid
+### Category grid
 
 ```blade
 @php
-    $options = collect($permissions)
-        ->mapWithKeys(fn ($p) => [$p->name => Str::title(Arr::last(explode('.', $p->name)))])
-        ->all();
+    $options = $categories->pluck('title', 'id')->all();
 @endphp
 
-<x-checkboxes name="permissions[]" :options="$options" :value="$selected" :inline="true" />
+<x-checkboxes name="categories[]" :options="$options" :value="old('categories', $post?->categories)" :inline="true" />
 ```
 
 ## Related
