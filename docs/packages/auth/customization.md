@@ -1,109 +1,37 @@
 # Auth Customization
 
-The auth package ships a default implementation for every authentication flow (login, registration, logout, password reset, magic link, email verification and the lock screen), but every flow is driven by an interface and resolved out of the service container. That means you can tweak the small customizable hooks, or swap an entire flow for your own implementation, without touching the package.
+Redot Auth ships sensible defaults for every flow, but you can adjust the common bits — login identifiers, registration fields — without writing much, or replace an entire flow with your own. This page covers both. See [Register auth routes](/packages/auth/routes) for wiring up the routes themselves and [Auth actions](/packages/auth/actions) for what each flow does.
 
-This page covers the action contracts, how route registrars resolve the action classes, how to bind your own implementation, and the `Locked` middleware. See [Auth Overview](/packages/auth/overview) for the route registration story and [AuthContext](/packages/auth/overview) for the context object that every action receives.
+Start with the lightweight hooks below; reach for a full swap only when they aren't enough. Register all of this from a service provider's `boot()` method (except action swaps — see that section). The first argument to each hook is the **auth provider name** (the key under `config('auth.providers')`), not the guard.
 
-## How actions are resolved
+## Change login identifiers and rules
 
-`RedotAuth::routes()` walks a fixed list of route registrars (one per feature). Each registrar resolves its action out of the container by its **concrete class**, not by its contract, and binds it to the route closures:
-
-```php
-// Redot\Auth\Routes\LoginRoutes
-$action = app(Login::class);
-
-Route::post('login', fn (Request $request) => $action->authenticate($request, $context))
-    ->name('login.store');
-```
-
-The concrete defaults are:
-
-| Feature             | Contract                                       | Default action                       |
-| ------------------- | ---------------------------------------------- | ------------------------------------ |
-| `login`             | `Redot\Auth\Contracts\LoginAction`             | `Redot\Auth\Actions\Login`           |
-| `register`          | `Redot\Auth\Contracts\RegistrationAction`      | `Redot\Auth\Actions\Registration`    |
-| `logout`            | `Redot\Auth\Contracts\LogoutAction`            | `Redot\Auth\Actions\Logout`          |
-| `password-reset`    | `Redot\Auth\Contracts\PasswordResetAction`     | `Redot\Auth\Actions\PasswordReset`   |
-| `magic-link`        | `Redot\Auth\Contracts\MagicLinkAction`         | `Redot\Auth\Actions\MagicLink`       |
-| `email-verification`| `Redot\Auth\Contracts\EmailVerificationAction` | `Redot\Auth\Actions\EmailVerification` |
-| `lock-screen`       | `Redot\Auth\Contracts\LockAction`              | `Redot\Auth\Actions\Lock`            |
-
-Because the registrars call `app(Login::class)` (and so on for each concrete class), the contract is the design surface, but the **concrete class name is the container key you bind against**.
-
-## The action contracts
-
-Every action method receives the incoming `Illuminate\Http\Request` and the resolved `Redot\Auth\AuthContext` for the current guard. The context exposes the guard name, provider, model, route-name prefix, the `views` map, the `api` flag, and helpers such as `routeName()`, `homeUrl()` and `identifierInputName()`.
+By default users sign in with their `email`. Allow additional identifiers, or override the validation rules, per provider:
 
 ```php
-namespace Redot\Auth\Contracts;
+use Redot\Auth\Actions\Login;
 
-interface LoginAction
-{
-    public function authenticate(Request $request, AuthContext $context): RedirectResponse|JsonResponse;
-}
-
-interface LogoutAction
-{
-    public function logout(Request $request, AuthContext $context): RedirectResponse|JsonResponse;
-}
-
-interface RegistrationAction
-{
-    public function register(Request $request, AuthContext $context): RedirectResponse|JsonResponse;
-}
-
-interface PasswordResetAction
-{
-    public function sendResetLink(Request $request, AuthContext $context): RedirectResponse|JsonResponse;
-    public function reset(Request $request, AuthContext $context): RedirectResponse|JsonResponse;
-}
-
-interface MagicLinkAction
-{
-    public function send(Request $request, AuthContext $context): RedirectResponse;
-    public function verifyToken(string $token, AuthContext $context): RedirectResponse;
-    public function view(Request $request, AuthContext $context): View|RedirectResponse;
-    public function verifyCode(Request $request, AuthContext $context): RedirectResponse;
-}
-
-interface EmailVerificationAction
-{
-    public function prompt(Request $request, AuthContext $context): RedirectResponse|View;
-    public function verify(Request $request, AuthContext $context): RedirectResponse|JsonResponse;
-    public function send(Request $request, AuthContext $context): RedirectResponse|JsonResponse;
-}
-
-interface LockAction
-{
-    public function lock(Request $request, AuthContext $context): RedirectResponse|JsonResponse;
-    public function view(Request $request, AuthContext $context): View|RedirectResponse;
-    public function unlock(Request $request, AuthContext $context): RedirectResponse|JsonResponse;
-}
-```
-
-## Lightweight customization first
-
-Before replacing a whole action, check whether the small static hooks on the default actions already cover your need. They are the lightest way to change behavior and are what the Redot Dashboard uses.
-
-The default `Login` action lets you register per-provider identifiers and validation rules:
-
-```php
-// Redot\Auth\Actions\Login
+// Let "users" log in by email OR username.
 Login::identifiers('users', ['email', 'username']);
-Login::validationRules('users', fn (AuthContext $context) => [...]);
+
+// Override the rules for that provider.
+Login::validationRules('users', fn ($context) => [
+    $context->identifierInputName() => ['required'],
+    'password' => ['required'],
+]);
 ```
 
-When a provider has a single identifier its input field is named after that identifier (e.g. `email`); with multiple identifiers the input is named `identifier` (see `AuthContext::identifierInputName()`).
+When a provider has a single identifier, the login field is named after that column (e.g. `email`); with more than one it becomes `identifier`. Build your form field with `$context->identifierInputName()` so it works either way.
 
-The default `Registration` action exposes per-provider validation rules and a user-creation callback. This is the real configuration the dashboard uses in `App\Providers\AppServiceProvider::configureAuth()`:
+## Customize registration
+
+Capture extra fields by overriding the registration rules and the user-creation step per provider:
 
 ```php
-use Illuminate\Http\Request;
 use Illuminate\Validation\Rules\Password;
 use Redot\Auth\Actions\Registration;
-use Redot\Auth\AuthContext;
 
-Registration::validationRules('users', fn (AuthContext $context) => [
+Registration::validationRules('users', fn ($context) => [
     'first_name' => ['required', 'string', 'max:255'],
     'last_name'  => ['required', 'string', 'max:255'],
     'email'      => ['required', 'string', 'email', 'max:255', 'unique:' . $context->model],
@@ -111,7 +39,7 @@ Registration::validationRules('users', fn (AuthContext $context) => [
     ...setting('cloudflare_turnstile_site_key') ? ['captcha' => ['required', 'captcha']] : [],
 ]);
 
-Registration::createUserUsing('users', fn (Request $request, AuthContext $context) => $context->model::create([
+Registration::createUserUsing('users', fn ($request, $context) => $context->model::create([
     'first_name' => $request->first_name,
     'last_name'  => $request->last_name,
     'email'      => $request->email,
@@ -119,31 +47,22 @@ Registration::createUserUsing('users', fn (Request $request, AuthContext $contex
 ]));
 ```
 
-The first argument to these helpers is the **auth provider name** (the key under `config('auth.providers')`), not the guard. If no rules/callback are registered for a provider, the default action falls back to validating `email` + `password` and creating the user with `$request->only('email', 'password')`.
+Without these hooks, registration validates `email` + `password` and creates the user with just those two fields.
 
-## Swapping an action implementation
+## Customize magic links
 
-When the static hooks are not enough, replace the action entirely. Implement the relevant contract (or extend the default action) and bind it to the **concrete default class** in a service provider's `register()` method:
+Point the passwordless flow at your own login-token model or notification class:
 
 ```php
-namespace App\Auth;
+use Redot\Auth\Actions\MagicLink;
 
-use Illuminate\Http\JsonResponse;
-use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
-use Redot\Auth\AuthContext;
-use Redot\Auth\Contracts\LoginAction;
-
-class CustomLogin implements LoginAction
-{
-    public function authenticate(Request $request, AuthContext $context): RedirectResponse|JsonResponse
-    {
-        // your own validation, throttling, credential check, token issuing...
-
-        return redirect()->intended($context->homeUrl());
-    }
-}
+MagicLink::useLoginTokenModel(\App\Models\LoginToken::class);
+MagicLink::useNotificationClass(\App\Notifications\MagicLink::class);
 ```
+
+## Swap a whole flow
+
+When the hooks aren't enough, replace an action entirely. Each flow is resolved from the service container, so bind your own implementation against the default action class in a service provider's `register()` method (not `boot()` — routes load before `boot()` runs):
 
 ```php
 namespace App\Providers;
@@ -156,56 +75,20 @@ class AppServiceProvider extends ServiceProvider
 {
     public function register(): void
     {
-        // Registrars call app(Login::class), so bind against the concrete class.
         $this->app->bind(Login::class, CustomLogin::class);
     }
 }
 ```
 
-Because the registrar resolves `app(Login::class)`, binding the contract `LoginAction` alone will **not** take effect — bind the concrete `Redot\Auth\Actions\Login` key. The same applies to every other feature: bind `Redot\Auth\Actions\Registration`, `...\Logout`, `...\PasswordReset`, `...\MagicLink`, `...\EmailVerification` or `...\Lock` to swap the corresponding flow.
+Your class only has to produce the right response for each step of that flow. If you just want to tweak part of the behavior, extend the default action, override the one piece you care about, and bind your subclass. The same pattern applies to every flow: bind your replacement against `Registration`, `Logout`, `PasswordReset`, `MagicLink`, `EmailVerification`, or `Lock`.
 
-If you only need to adjust part of the behavior, extend the default action and override the method you care about, then bind the subclass:
+Binding against a disabled feature has no effect — disabled features are never registered.
 
-```php
-use Redot\Auth\Actions\Registration as BaseRegistration;
+## Customize the lock screen
 
-class Registration extends BaseRegistration
-{
-    // override protected createUser()/rules() or the public register()
-}
+To change how unlocking works (for example a PIN instead of a password), swap the lock action using the binding approach above. The default unlock step re-checks the user's password.
 
-$this->app->bind(BaseRegistration::class, Registration::class);
-```
-
-> Bind in `register()`, not `boot()` — route registration happens while route files load, which can run before `boot()` on other providers. Binding during `register()` guarantees the override is in place when the registrar resolves the action.
-
-## The Locked middleware
-
-`Redot\Auth\Middleware\Locked` enforces the lock screen. It is applied automatically by `AuthContext::auth()` whenever the `lock-screen` feature is enabled, via `AuthContext::lockedMiddleware()`:
-
-```php
-// Redot\Auth\AuthContext::lockedMiddleware()
-Locked::class . ':' . $this->guard . ',' . $this->routeName('unlock');
-```
-
-The middleware signature is:
-
-```php
-public function handle(
-    Request $request,
-    Closure $next,
-    string $guard = 'web',
-    string $unlockRoute = 'unlock'
-): Response;
-```
-
-Behavior:
-
-- It checks the session key produced by `Redot\Auth\Actions\Lock::sessionKey($guard)`, which is `"auth.{$guard}.locked"`.
-- If that key is set and the current route is **not** the `$unlockRoute`, it stores `url()->previous()` in `url.intended` and redirects to the named unlock route.
-- Otherwise it passes the request through.
-
-The lock screen is automatically disabled for API guards and for guards that do not define an `unlock` view (see `AuthContext::resolveDisabled()`), so for a typical web guard you do not register this middleware yourself — `RedotAuth::routes()` wires it on the authenticated route group. You would only reference it directly if you protect additional routes outside the auth-generated group and want the same lock enforcement:
+If you protect routes outside the auth-generated group and want the same lock enforcement there, apply the lock middleware to that group:
 
 ```php
 use Redot\Auth\Middleware\Locked;
@@ -215,11 +98,10 @@ Route::middleware([Locked::class . ':admins,dashboard.unlock'])->group(function 
 });
 ```
 
-To customize lock/unlock behavior itself (for example a PIN instead of a password), bind your own implementation of `Redot\Auth\Contracts\LockAction` to `Redot\Auth\Actions\Lock` as shown above. The default `Lock` action verifies the unlock attempt with `Hash::check()` against the authenticated user's `password` and clears the session key on success.
+The two arguments are the guard name and the route to redirect to for unlocking. For a normal web guard you don't do this yourself — registering an `unlock` view wires the middleware onto the auth routes automatically.
 
-## Gotchas
+## Related
 
-- **Bind the concrete class, not the contract.** Registrars resolve `app(ConcreteAction::class)`; an interface-only binding is ignored.
-- **Provider, not guard.** `Login::identifiers()`, `Login::validationRules()`, `Registration::validationRules()` and `Registration::createUserUsing()` are keyed by the auth provider name.
-- **API guards skip the lock screen.** `Lock::lock()`/`unlock()` return a 400 failure for API contexts, and the feature is force-disabled for API guards or guards without an `unlock` view.
-- **Disabled features are never registered.** If you disable a feature via the `disable:` array on `RedotAuth::routes()`, its registrar (and therefore its action) is skipped entirely, so binding an override for a disabled feature has no effect.
+- [Register auth routes](/packages/auth/routes)
+- [Auth actions](/packages/auth/actions)
+- [Auth Overview](/packages/auth/overview)
