@@ -57,12 +57,15 @@
             "XDEBUG_MODE=coverage vendor/bin/pest --coverage"
         ],
         "docs:dev": [
+            "Composer\\Config::disableProcessTimeout",
             "npm run docs:dev --prefix docs"
         ],
         "docs:build": [
+            "Composer\\Config::disableProcessTimeout",
             "npm run docs:build --prefix docs"
         ],
         "docs:preview": [
+            "Composer\\Config::disableProcessTimeout",
             "npm run docs:preview --prefix docs"
         ]
     },
