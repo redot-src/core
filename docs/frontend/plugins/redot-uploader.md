@@ -5,7 +5,7 @@ The engine behind the [`<x-uploader>` component](/components/uploader): a drag-a
 ## Usage
 
 ```blade
-<x-uploader name="attachments" :title="__('Attachments')" :value="old('attachments', $entry?->attachments)" directory="memos" />
+<x-uploader name="attachments" :title="__('Attachments')" :value="old('attachments', $post?->attachments)" directory="posts" />
 ```
 
 Files upload as soon as they are dropped or picked, and the field is populated with the uploaded files when the form is submitted.

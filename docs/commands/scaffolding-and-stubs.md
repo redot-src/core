@@ -1,6 +1,6 @@
 # Scaffolding & Stubs
 
-Redot Dashboard ships generator commands that scaffold a full CRUD section with
+Redot Core ships generator commands that scaffold a full CRUD section with
 one command, plus a stub system so you can customize the markup they emit. The
 headline command is `make:entity`; it drives Laravel's own generators together
 with `make:view` and the datatable generator.

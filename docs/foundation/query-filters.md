@@ -15,10 +15,10 @@ it sends back.
 use Redot\Support\QueryFilters;
 
 // 1. Build definitions for the query-builder UI (from a model or a raw map).
-$filters = QueryFilters::resolve(ShortenedUrl::class);
+$filters = QueryFilters::resolve(Post::class);
 
 // 2. Apply the submitted rule tree to a query.
-$results = QueryFilters::query($rules, ShortenedUrl::query())->paginate();
+$results = QueryFilters::query($rules, Post::query())->paginate();
 ```
 
 Because the second call accepts an Eloquent or base builder, you can compose it
@@ -50,11 +50,11 @@ A schema entry is keyed by field name and supports:
 public static function getTableSchema(): array
 {
     return [
-        'id'         => ['title' => __('ID'), 'type' => 'integer'],
-        'url'        => ['title' => __('URL'), 'type' => 'string'],
-        'clicks'     => ['title' => __('Clicks'), 'type' => 'integer'],
-        'created_by' => ['title' => __('Created By'), 'type' => 'integer', 'values' => Admin::pluck('name', 'id')],
-        'created_at' => ['title' => __('Created At'), 'type' => 'datetime'],
+        'id'          => ['title' => __('ID'), 'type' => 'integer'],
+        'title'       => ['title' => __('Title'), 'type' => 'string'],
+        'status'      => ['title' => __('Status'), 'type' => 'string', 'values' => ['draft' => __('Draft'), 'published' => __('Published')]],
+        'category_id' => ['title' => __('Category'), 'type' => 'integer', 'values' => Category::pluck('name', 'id')],
+        'published_at' => ['title' => __('Published At'), 'type' => 'datetime'],
     ];
 }
 ```
@@ -67,8 +67,8 @@ Use a `query` expression to filter on a concatenated value rather than a single
 column:
 
 ```php
-'full_name' => [
-    'title' => __('Full Name'),
+'name' => [
+    'title' => __('Name'),
     'type'  => 'string',
     'query' => "CONCAT(first_name, ' ', last_name)",
 ],
@@ -86,7 +86,7 @@ $this->filters = QueryFilters::resolve($this->model, $this->filters);
 ### Applying submitted rules
 
 ```php
-$results = QueryFilters::query($rules, ShortenedUrl::query())->paginate();
+$results = QueryFilters::query($rules, Post::query())->paginate();
 ```
 
 ## Notes

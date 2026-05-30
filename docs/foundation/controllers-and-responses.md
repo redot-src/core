@@ -13,12 +13,12 @@ Extend the base controller and use its helpers:
 ```php
 use Redot\Http\Controllers\Controller;
 
-class UserController extends Controller
+class PostController extends Controller
 {
     public function store()
     {
-        // ... persist the user ...
-        return $this->created(__('User'), 'dashboard.users.index');
+        // ... persist the post ...
+        return $this->created(__('Post'), 'posts.index');
     }
 }
 ```
@@ -30,7 +30,7 @@ optional route name (and route parameters) to redirect to; with no route they
 redirect `back()`. The flash keys (`success`, `error`, `warning`, `info`) are
 what the dashboard's toast layer reads — see [Toastify](/packages/toastify).
 
-The CRUD helpers build a translated message for you (e.g. "User has been
+The CRUD helpers build a translated message for you (e.g. "Post has been
 created.") and flash it as a success:
 
 - **`created`** — confirm a resource was created. Pass the resource label.
@@ -72,27 +72,27 @@ rarely call the underlying converter yourself.
 ### Resource controller (HTML flows)
 
 ```php
-return $this->created(__('User'), 'dashboard.users.index'); // store()
-return $this->updated(__('User'));                          // update() -> back()
-return $this->deleted(__('User'));                          // destroy() -> back()
-return $this->restored(__('User'));                         // restore() -> back()
+return $this->created(__('Post'), 'posts.index'); // store()
+return $this->updated(__('Post'));                // update() -> back()
+return $this->deleted(__('Post'));                // destroy() -> back()
+return $this->restored(__('Post'));               // restore() -> back()
 ```
 
 ### Redirecting to a route with a parameter
 
 ```php
 return $this->success(
-    __('Language tokens published successfully.'),
-    'dashboard.languages.tokens.index',
-    $language,
+    __('Post published successfully.'),
+    'posts.show',
+    $post,
 );
 ```
 
 ### Bouncing back with an error
 
 ```php
-if (/* role is in use */) {
-    return $this->error(__('Role is used by a user.'));
+if ($category->posts()->exists()) {
+    return $this->error(__('This category is still in use.'));
 }
 ```
 
@@ -101,7 +101,7 @@ if (/* role is in use */) {
 ```php
 public function index()
 {
-    return $this->respond(payload: Role::paginate(columns: ['name']));
+    return $this->respond(payload: Post::paginate(columns: ['title']));
 }
 ```
 
@@ -110,19 +110,10 @@ public function index()
 ```php
 return $this->respond($request->user());
 
-return $this->respond(message: __('Admin created successfully.'));
-```
-
-### Empty rich-text placeholder
-
-Use the [`no_content()`](/foundation/helpers) helper for empty UI states:
-
-```blade
-{!! $memo->content ?: no_content() !!}
+return $this->respond(message: __('Created successfully.'));
 ```
 
 ## Related
 
-- [Helpers](/foundation/helpers) — `no_content()` and other global helpers.
 - [Toastify](/packages/toastify) — the JS toast layer driven by flash messages.
 - [Localization](/foundation/localization) — locale-aware routing and redirects.

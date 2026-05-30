@@ -27,7 +27,7 @@ Gate the matching UI on the same check so the dashboard stays consistent — use
 the [`route_allowed()` / `url_allowed()`](/foundation/helpers) helpers:
 
 ```php
-Action::edit('dashboard.users.edit')->visible(route_allowed('dashboard.users.edit'));
+Action::edit('posts.edit')->visible(route_allowed('posts.edit'));
 ```
 
 ```blade

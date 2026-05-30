@@ -7,7 +7,7 @@ pick dates, date-times, or times only.
 ## Usage
 
 ```blade
-<x-date-picker name="date" :title="__('Date')" :value="old('date', $entry?->date)" />
+<x-date-picker name="published_at" :title="__('Published at')" :value="old('published_at', $post?->published_at)" />
 ```
 
 It shares the [common form-field attributes](/components/overview#shared-form-field-conventions)
@@ -32,9 +32,9 @@ Additional picker behavior can be set per element with `date-*` attributes.
 
 ```blade
 <x-date-picker
-    name="date"
-    :title="__('Date')"
-    :value="old('date', $entry?->date ?? now())"
+    name="published_at"
+    :title="__('Published at')"
+    :value="old('published_at', $post?->published_at ?? now())"
     datetime
 />
 ```

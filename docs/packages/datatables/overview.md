@@ -30,7 +30,7 @@ class Users extends Datatable
     public function columns(): array
     {
         return [
-            TextColumn::make('full_name', __('Name'))->searchable()->sortable(),
+            TextColumn::make('name', __('Name'))->searchable()->sortable(),
             TextColumn::make('email', __('Email'))->email()->searchable(),
             TernaryColumn::make('email_verified_at', __('Verified')),
         ];
@@ -38,13 +38,13 @@ class Users extends Datatable
 }
 ```
 
-Drop it on a page with Livewire's tag syntax — public properties (like a bound `language`) pass through as attributes:
+Drop it on a page with Livewire's tag syntax — public properties (like a bound `category`) pass through as attributes:
 
 ```blade
 <livewire:datatables.users />
 ```
 
-That's a working table with search, sorting, pagination, and export. Point `query()` at any builder you like, including scoped queries (e.g. only the current admin's rows).
+That's a working table with search, sorting, pagination, and export. Point `query()` at any builder you like, including scoped queries (e.g. only the current user's rows).
 
 ## Common tasks
 
@@ -71,5 +71,5 @@ Search, sort, page size, and applied filters are reflected in the URL, so links 
 
 ## Related
 
-- [Components overview](/components/overview) — the form fields and UI the dashboard is built from.
+- [Components overview](/components/overview) — the form fields and UI to build your pages from.
 - [Asset & Init System](/frontend/asset-system) — how front-end assets are served.

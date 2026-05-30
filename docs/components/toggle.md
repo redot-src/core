@@ -7,7 +7,7 @@ form posts with no JavaScript.
 ## Usage
 
 ```blade
-<x-toggle name="active" :title="__('Active')" :value="old('active', $entry?->active ?? true)" />
+<x-toggle name="published" :title="__('Published')" :value="old('published', $post?->published ?? true)" />
 ```
 
 It shares the [common form-field attributes](/components/overview#shared-form-field-conventions)
@@ -30,19 +30,19 @@ like `form-check-reverse` or `mb-0` there.
 ### Custom on/off captions
 
 ```blade
-<x-toggle name="active" :title="__('Active')" :value="old('active', $entry?->active ?? true)" :on="__('Yes')" :off="__('No')" />
+<x-toggle name="published" :title="__('Published')" :value="old('published', $post?->published ?? true)" :on="__('Yes')" :off="__('No')" />
 ```
 
-### Setting toggle with default captions
+### Toggle with default captions
 
 ```blade
-<x-toggle name="page_loader_enabled" :title="__('Page loader')" :value="setting('page_loader_enabled')" />
+<x-toggle name="featured" :title="__('Featured')" :value="old('featured', $post?->featured)" />
 ```
 
 ### Title-less "select all" control
 
 ```blade
-<x-toggle class="form-check-reverse mb-0" :on="__('All')" :off="__('All')" permissions-toggle />
+<x-toggle class="form-check-reverse mb-0" :on="__('All')" :off="__('All')" />
 ```
 
 ## Related

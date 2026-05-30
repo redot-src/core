@@ -1,6 +1,6 @@
 # Introduction
 
-`redot/core` is the foundation package behind the **Redot Dashboard**. It gives a
+`redot/core` is a foundation package for Laravel admin applications. It gives a
 consuming Laravel app a ready-made admin back-office and public website: shared
 models, helpers, console commands, validation rules, page layouts, and a set of
 bundled feature packages. You install it as a normal Composer dependency and

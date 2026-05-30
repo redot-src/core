@@ -13,11 +13,11 @@ If you extend the base controller, just call the helpers:
 ```php
 use Redot\Http\Controllers\Controller;
 
-class RoleController extends Controller
+class PostController extends Controller
 {
     public function index()
     {
-        return $this->respond(payload: Role::paginate(columns: ['name']));
+        return $this->respond(payload: Post::paginate(columns: ['title']));
     }
 }
 ```
@@ -65,7 +65,7 @@ return $this->respond($request->user());
 ### A message-only success
 
 ```php
-return $this->respond(message: __('Admin created successfully.'));
+return $this->respond(message: __('Post created successfully.'));
 ```
 
 ### Failing mid-flow

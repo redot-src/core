@@ -8,7 +8,7 @@ with a normal form post. It's the input counterpart to
 ## Usage
 
 ```blade
-<x-uploader name="attachments" :title="__('Attachments')" :value="old('attachments', $entry?->attachments)" directory="memos" />
+<x-uploader name="attachments" :title="__('Attachments')" :value="old('attachments', $post?->attachments)" directory="posts" />
 ```
 
 It shares the [common form-field attributes](/components/overview#shared-form-field-conventions)
@@ -33,7 +33,7 @@ shape the uploader stored previously.
 ### Files attached to a record
 
 ```blade
-<x-uploader name="attachments" :title="__('Attachments')" :value="old('attachments', $entry?->attachments)" directory="memos" />
+<x-uploader name="attachments" :title="__('Attachments')" :value="old('attachments', $post?->attachments)" directory="posts" />
 ```
 
 ### Restricted types with a hint

@@ -8,7 +8,7 @@ for things like a list of links, phone numbers, or tags.
 ## Usage
 
 ```blade
-<x-repeater id="links" name="links" :title="__('Links')" :value="old('links', $entry?->links)">
+<x-repeater id="links" name="links" :title="__('Links')" :value="old('links', $post?->links)">
     <div class="row g-2">
         <div class="col"><x-input name="label" :placeholder="__('Label')" /></div>
         <div class="col"><x-input name="url" :placeholder="__('URL')" /></div>

@@ -7,7 +7,7 @@
 Mark the input with `init="icon-picker"`. You rarely write this yourself — the `<x-icon-picker>` component adds it (along with the preview/modal markup the plugin needs) for you:
 
 ```blade
-<x-icon-picker name="icon" :title="__('Icon')" :value="old('icon', $entry?->icon ?? 'far fa-note-sticky')" />
+<x-icon-picker name="icon" :title="__('Icon')" :value="old('icon', $post?->icon ?? 'far fa-note-sticky')" />
 ```
 
 See [Asset & Init System](/frontend/asset-system) for how the `init` attribute is wired.

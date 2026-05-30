@@ -6,7 +6,7 @@ hint. It can auto-grow its height as the user types.
 ## Usage
 
 ```blade
-<x-textarea name="bio" :title="__('Biography')" :value="old('bio', $entry?->bio)" />
+<x-textarea name="body" :title="__('Body')" :value="old('body', $post?->body)" />
 ```
 
 It shares the [common form-field attributes](/components/overview#shared-form-field-conventions)
@@ -24,19 +24,19 @@ pass (`placeholder`, `rows`, `wire:model`, …) falls through to the underlying
 
 ## Examples
 
-### Custom-code setting
+### Field with custom rows
 
 ```blade
-<x-textarea name="head_code" :title="__('Head code')" :value="setting('head_code')" />
+<x-textarea name="excerpt" :title="__('Excerpt')" :value="old('excerpt', $post?->excerpt)" rows="3" />
 ```
 
 ### Auto-growing, required field
 
 ```blade
 <x-textarea
-    name="bio"
-    :title="__('Biography')"
-    :hint="__('Tell us about yourself')"
+    name="body"
+    :title="__('Body')"
+    :hint="__('Write the post content')"
     :autosize="true"
     validation="required|max:500"
     rows="4"

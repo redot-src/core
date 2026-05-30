@@ -10,7 +10,7 @@ The component's default slot is the template that gets cloned per row. Mark acti
 <x-repeater id="contacts" name="contacts" :title="__('Contacts')" :value="old('contacts', $contacts)">
     <div class="card mb-2">
         <div class="card-body">
-            <x-input name="full_name" :title="__('Full name')" />
+            <x-input name="name" :title="__('Name')" />
             <x-input name="email" :title="__('Email')" />
 
             <div class="btn-list mt-2">

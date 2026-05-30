@@ -1,6 +1,6 @@
 # Sidebar
 
-The Sidebar package lets you define the dashboard's navigation menu as a tree of items. You describe each entry — its title, icon, and where it links — and the package resolves the URLs, hides entries the current user can't access, and highlights the item that matches the current page.
+The Sidebar package lets you define your app's navigation menu as a tree of items. You describe each entry — its title, icon, and where it links — and the package resolves the URLs, hides entries the current user can't access, and highlights the item that matches the current page.
 
 ## Quick start
 
@@ -14,28 +14,28 @@ use Redot\Sidebar\Sidebar;
 
 return Sidebar::make([
     Item::make()
-        ->title(__('Dashboard'))
-        ->icon('fa fa-home')
-        ->route('dashboard.index'),
+        ->title(__('Posts'))
+        ->icon('fa fa-newspaper')
+        ->route('posts.index'),
 
     Item::make()
-        ->title(__('Website Management'))
-        ->icon('fa fa-globe')
+        ->title(__('Content'))
+        ->icon('fa fa-folder')
         ->children([
             Item::make()
-                ->title(__('Users Management'))
-                ->icon('fa fa-users')
-                ->route('dashboard.users.index'),
+                ->title(__('Categories'))
+                ->icon('fa fa-tags')
+                ->route('categories.index'),
 
             Item::make()
-                ->title(__('Static Pages'))
-                ->icon('fa fa-file-text')
-                ->route('dashboard.static-pages.index'),
+                ->title(__('Users'))
+                ->icon('fa fa-users')
+                ->route('users.index'),
         ]),
 ]);
 ```
 
-The dashboard layout reads this file each request, so any item the current user is not authorized to reach is hidden automatically, and the item matching the current route is marked active.
+The layout reads this file each request, so any item the current user is not authorized to reach is hidden automatically, and the item matching the current route is marked active.
 
 ## Building items
 
@@ -54,7 +54,7 @@ Chain these onto `Item::make()`:
 ### A top-level link
 
 ```php
-Item::make()->title(__('Dashboard'))->icon('fa fa-home')->route('dashboard.index');
+Item::make()->title(__('Posts'))->icon('fa fa-newspaper')->route('posts.index');
 ```
 
 ### A dropdown group
@@ -63,13 +63,13 @@ Items with `children` render as a dropdown. A group disappears entirely if all o
 
 ```php
 Item::make()
-    ->title(__('Utilities'))
-    ->icon('fa fa-clipboard')
+    ->title(__('Content'))
+    ->icon('fa fa-folder')
     ->children([
         Item::make()
-            ->title(__('Shortened URLs'))
-            ->icon('fa fa-link')
-            ->route('dashboard.shortened-urls.index'),
+            ->title(__('Categories'))
+            ->icon('fa fa-tags')
+            ->route('categories.index'),
     ]);
 ```
 
@@ -79,9 +79,9 @@ Pass a boolean to hide based on config, or a callback for per-user logic:
 
 ```php
 Item::make()
-    ->title(__('Shortened URLs'))
-    ->route('dashboard.shortened-urls.index')
-    ->hidden(config('redot.features.website.enabled') === false);
+    ->title(__('Categories'))
+    ->route('categories.index')
+    ->hidden(config('blog.features.categories.enabled') === false);
 ```
 
 ### An external link

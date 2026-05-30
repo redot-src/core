@@ -1,7 +1,7 @@
 # Helpers
 
-`redot/core` ships a set of global helper functions for the everyday needs of a
-Redot dashboard: reading settings, building permission-aware UI, formatting
+`redot/core` ships a set of global helper functions for everyday needs:
+reading settings, building permission-aware UI, formatting
 values, working with assets, and shaping API responses. They are plain global
 functions, so you can call them anywhere — controllers, Livewire components, or
 Blade — without importing anything.
@@ -14,7 +14,7 @@ Blade — without importing anything.
   [Settings](/foundation/settings) for the full reference.
 
   ```blade
-  <x-input name="facebook_pixel_id" :value="setting('facebook_pixel_id')" />
+  <x-input name="site_title" :value="setting('site_title')" />
   ```
 
 - **`app_name()`** — the application name for the current locale (from the
@@ -35,7 +35,7 @@ Blade — without importing anything.
   [Datatables](/packages/datatables/overview) for the common use.
 
   ```php
-  Action::edit('dashboard.users.edit')->visible(route_allowed('dashboard.users.edit'));
+  Action::edit('posts.edit')->visible(route_allowed('posts.edit'));
   ```
 
 - **`url_allowed($url)`** — the URL counterpart to `route_allowed()`. External
@@ -98,15 +98,15 @@ Blade — without importing anything.
   a truthy/falsy value. Returns raw HTML, so echo it unescaped.
 
   ```blade
-  {!! switch_badge($user->is_active) !!}
-  {!! switch_badge($order->paid, __('Paid'), __('Unpaid')) !!}
+  {!! switch_badge($post->is_active) !!}
+  {!! switch_badge($post->published, __('Published'), __('Draft')) !!}
   ```
 
 - **`no_content()`** — a muted "No content" placeholder for empty rich-text
   fields. Echo it raw.
 
   ```blade
-  {!! $memo->content ?: no_content() !!}
+  {!! $post->body ?: no_content() !!}
   ```
 
 - **`collect_ellipsis($items, $limit, $ellipsis)`** — take the first few items of
@@ -170,20 +170,20 @@ See the [Asset & Init System](/frontend/asset-system) for the bigger picture.
 ## Querying & components
 
 - **`search_model($query, $columns, $term)`** — apply a grouped `LIKE` search
-  across columns onto a query. Dotted columns (e.g. `role.name`) search the
+  across columns onto a query. Dotted columns (e.g. `category.name`) search the
   related model. An empty term leaves the query untouched.
 
   ```php
-  search_model(User::query(), ['name', 'email', 'role.name'], 'admin');
+  search_model(Post::query(), ['title', 'body', 'category.name'], 'laravel');
   ```
 
 - **`component('name', $data)`** — render a Blade component to a string from PHP,
   outside the usual `<x-...>` syntax. Useful inside Datatable column getters.
 
   ```php
-  ->getter(fn ($value, Admin $admin) => component('avatar', [
-      'name' => $admin->name,
-      'image' => $admin->profile_picture,
+  ->getter(fn ($value, User $user) => component('avatar', [
+      'name' => $user->name,
+      'image' => $user->avatar,
   ]))
   ```
 

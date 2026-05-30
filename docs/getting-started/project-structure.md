@@ -1,13 +1,13 @@
 # Project Structure
 
-This page is a usage-oriented orientation: where things go in a Redot Dashboard
+This page is a usage-oriented orientation: where things go in a `redot/core`
 app, so you know which file to open when you want to change something. The
 package itself ships behind Composer in `vendor/` — you work in your own app
 directory and lean on what the package provides.
 
 ## Where you put your code
 
-A Redot Dashboard app follows the standard Laravel layout. The places you touch
+A `redot/core` app follows the standard Laravel layout. The places you touch
 most often are:
 
 - **`app/sidebar.php`** — your dashboard navigation. Edit this file to add,

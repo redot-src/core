@@ -13,14 +13,14 @@ use Redot\Datatables\Datatable;
 public function actions(): array
 {
     return Datatable::defaultActionGroup([
-        Action::view('dashboard.users.show'),
-        Action::edit('dashboard.users.edit'),
-        Action::delete('dashboard.users.destroy'),
+        Action::view('posts.show'),
+        Action::edit('posts.edit'),
+        Action::delete('posts.destroy'),
     ]);
 }
 ```
 
-Each ready-made builder — `view`, `edit`, `delete`, `restore`, `export` — comes with a sensible label, icon, and HTTP method (and delete/restore ask for confirmation). Pass a route name and optional parameters. By default the current row is bound as the route's first parameter, so `{user}` resolves automatically.
+Each ready-made builder — `view`, `edit`, `delete`, `restore`, `export` — comes with a sensible label, icon, and HTTP method (and delete/restore ask for confirmation). Pass a route name and optional parameters. By default the current row is bound as the route's first parameter, so `{post}` resolves automatically.
 
 For anything else, start from `Action::make(label, icon)` and point it at a destination.
 
@@ -47,29 +47,29 @@ For anything else, start from `Action::make(label, icon)` and point it at a dest
 Use `visible` for permission checks (pair it with `route_allowed()`) and `condition` for row-dependent logic:
 
 ```php
-Action::delete('dashboard.users.destroy')
-    ->visible(route_allowed('dashboard.users.destroy'))
-    ->condition(fn (User $user) => ! $user->trashed()),
-Action::restore('dashboard.users.restore')
-    ->visible(route_allowed('dashboard.users.restore'))
-    ->condition(fn (User $user) => $user->trashed()),
+Action::delete('posts.destroy')
+    ->visible(route_allowed('posts.destroy'))
+    ->condition(fn (Post $post) => ! $post->trashed()),
+Action::restore('posts.restore')
+    ->visible(route_allowed('posts.restore'))
+    ->condition(fn (Post $post) => $post->trashed()),
 ```
 
 ### A custom POST action with a payload and confirmation
 
 ```php
-Action::make(__('Impersonate'), 'fas fa-user-secret')
-    ->visible(route_allowed('dashboard.impersonate-users.create'))
-    ->condition(fn (User $user) => ! $user->trashed())
-    ->route('dashboard.impersonate-users.store', method: 'post', bounded: false)
-    ->body(['user_id' => fn (User $user) => $user->id])
-    ->confirmable(message: __('Are you sure you want to impersonate this user?')),
+Action::make(__('Publish'), 'fas fa-paper-plane')
+    ->visible(route_allowed('posts.publish'))
+    ->condition(fn (Post $post) => $post->status === 'draft')
+    ->route('posts.publish', method: 'post', bounded: false)
+    ->body(['post_id' => fn (Post $post) => $post->id])
+    ->confirmable(message: __('Are you sure you want to publish this post?')),
 ```
 
 ### Open in a new tab instead of Fancybox
 
 ```php
-Action::view('website.static-pages.show')->fancybox(false)->newTab();
+Action::view('categories.show')->fancybox(false)->newTab();
 ```
 
 ### Grouping actions into a dropdown explicitly
@@ -80,8 +80,8 @@ When you want full control instead of `defaultActionGroup`, build a group yourse
 use Redot\Datatables\Actions\ActionGroup;
 
 ActionGroup::make(__('More'))->actions([
-    Action::edit('dashboard.users.edit'),
-    Action::delete('dashboard.users.destroy'),
+    Action::edit('posts.edit'),
+    Action::delete('posts.destroy'),
 ]);
 ```
 

@@ -7,7 +7,7 @@ floating label, and — for passwords — a built-in show/hide toggle.
 ## Usage
 
 ```blade
-<x-input name="name" :title="__('Name')" :value="old('name', $entry?->name)" validation="required" />
+<x-input name="title" :title="__('Title')" :value="old('title', $post?->title)" validation="required" />
 ```
 
 It shares the [common form-field attributes](/components/overview#shared-form-field-conventions)
@@ -45,19 +45,19 @@ The show/hide toggle is added automatically:
 ### Prefix add-on
 
 ```blade
-<x-input name="slug" :title="__('Slug')" :prepend="route('website.shortened-urls.show') . '/'" />
+<x-input name="slug" :title="__('Slug')" prepend="https://example.com/" />
 ```
 
 ### Disabled, read-only display
 
 ```blade
-<x-input :title="__('Translation Key')" :value="$entry->key" disabled />
+<x-input :title="__('Slug')" :value="$post->slug" disabled />
 ```
 
 ### File input
 
 ```blade
-<x-input type="file" name="profile_picture" :title="__('Profile picture')" />
+<x-input type="file" name="avatar" :title="__('Avatar')" />
 ```
 
 ## Related

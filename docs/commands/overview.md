@@ -1,6 +1,6 @@
 # Artisan Commands
 
-Redot Dashboard adds a set of Artisan commands for build steps, maintenance
+Redot Core adds a set of Artisan commands for build steps, maintenance
 chores, permission discovery, and the database-driven translation workflow.
 They are available the moment the package is installed — no registration needed.
 
@@ -39,7 +39,7 @@ php artisan lint --with-js
 ```
 
 Runs Laravel Pint over the whole project. This is the canonical formatting entry
-point for the dashboard (also exposed as `composer lint`).
+point for the project (also exposed as `composer lint`).
 
 - **`--with-js`** — additionally runs Prettier over the project, but only when
   `npm` is available; otherwise the JS step is skipped with a notice.

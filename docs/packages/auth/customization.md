@@ -93,7 +93,7 @@ If you protect routes outside the auth-generated group and want the same lock en
 ```php
 use Redot\Auth\Middleware\Locked;
 
-Route::middleware([Locked::class . ':admins,dashboard.unlock'])->group(function () {
+Route::middleware([Locked::class . ':admins,admin.unlock'])->group(function () {
     // routes that also require the admin guard to be unlocked
 });
 ```

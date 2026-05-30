@@ -68,7 +68,7 @@ A datatable is a Livewire component, so mount it with Livewire's tag syntax. Pub
 
 ## Assets
 
-The package serves its own JS and CSS — there's no build step or `npm` publish. The table injects them on the page automatically the first time one renders, so you don't wire anything up by hand. The scripts expect jQuery, Bootstrap dropdowns, and Livewire to be present globally; the Redot Dashboard provides all three. See the [Asset & Init System](/frontend/asset-system) for how front-end assets are served across the dashboard.
+The package serves its own JS and CSS — there's no build step or `npm` publish. The table injects them on the page automatically the first time one renders, so you don't wire anything up by hand. The scripts expect jQuery, Bootstrap dropdowns, and Livewire to be present globally, so make sure your layout loads all three. See the [Asset & Init System](/frontend/asset-system) for how front-end assets are served.
 
 If you define a global `warnBeforeAction` function, confirmable [actions](/packages/datatables/actions) use it for their prompt; otherwise the browser's native confirm dialog is used.
 

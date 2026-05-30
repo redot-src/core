@@ -7,21 +7,21 @@
 You rarely write `init="tinymce"` yourself — render the [`<x-rich-editor>` component](/components/rich-editor), which emits a textarea carrying the attribute and loads the vendor script:
 
 ```blade
-<x-rich-editor name="content" :title="__('Content')" :value="old('content', $entry?->content)" />
+<x-rich-editor name="body" :title="__('Body')" :value="old('body', $post?->body)" />
 ```
 
 For a translatable editor, wrap it:
 
 ```blade
-<x-translatable component="rich-editor" name="content" :title="__('Content')"
-    :value="$entry ? $entry->getTranslations('content') : old('content')" />
+<x-translatable component="rich-editor" name="body" :title="__('Body')"
+    :value="$post ? $post->getTranslations('body') : old('body')" />
 ```
 
 See [Asset & Init System](/frontend/asset-system) for how the `init` attribute is wired.
 
 ## Options
 
-The toolbar, plugins, and height come preconfigured for dashboard content, and the editor reads its language, direction, and skin from the page — so there is little to set per field. Images pasted or picked in the editor upload automatically through the dashboard's upload endpoint.
+The toolbar, plugins, and height come preconfigured, and the editor reads its language, direction, and skin from the page — so there is little to set per field. Images pasted or picked in the editor upload automatically through the configured upload endpoint.
 
 The field must have an `id` (the component generates one if you omit it). When the user toggles light/dark, the editor rebuilds to pick up the new skin.
 

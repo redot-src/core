@@ -1,6 +1,6 @@
 # Configuration
 
-`config/redot.php` is the single configuration file for the Redot Dashboard. It
+`config/redot.php` is the single configuration file for `redot/core`. It
 controls which application surfaces are mounted, the locales the app supports,
 locale-aware routing, and the schema for persisted application settings. Its
 values are available as `config('redot.*')` out of the box.
@@ -18,7 +18,7 @@ published `config/redot.php` win over the packaged ones.
 ## Features
 
 `redot.features` toggles the four mountable surfaces and, where relevant, their
-URL prefix. The dashboard reads these flags both when registering routes and to
+URL prefix. The package reads these flags both when registering routes and to
 conditionally render UI (e.g. hiding a "Preview website" link).
 
 - **`website`** — mounts the public website routes. Set `enabled` to turn it on

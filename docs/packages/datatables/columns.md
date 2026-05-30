@@ -14,7 +14,7 @@ use Redot\Datatables\Columns\TernaryColumn;
 public function columns(): array
 {
     return [
-        TextColumn::make('full_name', __('Name'))->searchable()->sortable(),
+        TextColumn::make('name', __('Name'))->searchable()->sortable(),
         TextColumn::make('email', __('Email'))->email()->searchable(),
         DateColumn::make('created_at', __('Created'))->relative()->sortable(),
         TernaryColumn::make('email_verified_at', __('Verified')),
@@ -58,8 +58,8 @@ The general-purpose text cell. Beyond the shared options it can decorate the val
 - **`pad`** — pad the value to a fixed length.
 
 ```php
-TextColumn::make('slug', __('Shortened Url'))
-    ->route('website.shortened-urls.show', target: '_blank')
+TextColumn::make('title', __('Title'))
+    ->route('posts.show', target: '_blank')
     ->searchable();
 ```
 
@@ -72,7 +72,7 @@ Formats date/time values, respecting the active locale:
 - **`relative`** — show a human-friendly "2 hours ago" style.
 
 ```php
-DateColumn::make('date', __('Date'))->relative()->sortable();
+DateColumn::make('published_at', __('Published'))->relative()->sortable();
 ```
 
 ### NumericColumn
@@ -80,7 +80,7 @@ DateColumn::make('date', __('Date'))->relative()->sortable();
 - **`precision`** — number of decimal places to format to (left raw by default).
 
 ```php
-NumericColumn::make('clicks', __('Clicks'))->sortable();
+NumericColumn::make('views', __('Views'))->sortable();
 ```
 
 ### StatusColumn
@@ -92,8 +92,8 @@ Maps raw status values to readable labels and colored badges:
 
 ```php
 StatusColumn::make('status', __('Status'))
-    ->labels(['active' => __('Active'), 'pending' => __('Pending')])
-    ->classes(['active' => 'bg-success-lt', 'pending' => 'bg-warning-lt']);
+    ->labels(['published' => __('Published'), 'draft' => __('Draft')])
+    ->classes(['published' => 'bg-success-lt', 'draft' => 'bg-warning-lt']);
 ```
 
 ### TagsColumn
@@ -140,9 +140,9 @@ IconColumn::make('icon');
 Use `getter` for inline computed text without a custom type:
 
 ```php
-TextColumn::make('is_rtl', __('Direction'))
+TextColumn::make('published', __('State'))
     ->width('150px')
-    ->getter(fn ($value) => $value ? __('Right to Left') : __('Left to Right'));
+    ->getter(fn ($value) => $value ? __('Published') : __('Draft'));
 ```
 
 ### A flexible-width primary column

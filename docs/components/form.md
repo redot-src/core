@@ -1,14 +1,14 @@
 # Form
 
-`<x-form>` is the dashboard's standard form wrapper. It renders the `<form>`
+`<x-form>` is the standard form wrapper. It renders the `<form>`
 tags, injects the CSRF token, spoofs the HTTP method when needed, and stamps a
-hidden form identifier — so every page-level form in the dashboard and website is
+hidden form identifier — so every page-level form is
 built on top of it.
 
 ## Usage
 
 ```blade
-<x-form :action="route('dashboard.login.store')" method="POST">
+<x-form :action="route('posts.store')" method="POST">
     <!-- fields and buttons -->
 </x-form>
 ```
@@ -32,19 +32,19 @@ Put your fields and buttons inside the default slot. Any extra attribute
 
 ## Examples
 
-### Login form
+### Create form
 
 ```blade
-<x-form class="card card-md" :action="route('dashboard.login.store')" method="POST">
+<x-form class="card card-md" :action="route('posts.store')" method="POST">
     <div class="card-body">
         <div class="mb-3">
-            <x-input type="email" name="email" :title="__('Email address')" validation="required|email" />
+            <x-input name="title" :title="__('Title')" validation="required" />
         </div>
         <div class="mb-3">
-            <x-input type="password" name="password" :title="__('Password')" validation="required" />
+            <x-textarea name="body" :title="__('Body')" validation="required" />
         </div>
         <div class="form-footer">
-            <button type="submit" class="btn btn-primary w-100">{{ __('Sign in') }}</button>
+            <button type="submit" class="btn btn-primary w-100">{{ __('Save') }}</button>
         </div>
     </div>
 </x-form>
@@ -53,9 +53,9 @@ Put your fields and buttons inside the default slot. Any extra attribute
 ### Update form with method spoofing
 
 ```blade
-<x-form class="card" :action="route('dashboard.profile.update')" method="PUT">
+<x-form class="card" :action="route('posts.update', $post)" method="PUT">
     <div class="card-body">
-        <x-input type="file" name="profile_picture" :title="__('Profile picture')" />
+        <x-input type="file" name="cover" :title="__('Cover')" />
     </div>
 </x-form>
 ```
@@ -63,7 +63,7 @@ Put your fields and buttons inside the default slot. Any extra attribute
 ### Utility form opted out of validation
 
 ```blade
-<x-form id="logout" :action="route('website.logout')" method="POST" class="d-none" disable-validation />
+<x-form id="delete-post" :action="route('posts.destroy', $post)" method="DELETE" class="d-none" disable-validation />
 ```
 
 ## Related
