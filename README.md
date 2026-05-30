@@ -17,18 +17,7 @@ a shared foundation of helpers, models, traits, casts, and validation rules:
 
 ## Documentation
 
-Full usage documentation lives in [`docs/`](docs) (a VitePress site). To run it
-locally:
-
-```bash
-cd docs
-npm install
-npm run docs:dev      # serve with hot reload
-npm run docs:build    # build the static site
-```
-
-Start with the [Introduction](docs/getting-started/introduction.md) and
-[Installation](docs/getting-started/installation.md) guides.
+Full usage documentation lives in [`docs/`](docs).
 
 ## Testing
 

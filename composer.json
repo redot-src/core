@@ -29,16 +29,16 @@
     },
     "autoload": {
         "psr-4": {
-            "Redot\\": "src/",
-            "Redot\\Auth\\": "src/packages/auth/src",
-            "Redot\\Sidebar\\": "src/packages/sidebar/src",
-            "Redot\\Toastify\\": "src/packages/toastify/src",
-            "Redot\\Datatables\\": "src/packages/datatables/src",
-            "Redot\\LangExtractor\\": "src/packages/lang-extractor/src"
+            "Redot\\": "src/Foundation/src",
+            "Redot\\Auth\\": "src/Auth/src",
+            "Redot\\Sidebar\\": "src/Sidebar/src",
+            "Redot\\Toastify\\": "src/Toastify/src",
+            "Redot\\Datatables\\": "src/Datatables/src",
+            "Redot\\LangExtractor\\": "src/LangExtractor/src"
         },
         "files": [
-            "src/packages/toastify/src/helpers.php",
-            "src/helpers.php"
+            "src/Toastify/src/helpers.php",
+            "src/Foundation/src/helpers.php"
         ]
     },
     "autoload-dev": {

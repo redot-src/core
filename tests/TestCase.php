@@ -69,6 +69,6 @@ abstract class TestCase extends Orchestra
      */
     protected function defineDatabaseMigrations(): void
     {
-        $this->loadMigrationsFrom(__DIR__ . '/../database/migrations');
+        $this->loadMigrationsFrom(dirname(__DIR__) . '/src/Foundation/database/migrations');
     }
 }
