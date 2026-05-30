@@ -85,7 +85,7 @@ class LangExtractor
 
         $ignore = count($ignore) > 0 ? '(?!' . implode('|', $ignore) . ')' : '';
 
-        return '/(?:' . implode('|', $functions) . ")\((['\"])(?<translation>{$ignore}(?:[^']|\\\')+?)(?<!\\\\)\\1/s";
+        return '/(?:' . implode('|', $functions) . ")\s*\(\s*(['\"])(?<translation>{$ignore}(?:\\\\.|(?!\\1).)+?)(?<!\\\\)\\1/s";
     }
 
     /**
@@ -99,18 +99,43 @@ class LangExtractor
         $files->in($this->directories)->name(array_map(fn ($extension) => '*.' . $extension, $this->extensions));
 
         foreach ($files as $file) {
-            preg_match_all($this->pattern, $file->getContents(), $matches);
-
-            $translations = $translations->merge($matches['translation']);
+            $translations = $translations->merge($this->extractMatchesFromString($file->getContents()));
         }
 
-        $replacements = ['\"' => '"', '\\\'' => '\''];
-        $translations = $translations->map(fn ($translation) => trim(strtr($translation, $replacements)));
-
-        $this->translations = $translations->filter()->unique(strict: true)->values()->toArray();
-        $this->translations = array_combine($this->translations, $this->translations);
+        $this->translations = $this->formatTranslations($translations->all());
 
         return $this;
+    }
+
+    /**
+     * Get all translations from the given string.
+     */
+    public function extractFromString(string $contents): array
+    {
+        return $this->formatTranslations($this->extractMatchesFromString($contents));
+    }
+
+    /**
+     * Match raw translation strings from the given string.
+     */
+    protected function extractMatchesFromString(string $contents): array
+    {
+        preg_match_all($this->pattern, $contents, $matches);
+
+        return $matches['translation'];
+    }
+
+    /**
+     * Format matched translations into language file entries.
+     */
+    protected function formatTranslations(array $translations): array
+    {
+        $replacements = ['\"' => '"', '\\\'' => '\''];
+        $translations = collect($translations)->map(fn ($translation) => trim(strtr($translation, $replacements)));
+
+        $translations = $translations->filter()->unique(strict: true)->values()->toArray();
+
+        return array_combine($translations, $translations) ?: [];
     }
 
     /**
