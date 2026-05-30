@@ -3,10 +3,22 @@ import { defineConfig } from 'vitepress';
 export default defineConfig({
     srcDir: 'content',
     lang: 'en-US',
-    title: 'Redot Core',
-    description: 'Developer documentation for the redot/core Laravel package and the Redot Dashboard platform.',
+    title: 'Redot Documentation',
+    description:
+        'Developer documentation for building Laravel admin dashboards with Redot.',
     cleanUrls: true,
     lastUpdated: true,
+    head: [
+        ['link', { rel: 'preconnect', href: 'https://fonts.googleapis.com' }],
+        ['link', { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossorigin: '' }],
+        [
+            'link',
+            {
+                rel: 'stylesheet',
+                href: 'https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=JetBrains+Mono:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap',
+            },
+        ],
+    ],
     vite: {
         publicDir: '../public',
     },
@@ -21,12 +33,18 @@ export default defineConfig({
             { text: 'Packages', link: '/packages/auth/overview' },
             { text: 'Frontend', link: '/frontend/asset-system' },
             { text: 'Components', link: '/components/overview' },
+            { text: 'redot.dev', link: 'https://redot.dev' },
         ],
         search: { provider: 'local' },
         outline: { level: [2, 3], label: 'On This Page' },
-        socialLinks: [{ icon: 'github', link: 'https://github.com/redot-src' }],
+        editLink: {
+            pattern: 'https://github.com/redot-src/core/edit/master/docs/content/:path',
+            text: 'Edit on GitHub',
+        },
+        socialLinks: [{ icon: 'github', link: 'https://github.com/redot-src/core' }],
         footer: {
-            message: 'Proprietary — for use within the Redot Dashboard.',
+            message:
+                'Proprietary — for use within the Redot Dashboard. Product site: redot.dev',
             copyright: `Copyright © ${new Date().getFullYear()} Redot`,
         },
         sidebar: [

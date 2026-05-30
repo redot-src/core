@@ -3,7 +3,7 @@ layout: home
 
 hero:
   text: Redot Dashboard
-  tagline: Usage documentation for building Laravel admin dashboards with redot dashbaord
+  tagline: Production-ready Laravel admin foundation — auth, roles, CRUD, datatables, and Blade conventions for shipping faster.
   actions:
     - theme: brand
       text: Get Started
@@ -11,6 +11,9 @@ hero:
     - theme: alt
       text: Packages
       link: /packages/auth/overview
+    - theme: alt
+      text: Visit redot.dev
+      link: https://redot.dev
 
 features:
   - title: Foundation

@@ -1,0 +1,163 @@
+/**
+ * Redot docs theme — aligned with https://redot.dev
+ * (website.css: --tblr-primary #080808, body #121212, DM Sans; home hero gradient)
+ */
+
+:root {
+    --vp-font-family-base: 'DM Sans', ui-sans-serif, system-ui, sans-serif,
+        'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol';
+    --vp-font-family-mono: 'JetBrains Mono', ui-monospace, 'Menlo', 'Monaco', 'Consolas',
+        'Liberation Mono', 'Courier New', monospace;
+
+    /* Brand (matches --tblr-primary / body on redot.dev) */
+    --vp-c-brand-1: #121212;
+    --vp-c-brand-2: #0a0a0a;
+    --vp-c-brand-3: #080808;
+    --vp-c-brand-soft: rgba(8, 8, 8, 0.08);
+
+    --vp-button-brand-border: transparent;
+    --vp-button-brand-text: var(--vp-c-white);
+    --vp-button-brand-bg: var(--vp-c-brand-3);
+    --vp-button-brand-hover-border: transparent;
+    --vp-button-brand-hover-text: var(--vp-c-white);
+    --vp-button-brand-hover-bg: var(--vp-c-brand-2);
+    --vp-button-brand-active-border: transparent;
+    --vp-button-brand-active-text: var(--vp-c-white);
+    --vp-button-brand-active-bg: var(--vp-c-brand-1);
+
+    /* Home hero: solid title (no gradient text cutout) */
+    --vp-home-hero-name-color: var(--vp-c-text-1);
+    --vp-home-hero-name-background: none;
+    --vp-home-hero-image-background-image: none;
+    --vp-home-hero-image-filter: none;
+
+    --vp-custom-block-tip-border: transparent;
+    --vp-custom-block-tip-text: var(--vp-c-text-1);
+    --vp-custom-block-tip-bg: var(--vp-c-brand-soft);
+    --vp-custom-block-tip-code-bg: var(--vp-c-brand-soft);
+}
+
+.dark {
+    --vp-c-brand-1: #d4d4d8;
+    --vp-c-brand-2: #e4e4e7;
+    --vp-c-brand-3: #f4f4f5;
+    --vp-c-brand-soft: rgba(244, 244, 245, 0.12);
+
+    --vp-button-brand-text: #080808;
+    --vp-button-brand-bg: var(--vp-c-brand-3);
+    --vp-button-brand-hover-text: #080808;
+    --vp-button-brand-hover-bg: var(--vp-c-brand-2);
+    --vp-button-brand-active-text: #080808;
+    --vp-button-brand-active-bg: var(--vp-c-brand-1);
+
+    --vp-home-hero-name-color: var(--vp-c-text-1);
+    --vp-home-hero-name-background: none;
+    --vp-home-hero-image-background-image: none;
+    --vp-home-hero-image-filter: none;
+}
+
+/*
+ * Home: align with VPNavBar (.wrapper padding + .container max-width).
+ * Navbar uses max-width calc(layout - 64px) and 24px/8px (32px from 768px) inset.
+ */
+.VPHome .VPHero .container,
+.VPHome .VPFeatures .container {
+    max-width: calc(var(--vp-layout-max-width) - 64px);
+}
+
+/* Hero: full horizontal width (navbar-aligned), default vertical spacing */
+.VPHome .VPHero {
+    width: 100%;
+    padding-left: 24px;
+    padding-right: 8px;
+}
+
+.VPHome .VPHero .container {
+    width: 100%;
+}
+
+.VPHome .VPHero .main {
+    width: 100%;
+    max-width: none;
+}
+
+.VPHome .VPHero .name,
+.VPHome .VPHero .text,
+.VPHome .VPHero .tagline {
+    width: 100%;
+    max-width: none;
+}
+
+.VPHome .VPFeatures {
+    padding-left: 24px;
+    padding-right: 8px;
+}
+
+@media (min-width: 640px) {
+    .VPHome .VPHero {
+        padding-left: 24px;
+        padding-right: 8px;
+    }
+
+    .VPHome .VPFeatures {
+        padding-left: 24px;
+        padding-right: 8px;
+    }
+}
+
+@media (min-width: 768px) {
+    .VPHome .VPHero {
+        padding-left: 32px;
+        padding-right: 32px;
+    }
+
+    .VPHome .VPFeatures {
+        padding-left: 32px;
+        padding-right: 32px;
+    }
+}
+
+@media (min-width: 960px) {
+    .VPHome .VPHero {
+        padding-left: 32px;
+        padding-right: 32px;
+    }
+
+    .VPHome .VPFeatures {
+        padding-left: 32px;
+        padding-right: 32px;
+    }
+}
+
+.VPHome .VPHero .name.clip {
+    color: var(--vp-c-text-1);
+    background: none;
+    -webkit-text-fill-color: var(--vp-c-text-1);
+    -webkit-background-clip: unset;
+    background-clip: unset;
+}
+
+/* No decorative hero orb / split layout */
+.VPHome .VPHero .image {
+    display: none;
+}
+
+.VPHome .VPHero.has-image .main {
+    width: 100%;
+    max-width: none;
+}
+
+@media (min-width: 960px) {
+    .VPHome .VPHero.has-image .container {
+        flex-direction: column;
+        text-align: left;
+    }
+
+    .VPHome .VPHero.has-image .actions {
+        justify-content: flex-start;
+    }
+}
+
+.DocSearch {
+    --docsearch-primary-color: var(--vp-c-brand-1) !important;
+}
