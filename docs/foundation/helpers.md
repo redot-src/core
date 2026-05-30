@@ -1,339 +1,196 @@
 # Helpers
 
-`redot/core` ships a set of global helper functions (autoloaded via `src/helpers.php`) that cover the most common needs of a Redot dashboard: reading dynamic settings, building permission-aware UI, formatting data, working with assets, and shaping API responses. They are plain global functions in the root namespace, so you can call them anywhere — controllers, Livewire components, Blade views — without importing anything.
+`redot/core` ships a set of global helper functions for the everyday needs of a
+Redot dashboard: reading settings, building permission-aware UI, formatting
+values, working with assets, and shaping API responses. They are plain global
+functions, so you can call them anywhere — controllers, Livewire components, or
+Blade — without importing anything.
 
-## Application & settings
+## Settings
 
-### `setting()`
+- **`setting('key', $default)`** — read an application setting, falling back to
+  the schema default (or your `$default`) when none is stored. Pass `true` as a
+  third argument for an uncached read. Call with no key to get the full map. See
+  [Settings](/foundation/settings) for the full reference.
 
-```php
-function setting(?string $key = null, mixed $default = null, bool $fresh = false): mixed
-```
+  ```blade
+  <x-input name="facebook_pixel_id" :value="setting('facebook_pixel_id')" />
+  ```
 
-Reads a value from the `Redot\Models\Setting` store. With no key it returns the full settings map as a `key => value` array; with a key it delegates to `Setting::get($key, $default, $fresh)`. Pass `$fresh = true` to bypass any cached value.
+- **`app_name()`** — the application name for the current locale (from the
+  translatable `app_name` setting), falling back to `config('app.name')`.
 
-```blade
-<x-input name="facebook_pixel_id" value="{{ setting('facebook_pixel_id') }}" />
-<x-checkboxes name="dashboard_locales[]" :value="setting('dashboard_locales', [])" />
-```
+  ```blade
+  <a href="{{ url('/') }}">{{ app_name() }}</a>
+  ```
 
-```php
-// In a controller
-if (in_array($language->code, setting('website_locales'))) {
-    // ...
-}
-```
+- **`app_url()`** — the application base URL. Mostly used to tell whether a URL
+  is internal or external.
 
-### `app_name()`
+## URLs & routing
 
-```php
-function app_name(): string
-```
+- **`route_allowed('route.name')`** — whether the current admin may access a
+  named route. Use it to show/hide permission-gated UI. Unprotected routes are
+  always allowed; protected ones defer to the gate. See
+  [Datatables](/packages/datatables/overview) for the common use.
 
-Returns the localized application name from the `app_name` setting (keyed by the current locale via `app()->getLocale()`), falling back to `config('app.name')` when the setting has no value for that locale.
+  ```php
+  Action::edit('dashboard.users.edit')->visible(route_allowed('dashboard.users.edit'));
+  ```
 
-```php
-$this->title = app_name();
-```
+- **`url_allowed($url)`** — the URL counterpart to `route_allowed()`. External
+  URLs are always allowed; internal ones resolve to a route name and defer to
+  `route_allowed()`. Handy for conditionally rendering links in Blade.
 
-```blade
-<a href="{{ url('/') }}">{{ app_name() }}</a>
-```
+  ```blade
+  @if ($create && url_allowed($create))
+      <a href="{{ $create }}" class="btn btn-primary">{{ __('Create') }}</a>
+  @endif
+  ```
 
-### `app_url()`
+- **`route_from_url($url)`** — resolve a URL string to its matched route name (or
+  `null` if nothing matches).
 
-```php
-function app_url(): string
-```
+- **`back_or_route('route.name', $params)`** — a safe "go back" URL: the previous
+  page when it belongs to the app, otherwise the named route. Prevents open
+  redirects to external referrers.
 
-Returns the application base URL via `URL::to('/')`. Used internally by [`url_allowed()`](#url-allowed) to decide whether a URL is external.
+  ```blade
+  <a href="{{ back_or_route($back, $backParams) }}" class="btn">{{ __('Back') }}</a>
+  ```
 
-## Routing & authorization
+## Requests & API responses
 
-### `route_from_url()`
+- **`throw_api_exception($e)`** — turn any caught exception into the standard JSON
+  error envelope (mapping common exceptions to the right HTTP status). You rarely
+  call this directly — it is wired in as the global JSON exception renderer. See
+  [Controllers & API Responses](/foundation/controllers-and-responses).
 
-```php
-function route_from_url(string $url): ?string
-```
+  ```php
+  try {
+      // ...
+  } catch (Throwable $e) {
+      return throw_api_exception($e);
+  }
+  ```
 
-Resolves a URL string to its matched route **name**, or `null` if no named route matches (or matching throws). Internally builds a request with `Request::create($url)` and matches it against the registered routes.
+- **`is_mobile()` / `is_desktop()`** — detect the device from the request's
+  user agent. Both return `false` safely when there is no request (e.g. console).
 
-### `route_allowed()`
-
-```php
-function route_allowed(string $route, string $guard = 'admins'): bool
-```
-
-Checks whether the authenticated user of the given guard may access a route. Returns `false` when nobody is authenticated. The result is cached forever per `permission.{guard}.{userId}.{route}` key. A route is considered allowed when **no `Spatie\Permission\Models\Permission` exists with that name** (i.e. the route is unprotected) **or** when `Gate::allows($route)` passes.
-
-```php
-Action::edit('dashboard.users.edit')->visible(route_allowed('dashboard.users.edit'));
-Action::delete('dashboard.users.destroy')->visible(route_allowed('dashboard.users.destroy'));
-```
-
-See [Datatables](/packages/datatables/overview) for where this is most commonly used.
-
-### `url_allowed()`
-
-```php
-function url_allowed(string $url, string $guard = 'admins'): bool
-```
-
-The URL-based counterpart to `route_allowed()`. External URLs (those that do not contain the app host) are always allowed; otherwise it resolves the URL to a route name with `route_from_url()` and defers to `route_allowed()`.
-
-```blade
-@if ($create && url_allowed($create))
-    <a href="{{ $create }}" class="btn btn-primary">{{ __('Create') }}</a>
-@endif
-```
-
-> Note: `route_allowed()` caches results with `cache()->rememberForever(...)`, so permission changes for a user are not reflected until that cache key is invalidated.
-
-## API responses
-
-### `throw_api_exception()`
-
-```php
-function throw_api_exception(Throwable $e): JsonResponse
-```
-
-Converts any throwable into a uniform JSON error response. It maps common exceptions to HTTP status codes — `HttpException` → its status, `ModelNotFoundException` → 404, `ValidationException` → 422, `AuthenticationException` → 401, `AuthorizationException` → 403, everything else → 500 — and pairs each code with a standard reason phrase.
-
-The response body is always:
-
-```json
-{
-    "code": 422,
-    "success": false,
-    "message": "...",
-    "payload": {}
-}
-```
-
-Behavior details:
-
-- For client errors (`code < 500`) or when `config('app.debug')` is true, `message` is the exception message (falling back to the standard phrase). For server errors in production it is the generic phrase only.
-- `payload` carries validation errors for `ValidationException`; in debug mode it carries `message`, `file`, `line`, and `trace`; otherwise it is empty.
-
-```php
-try {
-    // ...
-} catch (Throwable $e) {
-    return throw_api_exception($e);
-}
-```
+  ```php
+  if (is_mobile()) {
+      // serve a compact layout
+  }
+  ```
 
 ## Formatting & display
 
-### `format_phone()`
+- **`format_phone($phone, $country)`** — normalize a phone number to E.164 form.
+  The default region is `EG`. Validate the input first (with the
+  [`Phone` rule](/foundation/rules)) — an unparseable string throws.
 
-```php
-function format_phone(string $phone, string $country = 'EG'): string
-```
+  ```php
+  format_phone('01001234567');        // +201001234567
+  format_phone('2025550123', 'US');   // +12025550123
+  ```
 
-Parses and normalizes a phone number to E.164 format using `libphonenumber`. The default region is `EG`.
+- **`switch_badge($value, $true, $false)`** — render a green/red yes/no badge for
+  a truthy/falsy value. Returns raw HTML, so echo it unescaped.
 
-```php
-format_phone('01001234567');        // +201001234567
-format_phone('2025550123', 'US');   // +12025550123
-```
+  ```blade
+  {!! switch_badge($user->is_active) !!}
+  {!! switch_badge($order->paid, __('Paid'), __('Unpaid')) !!}
+  ```
 
-### `switch_badge()`
+- **`no_content()`** — a muted "No content" placeholder for empty rich-text
+  fields. Echo it raw.
 
-```php
-function switch_badge(mixed $value, ?string $true = null, ?string $false = null): string
-```
+  ```blade
+  {!! $memo->content ?: no_content() !!}
+  ```
 
-Returns an HTML badge reflecting a truthy/falsy value — a green `badge bg-success-lt` for truthy, a red `badge bg-danger-lt` for falsy. Labels default to the translated `Yes` / `No`. The return value is raw HTML, so render it unescaped (`{!! !!}`).
+- **`collect_ellipsis($items, $limit, $ellipsis)`** — take the first few items of
+  a collection and, when there are more, append a translated "and N more" marker.
+  The `:count` placeholder receives the number of hidden items.
 
-```php
-switch_badge($user->is_active);
-switch_badge($order->paid, __('Paid'), __('Unpaid'));
-```
+  ```php
+  collect_ellipsis($tags, 2, ':count more')->implode(', ');
+  // tag-a, tag-b, 3 more
+  ```
 
-### `no_content()`
+## Files & images
 
-```php
-function no_content(): string
-```
+- **`is_image($path)`** — whether a file is an image (by MIME type). Takes a
+  filesystem path, not a URL.
 
-Returns a muted "No content" paragraph (`<p class="text-muted">...</p>`), translated via `__()`. Handy as a placeholder for empty rich-text fields.
+  ```php
+  if (is_image(public_path($path))) {
+      // ...
+  }
+  ```
 
-```blade
-{!! $memo->content ?: no_content() !!}
-```
+- **`create_thumbnail($path, $width, $height, $quality)`** — generate a thumbnail
+  next to an image (in a `thumbnails/` subfolder) and return its public-relative
+  path. Keeps aspect ratio, preserves PNG/GIF transparency, and reuses an existing
+  thumbnail when it is newer than the source. Defaults to 100×100.
 
-### `collect_ellipsis()`
+  ```php
+  $thumb = create_thumbnail(public_path($path));            // 100x100
+  $thumb = create_thumbnail(public_path($path), 200, 200, 90);
+  ```
 
-```php
-function collect_ellipsis($value = [], int $limit = 3, ?string $ellipsis = '...'): Collection
-```
+- **`parse_csv($csv, $separator, $callback)`** — turn a comma-separated string
+  (or array) into a clean, trimmed, re-indexed array with empties removed.
 
-Takes the first `$limit` items of a collection/array and, when there are more, appends a translated ellipsis string. The `$ellipsis` text is passed through `__()` with a `count` replacement equal to the number of hidden items, so a translation key like `:count more` receives the remaining count.
-
-```php
-collect_ellipsis($tags, 2, ':count more')->implode(', ');
-// tag-a, tag-b, 3 more
-```
+  ```php
+  parse_csv('a, b, , c'); // ['a', 'b', 'c']
+  ```
 
 ## Assets & build
 
-### `hashed_asset()`
+See the [Asset & Init System](/frontend/asset-system) for the bigger picture.
 
-```php
-function hashed_asset(string $path, ?bool $secure = null): string
-```
+- **`hashed_asset($path)`** — a public asset URL with a cache-busting `?v=`
+  suffix derived from the file's modification time.
 
-Returns the public asset URL with a cache-busting `?v=` query string derived from `md5(filemtime(...))` of the file in `public_path($path)`. If the file does not exist, the plain `asset()` URL is returned with no version suffix.
+  ```blade
+  <link rel="stylesheet" href="{{ hashed_asset('/assets/css/app.css') }}" />
+  ```
 
-```blade
-<link rel="stylesheet" href="{{ hashed_asset('/assets/css/app.css') }}" />
-<script src="{{ hashed_asset('assets/js/dashboard.js') }}"></script>
-```
+- **`dist_path($suffix)`** — the path to the build output directory, optionally
+  with a file appended.
 
-### `dist_path()`
+  ```php
+  dist_path('init.js'); // .../public/assets/dist/init.js
+  ```
 
-```php
-function dist_path(?string $suffix = null): string
-```
+- **`trigger_dependencies_build()`** — clear the build output so front-end
+  dependencies are regenerated on the next request.
 
-Returns the path to the build/distribution directory, `public_path('assets/dist')`, optionally with a `/$suffix` appended.
+## Querying & components
 
-```php
-dist_path();                 // .../public/assets/dist
-dist_path('init.js');        // .../public/assets/dist/init.js
-```
+- **`search_model($query, $columns, $term)`** — apply a grouped `LIKE` search
+  across columns onto a query. Dotted columns (e.g. `role.name`) search the
+  related model. An empty term leaves the query untouched.
 
-### `trigger_dependencies_build()`
+  ```php
+  search_model(User::query(), ['name', 'email', 'role.name'], 'admin');
+  ```
 
-```php
-function trigger_dependencies_build(): void
-```
+- **`component('name', $data)`** — render a Blade component to a string from PHP,
+  outside the usual `<x-...>` syntax. Useful inside Datatable column getters.
 
-Deletes the entire `dist_path()` directory (via `File::deleteDirectories()`), forcing the front-end dependency build artifacts to be regenerated on next request.
+  ```php
+  ->getter(fn ($value, Admin $admin) => component('avatar', [
+      'name' => $admin->name,
+      'image' => $admin->profile_picture,
+  ]))
+  ```
 
-## Images
+## Related
 
-### `is_image()`
-
-```php
-function is_image(string $path): bool
-```
-
-Returns `true` when the file's MIME type (from `mime_content_type()`) starts with `image/`. Expects a real filesystem path.
-
-```php
-if ($config->thumbnail && is_image(public_path($path))) {
-    // ...
-}
-```
-
-### `create_thumbnail()`
-
-```php
-function create_thumbnail(string $path, int $width = 100, int $height = 100, int $quality = 85): ?string
-```
-
-Generates a thumbnail next to the original image inside a `thumbnails/` subdirectory, named `{filename}-thumb.{ext}`, and returns its path **relative to `public_path()`**. Key behaviors:
-
-- Throws `InvalidArgumentException` if the file is missing, is not an image, or is an unsupported type, and `RuntimeException` on resource/resize/save failures.
-- Supports JPEG, PNG, GIF, and WebP. PNG/GIF transparency is preserved.
-- Dimensions are clamped to fit within `$width` × `$height` while keeping aspect ratio.
-- Returns the cached thumbnail when one already exists and is newer than the source (no regeneration).
-
-```php
-$thumbnail = create_thumbnail(public_path($path));        // 100x100
-$thumbnail = create_thumbnail(public_path($path), 200, 200, 90);
-```
-
-## Data parsing
-
-### `parse_csv()`
-
-```php
-function parse_csv(string|array $csv, ?string $separator = ',', ?callable $callback = null): array
-```
-
-Normalizes a comma-separated string (or array) into a clean, re-indexed array. Each item is mapped through `$callback` (defaulting to `trim`), then empty values are filtered out and keys reset with `array_values()`.
-
-```php
-$this->value = parse_csv($this->value);             // "a, b, c" => ['a', 'b', 'c']
-$acceptedTypes = parse_csv($accept);
-$ids = array_values(array_filter(parse_csv($request->query('ids')), fn ($id) => filled($id)));
-```
-
-## Querying
-
-### `search_model()`
-
-```php
-function search_model(Builder|QueryBuilder $query, array $columns = [], ?string $term = null): Builder|QueryBuilder
-```
-
-Applies a grouped `LIKE` search across the given columns. The term is trimmed; an empty term returns the query untouched. Columns containing a dot (e.g. `role.name`) are treated as relations: when the query is an Eloquent `Builder` and the model exposes that relation method, it uses `orWhereHas()`; otherwise it falls back to a plain `orWhere()` on the column after the last dot. All conditions are wrapped in a single `where(fn ...)` group so they don't clobber existing constraints.
-
-```php
-$query = search_model($query, $columns, sprintf('{%s}', $term));
-```
-
-```php
-search_model(User::query(), ['name', 'email', 'role.name'], 'admin');
-```
-
-## Components
-
-### `component()`
-
-```php
-function component(string $name, array $data = []): string|View
-```
-
-Renders a Blade component to a string (or `View`) outside the normal `<x-...>` syntax — useful inside Datatable column getters and other PHP contexts. Resolution order:
-
-1. If `$name` is already a class name (`class_exists`), use it directly.
-2. Otherwise build a class name under `{AppNamespace}View\Components\` from the dotted/spaced name (e.g. `user.avatar` → `App\View\Components\User\Avatar`).
-3. If a matching class exists, instantiate it with `$data` and render via `Blade::renderComponent()`.
-4. If no class matches, fall back to rendering the inline view `components.{name}` with `$data`.
-
-```php
-->getter(fn ($value, Admin $admin) => component('avatar', [
-    'name' => $admin->name,
-    'image' => $admin->profile_picture,
-]))
-```
-
-## Navigation
-
-### `back_or_route()`
-
-```php
-function back_or_route(string $route, mixed $parameters = [], bool $absolute = true): string
-```
-
-Returns a safe "go back" URL: the previous URL when it exists, differs from the current URL, and belongs to the app (starts with `config('app.url')`, falling back to `request()->root()`); otherwise the named `route($route, $parameters, $absolute)`. This prevents open redirects to external referrers.
-
-```blade
-<a href="{{ back_or_route($back, $backParams) }}" class="btn">{{ __('Back') }}</a>
-```
-
-## Device detection
-
-### `is_mobile()` / `is_desktop()`
-
-```php
-function is_mobile(): bool
-function is_desktop(): bool
-```
-
-`is_mobile()` inspects the request's `User-Agent` against a mobile-device regex. It returns `false` safely when no request is bound (e.g. console) or the user agent is empty. `is_desktop()` is simply the negation of `is_mobile()`.
-
-```php
-if (is_mobile()) {
-    // serve a compact layout
-}
-```
-
-## Related pages
-
-- [Setting model](/foundation/settings) — the backing store for `setting()` and `app_name()`.
-- [Datatables](/packages/datatables/overview) — heavy consumer of `route_allowed()` and `component()`.
+- [Settings](/foundation/settings) — the store behind `setting()` and `app_name()`.
+- [Controllers & API Responses](/foundation/controllers-and-responses) — where
+  `throw_api_exception()` is used.
+- [Datatables](/packages/datatables/overview) — heavy consumer of `route_allowed()`
+  and `component()`.
