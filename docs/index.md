@@ -2,9 +2,9 @@
 layout: home
 
 hero:
-  name: Redot Core
-  text: Laravel package documentation
-  tagline: A reusable redot/core Laravel package bundling five focused packages — Auth, Datatables, Sidebar, Toastify, and Lang Extractor — on top of a shared foundation of helpers, models, traits, casts, and rules.
+  name: Redot
+  text: Dashboard documentation
+  tagline: Usage documentation for the Redot Dashboard with the redot/core package installed — building admin and website screens from five bundled packages (Auth, Datatables, Sidebar, Toastify, and Lang Extractor) on top of a shared foundation of helpers, models, traits, casts, and rules.
   actions:
     - theme: brand
       text: Get Started
