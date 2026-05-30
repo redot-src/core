@@ -2,9 +2,8 @@
 layout: home
 
 hero:
-  name: Redot
-  text: Dashboard documentation
-  tagline: Usage documentation for the Redot Dashboard with the redot/core package installed — building admin and website screens from five bundled packages (Auth, Datatables, Sidebar, Toastify, and Lang Extractor) on top of a shared foundation of helpers, models, traits, casts, and rules.
+  text: Redot Dashboard
+  tagline: Usage documentation for building Laravel admin dashboards with redot dashbaord
   actions:
     - theme: brand
       text: Get Started

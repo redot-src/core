@@ -1,210 +1,212 @@
-import { defineConfig } from 'vitepress'
+import { defineConfig } from 'vitepress';
 
 export default defineConfig({
-  lang: 'en-US',
-  title: 'Redot Core',
-  description: 'Developer documentation for the redot/core Laravel package and the Redot Dashboard platform.',
-  cleanUrls: true,
-  lastUpdated: true,
-  themeConfig: {
-    siteTitle: false,
-    logo: {
-      light: '/logo-light.svg',
-      dark: '/logo-dark.svg'
+    srcDir: 'content',
+    lang: 'en-US',
+    title: 'Redot Core',
+    description: 'Developer documentation for the redot/core Laravel package and the Redot Dashboard platform.',
+    cleanUrls: true,
+    lastUpdated: true,
+    vite: {
+        publicDir: '../public',
     },
-    nav: [
-      { text: 'Guide', link: '/getting-started/introduction' },
-      { text: 'Packages', link: '/packages/auth/overview' },
-      { text: 'Frontend', link: '/frontend/asset-system' },
-      { text: 'Components', link: '/components/overview' }
-    ],
-    search: { provider: 'local' },
-    outline: { level: [2, 3], label: 'On This Page' },
-    socialLinks: [
-      { icon: 'github', link: 'https://github.com/redot-src' }
-    ],
-    footer: {
-      message: 'Proprietary — for use within the Redot Dashboard.',
-      copyright: `Copyright © ${new Date().getFullYear()} Redot`
+    themeConfig: {
+        siteTitle: false,
+        logo: {
+            light: '/logo-light.svg',
+            dark: '/logo-dark.svg',
+        },
+        nav: [
+            { text: 'Guide', link: '/getting-started/introduction' },
+            { text: 'Packages', link: '/packages/auth/overview' },
+            { text: 'Frontend', link: '/frontend/asset-system' },
+            { text: 'Components', link: '/components/overview' },
+        ],
+        search: { provider: 'local' },
+        outline: { level: [2, 3], label: 'On This Page' },
+        socialLinks: [{ icon: 'github', link: 'https://github.com/redot-src' }],
+        footer: {
+            message: 'Proprietary — for use within the Redot Dashboard.',
+            copyright: `Copyright © ${new Date().getFullYear()} Redot`,
+        },
+        sidebar: [
+            {
+                text: 'Getting Started',
+                collapsed: false,
+                items: [
+                    { text: 'Introduction', link: '/getting-started/introduction' },
+                    { text: 'Installation & Publishing', link: '/getting-started/installation' },
+                    { text: 'Project Structure', link: '/getting-started/project-structure' },
+                ],
+            },
+            {
+                text: 'Architecture',
+                collapsed: false,
+                items: [
+                    { text: 'Service Provider', link: '/architecture/service-provider' },
+                    { text: 'Configuration', link: '/architecture/configuration' },
+                    { text: 'Runtime & Dependencies', link: '/architecture/runtime-and-dependencies' },
+                ],
+            },
+            {
+                text: 'Foundation',
+                collapsed: false,
+                items: [
+                    { text: 'Helpers', link: '/foundation/helpers' },
+                    { text: 'Settings', link: '/foundation/settings' },
+                    { text: 'Localization', link: '/foundation/localization' },
+                    { text: 'Models', link: '/foundation/models' },
+                    { text: 'Controllers & Responses', link: '/foundation/controllers-and-responses' },
+                    { text: 'Middleware', link: '/foundation/middleware' },
+                    { text: 'Casts', link: '/foundation/casts' },
+                    { text: 'Validation Rules', link: '/foundation/rules' },
+                    { text: 'Jobs', link: '/foundation/jobs' },
+                    { text: 'Notifications', link: '/foundation/notifications' },
+                    { text: 'Query Filters', link: '/foundation/query-filters' },
+                    {
+                        text: 'Traits',
+                        collapsed: true,
+                        items: [
+                            { text: 'CanUploadFile', link: '/foundation/traits/can-upload-file' },
+                            { text: 'RespondAsApi', link: '/foundation/traits/respond-as-api' },
+                            { text: 'Taggable', link: '/foundation/traits/taggable' },
+                            { text: 'UserAuditable', link: '/foundation/traits/user-auditable' },
+                        ],
+                    },
+                ],
+            },
+            {
+                text: 'Commands',
+                collapsed: false,
+                items: [
+                    { text: 'Artisan Commands', link: '/commands/overview' },
+                    { text: 'Scaffolding & Stubs', link: '/commands/scaffolding-and-stubs' },
+                ],
+            },
+            {
+                text: 'Packages',
+                collapsed: false,
+                items: [
+                    {
+                        text: 'Auth',
+                        collapsed: true,
+                        items: [
+                            { text: 'Overview', link: '/packages/auth/overview' },
+                            { text: 'Actions', link: '/packages/auth/actions' },
+                            { text: 'Routes', link: '/packages/auth/routes' },
+                            { text: 'Customization', link: '/packages/auth/customization' },
+                        ],
+                    },
+                    {
+                        text: 'Datatables',
+                        collapsed: true,
+                        items: [
+                            { text: 'Overview', link: '/packages/datatables/overview' },
+                            { text: 'Columns', link: '/packages/datatables/columns' },
+                            { text: 'Filters', link: '/packages/datatables/filters' },
+                            { text: 'Actions', link: '/packages/datatables/actions' },
+                            { text: 'Export (PDF)', link: '/packages/datatables/export' },
+                            { text: 'Frontend & Scaffolding', link: '/packages/datatables/frontend' },
+                        ],
+                    },
+                    { text: 'Sidebar', link: '/packages/sidebar' },
+                    { text: 'Toastify', link: '/packages/toastify' },
+                    { text: 'Lang Extractor', link: '/packages/lang-extractor' },
+                ],
+            },
+            {
+                text: 'Frontend',
+                collapsed: false,
+                items: [
+                    { text: 'Asset & Init System', link: '/frontend/asset-system' },
+                    { text: 'Theming', link: '/frontend/theming' },
+                    { text: 'Stylesheets', link: '/frontend/stylesheets' },
+                    { text: 'JS Translations', link: '/frontend/translations' },
+                    { text: 'Service Worker', link: '/frontend/service-worker' },
+                    {
+                        text: 'Redot Plugins',
+                        collapsed: true,
+                        items: [
+                            { text: 'RedotIconPicker', link: '/frontend/plugins/redot-icon-picker' },
+                            { text: 'RedotRepeater', link: '/frontend/plugins/redot-repeater' },
+                            { text: 'RedotUploader', link: '/frontend/plugins/redot-uploader' },
+                            { text: 'RedotValidator', link: '/frontend/plugins/redot-validator' },
+                            { text: 'RedotValidatorRules', link: '/frontend/plugins/redot-validator-rules' },
+                            { text: 'RedotVisibility', link: '/frontend/plugins/redot-visibility' },
+                        ],
+                    },
+                    {
+                        text: 'Initializers',
+                        collapsed: true,
+                        items: [
+                            { text: 'Coloris', link: '/frontend/inits/coloris' },
+                            { text: 'Icon Picker', link: '/frontend/inits/icon-picker' },
+                            { text: 'Query Builder', link: '/frontend/inits/query-builder' },
+                            { text: 'Repeater', link: '/frontend/inits/repeater' },
+                            { text: 'Sortable', link: '/frontend/inits/sortable' },
+                            { text: 'Tempus Dominus', link: '/frontend/inits/tempus-dominus' },
+                            { text: 'TinyMCE', link: '/frontend/inits/tinymce' },
+                            { text: 'Tom Select', link: '/frontend/inits/tomselect' },
+                            { text: 'Turnstile', link: '/frontend/inits/turnstile' },
+                            { text: 'Uploader', link: '/frontend/inits/uploader' },
+                        ],
+                    },
+                ],
+            },
+            {
+                text: 'Components',
+                collapsed: false,
+                items: [
+                    { text: 'Overview', link: '/components/overview' },
+                    { text: 'Alert', link: '/components/alert' },
+                    { text: 'Attachments', link: '/components/attachments' },
+                    { text: 'Avatar', link: '/components/avatar' },
+                    { text: 'Captcha', link: '/components/captcha' },
+                    { text: 'Checkboxes', link: '/components/checkboxes' },
+                    { text: 'Color Picker', link: '/components/color-picker' },
+                    { text: 'Countries', link: '/components/countries' },
+                    { text: 'Date Picker', link: '/components/date-picker' },
+                    { text: 'Empty', link: '/components/empty' },
+                    { text: 'Facebook Pixel', link: '/components/facebook-pixel' },
+                    { text: 'File Hint', link: '/components/file-hint' },
+                    { text: 'Flag', link: '/components/flag' },
+                    { text: 'Form', link: '/components/form' },
+                    { text: 'Form Card', link: '/components/form-card' },
+                    { text: 'Google Analytics', link: '/components/google-analytics' },
+                    { text: 'Hint', link: '/components/hint' },
+                    { text: 'Icon', link: '/components/icon' },
+                    { text: 'Icon Picker', link: '/components/icon-picker' },
+                    { text: 'Input', link: '/components/input' },
+                    { text: 'Label', link: '/components/label' },
+                    { text: 'Logo', link: '/components/logo' },
+                    { text: 'Page Header', link: '/components/page-header' },
+                    { text: 'Page Loader', link: '/components/page-loader' },
+                    { text: 'Pagination', link: '/components/pagination' },
+                    { text: 'Query Builder', link: '/components/query-builder' },
+                    { text: 'Radios', link: '/components/radios' },
+                    { text: 'Radios Colored', link: '/components/radios-colored' },
+                    { text: 'Rating', link: '/components/rating' },
+                    { text: 'Repeater', link: '/components/repeater' },
+                    { text: 'Repeater Card', link: '/components/repeater-card' },
+                    { text: 'Rich Editor', link: '/components/rich-editor' },
+                    { text: 'Select', link: '/components/select' },
+                    { text: 'Social Icon', link: '/components/social-icon' },
+                    { text: 'Status', link: '/components/status' },
+                    { text: 'Textarea', link: '/components/textarea' },
+                    { text: 'Toggle', link: '/components/toggle' },
+                    { text: 'Translatable', link: '/components/translatable' },
+                    { text: 'Translatable Switcher', link: '/components/translatable-switcher' },
+                    { text: 'Uploader', link: '/components/uploader' },
+                ],
+            },
+            {
+                text: 'Layouts & Templates',
+                collapsed: false,
+                items: [
+                    { text: 'Layouts', link: '/layouts/overview' },
+                    { text: 'Templates', link: '/layouts/templates' },
+                ],
+            },
+        ],
     },
-    sidebar: [
-      {
-        text: 'Getting Started',
-        collapsed: false,
-        items: [
-          { text: 'Introduction', link: '/getting-started/introduction' },
-          { text: 'Installation & Publishing', link: '/getting-started/installation' },
-          { text: 'Project Structure', link: '/getting-started/project-structure' }
-        ]
-      },
-      {
-        text: 'Architecture',
-        collapsed: false,
-        items: [
-          { text: 'Service Provider', link: '/architecture/service-provider' },
-          { text: 'Configuration', link: '/architecture/configuration' },
-          { text: 'Runtime & Dependencies', link: '/architecture/runtime-and-dependencies' }
-        ]
-      },
-      {
-        text: 'Foundation',
-        collapsed: false,
-        items: [
-          { text: 'Helpers', link: '/foundation/helpers' },
-          { text: 'Settings', link: '/foundation/settings' },
-          { text: 'Localization', link: '/foundation/localization' },
-          { text: 'Models', link: '/foundation/models' },
-          { text: 'Controllers & Responses', link: '/foundation/controllers-and-responses' },
-          { text: 'Middleware', link: '/foundation/middleware' },
-          { text: 'Casts', link: '/foundation/casts' },
-          { text: 'Validation Rules', link: '/foundation/rules' },
-          { text: 'Jobs', link: '/foundation/jobs' },
-          { text: 'Notifications', link: '/foundation/notifications' },
-          { text: 'Query Filters', link: '/foundation/query-filters' },
-          {
-            text: 'Traits',
-            collapsed: true,
-            items: [
-              { text: 'CanUploadFile', link: '/foundation/traits/can-upload-file' },
-              { text: 'RespondAsApi', link: '/foundation/traits/respond-as-api' },
-              { text: 'Taggable', link: '/foundation/traits/taggable' },
-              { text: 'UserAuditable', link: '/foundation/traits/user-auditable' }
-            ]
-          }
-        ]
-      },
-      {
-        text: 'Commands',
-        collapsed: false,
-        items: [
-          { text: 'Artisan Commands', link: '/commands/overview' },
-          { text: 'Scaffolding & Stubs', link: '/commands/scaffolding-and-stubs' }
-        ]
-      },
-      {
-        text: 'Packages',
-        collapsed: false,
-        items: [
-          {
-            text: 'Auth',
-            collapsed: true,
-            items: [
-              { text: 'Overview', link: '/packages/auth/overview' },
-              { text: 'Actions', link: '/packages/auth/actions' },
-              { text: 'Routes', link: '/packages/auth/routes' },
-              { text: 'Customization', link: '/packages/auth/customization' }
-            ]
-          },
-          {
-            text: 'Datatables',
-            collapsed: true,
-            items: [
-              { text: 'Overview', link: '/packages/datatables/overview' },
-              { text: 'Columns', link: '/packages/datatables/columns' },
-              { text: 'Filters', link: '/packages/datatables/filters' },
-              { text: 'Actions', link: '/packages/datatables/actions' },
-              { text: 'Export (PDF)', link: '/packages/datatables/export' },
-              { text: 'Frontend & Scaffolding', link: '/packages/datatables/frontend' }
-            ]
-          },
-          { text: 'Sidebar', link: '/packages/sidebar' },
-          { text: 'Toastify', link: '/packages/toastify' },
-          { text: 'Lang Extractor', link: '/packages/lang-extractor' }
-        ]
-      },
-      {
-        text: 'Frontend',
-        collapsed: false,
-        items: [
-          { text: 'Asset & Init System', link: '/frontend/asset-system' },
-          { text: 'Theming', link: '/frontend/theming' },
-          { text: 'Stylesheets', link: '/frontend/stylesheets' },
-          { text: 'JS Translations', link: '/frontend/translations' },
-          { text: 'Service Worker', link: '/frontend/service-worker' },
-          {
-            text: 'Redot Plugins',
-            collapsed: true,
-            items: [
-              { text: 'RedotIconPicker', link: '/frontend/plugins/redot-icon-picker' },
-              { text: 'RedotRepeater', link: '/frontend/plugins/redot-repeater' },
-              { text: 'RedotUploader', link: '/frontend/plugins/redot-uploader' },
-              { text: 'RedotValidator', link: '/frontend/plugins/redot-validator' },
-              { text: 'RedotValidatorRules', link: '/frontend/plugins/redot-validator-rules' },
-              { text: 'RedotVisibility', link: '/frontend/plugins/redot-visibility' }
-            ]
-          },
-          {
-            text: 'Initializers',
-            collapsed: true,
-            items: [
-              { text: 'Coloris', link: '/frontend/inits/coloris' },
-              { text: 'Icon Picker', link: '/frontend/inits/icon-picker' },
-              { text: 'Query Builder', link: '/frontend/inits/query-builder' },
-              { text: 'Repeater', link: '/frontend/inits/repeater' },
-              { text: 'Sortable', link: '/frontend/inits/sortable' },
-              { text: 'Tempus Dominus', link: '/frontend/inits/tempus-dominus' },
-              { text: 'TinyMCE', link: '/frontend/inits/tinymce' },
-              { text: 'Tom Select', link: '/frontend/inits/tomselect' },
-              { text: 'Turnstile', link: '/frontend/inits/turnstile' },
-              { text: 'Uploader', link: '/frontend/inits/uploader' }
-            ]
-          }
-        ]
-      },
-      {
-        text: 'Components',
-        collapsed: false,
-        items: [
-          { text: 'Overview', link: '/components/overview' },
-          { text: 'Alert', link: '/components/alert' },
-          { text: 'Attachments', link: '/components/attachments' },
-          { text: 'Avatar', link: '/components/avatar' },
-          { text: 'Captcha', link: '/components/captcha' },
-          { text: 'Checkboxes', link: '/components/checkboxes' },
-          { text: 'Color Picker', link: '/components/color-picker' },
-          { text: 'Countries', link: '/components/countries' },
-          { text: 'Date Picker', link: '/components/date-picker' },
-          { text: 'Empty', link: '/components/empty' },
-          { text: 'Facebook Pixel', link: '/components/facebook-pixel' },
-          { text: 'File Hint', link: '/components/file-hint' },
-          { text: 'Flag', link: '/components/flag' },
-          { text: 'Form', link: '/components/form' },
-          { text: 'Form Card', link: '/components/form-card' },
-          { text: 'Google Analytics', link: '/components/google-analytics' },
-          { text: 'Hint', link: '/components/hint' },
-          { text: 'Icon', link: '/components/icon' },
-          { text: 'Icon Picker', link: '/components/icon-picker' },
-          { text: 'Input', link: '/components/input' },
-          { text: 'Label', link: '/components/label' },
-          { text: 'Logo', link: '/components/logo' },
-          { text: 'Page Header', link: '/components/page-header' },
-          { text: 'Page Loader', link: '/components/page-loader' },
-          { text: 'Pagination', link: '/components/pagination' },
-          { text: 'Query Builder', link: '/components/query-builder' },
-          { text: 'Radios', link: '/components/radios' },
-          { text: 'Radios Colored', link: '/components/radios-colored' },
-          { text: 'Rating', link: '/components/rating' },
-          { text: 'Repeater', link: '/components/repeater' },
-          { text: 'Repeater Card', link: '/components/repeater-card' },
-          { text: 'Rich Editor', link: '/components/rich-editor' },
-          { text: 'Select', link: '/components/select' },
-          { text: 'Social Icon', link: '/components/social-icon' },
-          { text: 'Status', link: '/components/status' },
-          { text: 'Textarea', link: '/components/textarea' },
-          { text: 'Toggle', link: '/components/toggle' },
-          { text: 'Translatable', link: '/components/translatable' },
-          { text: 'Translatable Switcher', link: '/components/translatable-switcher' },
-          { text: 'Uploader', link: '/components/uploader' }
-        ]
-      },
-      {
-        text: 'Layouts & Templates',
-        collapsed: false,
-        items: [
-          { text: 'Layouts', link: '/layouts/overview' },
-          { text: 'Templates', link: '/layouts/templates' }
-        ]
-      }
-    ]
-  }
-})
+});

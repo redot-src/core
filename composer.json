@@ -55,6 +55,15 @@
         ],
         "coverage": [
             "XDEBUG_MODE=coverage vendor/bin/pest --coverage"
+        ],
+        "docs:dev": [
+            "npm run docs:dev --prefix docs"
+        ],
+        "docs:build": [
+            "npm run docs:build --prefix docs"
+        ],
+        "docs:preview": [
+            "npm run docs:preview --prefix docs"
         ]
     },
     "extra": {
