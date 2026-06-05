@@ -47,6 +47,7 @@ Chain these onto `Item::make()`:
 - **`url`** — an explicit URL, used as-is. Use this for links that aren't named routes; it wins over `route` for the link itself.
 - **`external`** — mark the link as external so it opens in a new tab.
 - **`children`** — nest items one level deep to render the entry as a dropdown.
+- **`badge`** — show a badge inside the sidebar item. Pass a callback that returns a number; the returned value is rendered as the badge's inner text.
 - **`hidden`** — hide the item. Pass `true` to always hide it, or a callback (receiving the current user) for conditional visibility.
 
 ## Examples
@@ -71,6 +72,18 @@ Item::make()
             ->icon('fa fa-tags')
             ->route('categories.index'),
     ]);
+```
+
+### Showing a badge
+
+Use `badge` to show a numeric count inside a sidebar item, such as pending posts, unread messages, or other dashboard counters. The method accepts a callback, and the callback should return the number to display as the badge text:
+
+```php
+Item::make()
+    ->title(__('Posts'))
+    ->icon('fa fa-newspaper')
+    ->route('posts.index')
+    ->badge(fn () => Post::query()->where('status', 'pending')->count());
 ```
 
 ### Conditionally hiding an item
