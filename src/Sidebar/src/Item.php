@@ -3,9 +3,12 @@
 namespace Redot\Sidebar;
 
 use Closure;
+use Illuminate\Support\Traits\Macroable;
 
 class Item
 {
+    use Macroable;
+
     /**
      * The parent of the item.
      */
@@ -55,6 +58,11 @@ class Item
      * Determine if the item is active.
      */
     public bool $active = false;
+
+    /**
+     * The badge callable of the item.
+     */
+    public ?Closure $badge = null;
 
     /**
      * Create a new item instance.
@@ -136,6 +144,16 @@ class Item
     public function hidden(bool|Closure $hidden): static
     {
         $this->hidden = $hidden;
+
+        return $this;
+    }
+
+    /**
+     * Set the badge callable of the item.
+     */
+    public function badge(Closure $badge): static
+    {
+        $this->badge = $badge;
 
         return $this;
     }
