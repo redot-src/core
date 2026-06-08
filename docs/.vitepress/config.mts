@@ -80,6 +80,7 @@ export default defineConfig({
                     { text: 'Validation Rules', link: '/foundation/rules' },
                     { text: 'Jobs', link: '/foundation/jobs' },
                     { text: 'Notifications', link: '/foundation/notifications' },
+                    { text: 'Dashboard Notifications', link: '/foundation/dashboard-notifications' },
                     { text: 'Query Filters', link: '/foundation/query-filters' },
                     {
                         text: 'Traits',

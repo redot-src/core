@@ -45,4 +45,6 @@ Config keys that affect the email:
 ## Related
 
 - [Authentication](/packages/auth/overview) — the magic-link flow that sends it.
+- [Dashboard Notifications](/foundation/dashboard-notifications) — in-app
+  notifications shown in the dashboard bell and notifications page.
 - [Models](/foundation/models) — the login token the email carries.
