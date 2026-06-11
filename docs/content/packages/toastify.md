@@ -1,6 +1,6 @@
 # Toastify
 
-Toastify flashes toast notifications — small pop-up messages in styled success, error, info, and warning variants. You can flash one from a controller so it appears after a redirect, push one live from a Livewire component, or fire one straight from JavaScript.
+Toastify flashes Bootstrap toast notifications — small pop-up messages with success, error, info, and warning variants. You can flash one from a controller so it appears after a redirect, push one live from a Livewire component, or fire one straight from JavaScript.
 
 ## Quick start
 
@@ -20,15 +20,18 @@ toastify()->success(__('Saved successfully'));
 
 ## Flashing a toast
 
-Call the type you want on the `toastify()` helper. Each takes a message and optional per-toast settings (for example a longer duration):
+Call the type you want on the `toastify()` helper. Each takes a title, optional message, and optional per-toast settings:
 
 ```php
 toastify()->success(__('Saved successfully'));
-toastify()->error(__('Something went wrong'), ['duration' => 5000]);
+toastify()->error(__('Something went wrong'), options: ['delay' => 5000]);
+toastify()->info(__('Heads up'), __('The import is still running.'));
 toastify()->info(__('Heads up'));
 toastify()->warning(__('Check your input'));
 toastify()->toast(__('A plain toast'));
 ```
+
+When the message is empty, the title is rendered as the toast body without a header.
 
 Flashed toasts are stored in the session, so they survive a redirect and show on the next page.
 
@@ -64,10 +67,11 @@ class SaveProfile extends Component
 
 ### Straight from JavaScript
 
-The page exposes a global `toastify()` you can call from inline scripts. Each call takes the text and optional settings:
+The page exposes a global `toastify()` you can call from inline scripts. Each call takes the title, optional message, and optional settings:
 
 ```js
-toastify().error('{{ __('Please enter a title before saving') }}');
+toastify().error('Please enter a title before saving');
+toastify().success('Saved', 'Your changes were saved.', { delay: 5000 });
 ```
 
 ## Customizing toast types
@@ -78,8 +82,8 @@ The available types and their styling live in `config/toastify.php`. Publish it 
 php artisan vendor:publish --tag=toastify::config
 ```
 
-- **`toastifiers`** — the map of toast types. Out of the box: `toast`, `error`, `success`, `info`, and `warning`, each styled with a color variant. Add a key here to create a new type — it becomes callable as `toastify()->yourType(...)` and from JavaScript.
-- **`defaults`** — settings applied to every toast, such as its on-screen position and whether it shows a close button.
+- **`toastifiers`** — the map of toast types. Out of the box: `toast`, `error`, `success`, `info`, and `warning`, each with an icon and optional icon color. Add a key here to create a new type — it becomes callable as `toastify()->yourType(...)` and from JavaScript.
+- **`defaults`** — settings applied to every toast, such as its on-screen position, delay, and whether it shows a close button.
 
 ## Notes
 

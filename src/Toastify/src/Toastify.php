@@ -5,20 +5,20 @@ namespace Redot\Toastify;
 use Illuminate\Support\Facades\Session;
 
 /**
- * @method void toast(string $message, array $options = [])
- * @method void error(string $message, array $options = [])
- * @method void success(string $message, array $options = [])
- * @method void info(string $message, array $options = [])
- * @method void warning(string $message, array $options = [])
+ * @method void toast(string $title, ?string $message = null, array $options = [])
+ * @method void error(string $title, ?string $message = null, array $options = [])
+ * @method void success(string $title, ?string $message = null, array $options = [])
+ * @method void info(string $title, ?string $message = null, array $options = [])
+ * @method void warning(string $title, ?string $message = null, array $options = [])
  */
 class Toastify
 {
     /**
      * Push message to session.
      */
-    protected function push(string $message, string $type, array $options = []): void
+    protected function push(string $title, ?string $message, string $type, array $options = []): void
     {
-        Session::push('toastify', compact('message', 'type', 'options'));
+        Session::push('toastify', compact('title', 'message', 'type', 'options'));
     }
 
     /**
@@ -26,6 +26,25 @@ class Toastify
      */
     public function __call(string $name, array $arguments)
     {
-        $this->push($arguments[0], $name, $arguments[1] ?? []);
+        [$title, $message, $options] = static::normalizeArguments($arguments);
+
+        $this->push($title, $message, $name, $options);
+    }
+
+    /**
+     * Normalize positional and named arguments.
+     */
+    public static function normalizeArguments(array $arguments): array
+    {
+        $title = $arguments['title'] ?? $arguments[0];
+        $message = $arguments['message'] ?? $arguments[1] ?? null;
+        $options = $arguments['options'] ?? $arguments[2] ?? [];
+
+        if (is_array($message) && $options === []) {
+            $options = $message;
+            $message = null;
+        }
+
+        return [$title, $message, $options];
     }
 }

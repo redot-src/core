@@ -5,11 +5,11 @@ namespace Redot\Toastify;
 use Livewire\Component;
 
 /**
- * @method void toast(string $message, array $options = [])
- * @method void error(string $message, array $options = [])
- * @method void success(string $message, array $options = [])
- * @method void info(string $message, array $options = [])
- * @method void warning(string $message, array $options = [])
+ * @method void toast(string $title, ?string $message = null, array $options = [])
+ * @method void error(string $title, ?string $message = null, array $options = [])
+ * @method void success(string $title, ?string $message = null, array $options = [])
+ * @method void info(string $title, ?string $message = null, array $options = [])
+ * @method void warning(string $title, ?string $message = null, array $options = [])
  */
 class LivewireToastifier
 {
@@ -20,11 +20,8 @@ class LivewireToastifier
      */
     public function __call(string $name, array $arguments): void
     {
-        $this->component->dispatch(
-            'toastify',
-            message: $arguments[0],
-            type: $name,
-            options: $arguments[1] ?? [],
-        );
+        [$title, $message, $options] = Toastify::normalizeArguments($arguments);
+
+        $this->component->dispatch('toastify', $title, $message, $name, $options);
     }
 }
