@@ -4,14 +4,12 @@ Toastify flashes toast notifications — small pop-up messages in styled success
 
 ## Quick start
 
-Add the directives to your layout once — the styles in `<head>`, the script before `</body>` (after Livewire and jQuery if you use them):
+Toastify CSS and JavaScript are included automatically whenever you render `<x-toasts />` in your layout. The scaffold layout already includes it, so dashboard and website pages work out of the box.
+
+If you build a custom layout, add the component before `</body>`:
 
 ```blade
-{{-- in <head> --}}
-@toastifyCss
-
-{{-- before </body> --}}
-@toastifyJs
+<x-toasts />
 ```
 
 Then flash a toast with the `toastify()` helper:
@@ -86,7 +84,7 @@ php artisan vendor:publish --tag=toastify::config
 ## Notes
 
 - A toast's type must exist in `toastifiers` to pick up a preset style; an unknown type still shows but unstyled.
-- Include `@toastifyJs` once per page — it clears the session toasts as it renders.
+- Include `<x-toasts />` once per page — it loads the assets and renders session toasts.
 
 ## Related
 

@@ -14,9 +14,6 @@ class LaravelToastifyServiceProvider extends ServiceProvider
     {
         $this->app->singleton(Toastify::class, fn () => new Toastify);
         $this->app->alias(Toastify::class, 'toastify');
-
-        Blade::directive('toastifyCss', fn () => "<?php echo app('toastify')->css(); ?>");
-        Blade::directive('toastifyJs', fn () => "<?php echo app('toastify')->js(); ?>");
     }
 
     /**
@@ -26,11 +23,6 @@ class LaravelToastifyServiceProvider extends ServiceProvider
     {
         $this->mergeConfigFrom(
             __DIR__ . '/../config/toastify.php',
-            'toastify'
-        );
-
-        $this->loadViewsFrom(
-            __DIR__ . '/../resources/views',
             'toastify'
         );
 

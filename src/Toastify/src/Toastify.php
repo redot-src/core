@@ -15,22 +15,6 @@ use Illuminate\Support\Facades\View;
 class Toastify
 {
     /**
-     * Get toastify css.
-     */
-    public function css(): string
-    {
-        return View::make('toastify::css')->render();
-    }
-
-    /**
-     * Get toastify js.
-     */
-    public function js(): string
-    {
-        return View::make('toastify::js')->render();
-    }
-
-    /**
      * Push message to session.
      */
     protected function push(string $message, string $type, array $options = []): void
