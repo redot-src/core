@@ -3,7 +3,6 @@
 namespace Redot\Toastify;
 
 use Illuminate\Support\Facades\Session;
-use Illuminate\Support\Facades\View;
 
 /**
  * @method void toast(string $message, array $options = [])

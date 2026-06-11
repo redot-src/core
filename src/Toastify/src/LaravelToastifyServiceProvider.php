@@ -2,7 +2,6 @@
 
 namespace Redot\Toastify;
 
-use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\ServiceProvider;
 
 class LaravelToastifyServiceProvider extends ServiceProvider
