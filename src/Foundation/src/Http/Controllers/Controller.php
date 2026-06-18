@@ -5,6 +5,7 @@ namespace Redot\Http\Controllers;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Routing\Controller as BaseController;
+use Illuminate\Support\Js;
 use Redot\Traits\RespondAsApi;
 
 class Controller extends BaseController
@@ -99,5 +100,25 @@ class Controller extends BaseController
         }
 
         return redirect()->route($route, $parameters)->with('info', $message);
+    }
+
+    /**
+     * Post a message to the parent window to exit the iframe with data.
+     */
+    public function exit(string $key, mixed $data = [], int $code = 200)
+    {
+        if (! is_string($data)) {
+            $data = Js::encode($data);
+        }
+
+        $javascript = <<<HTML
+        <script>
+            window.parent.postMessage({ key: '$key', data: $data }, '*');
+        </script>
+        HTML;
+
+        return response()->make($javascript, $code, [
+            'Content-Type' => 'text/html',
+        ]);
     }
 }
