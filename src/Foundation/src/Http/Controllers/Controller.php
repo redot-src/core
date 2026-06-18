@@ -103,9 +103,9 @@ class Controller extends BaseController
     }
 
     /**
-     * Post a message to the parent window to exit the iframe with data.
+     * Dispatch a browser event to the parent window with data.
      */
-    public function exit(string $key, mixed $data = [], int $code = 200)
+    public function dispatchBrowserEvent(string $key, mixed $data = [], int $code = 200)
     {
         if (! is_string($data)) {
             $data = Js::encode($data);
