@@ -20,11 +20,7 @@ class Controller extends BaseController
     {
         $message = __(':resource has been created.', ['resource' => $resource]);
 
-        if ($route === null) {
-            return back()->with('success', $message);
-        }
-
-        return redirect()->route($route, $parameters)->with('success', $message);
+        return $this->success($message, $route, $parameters);
     }
 
     /**
@@ -34,11 +30,7 @@ class Controller extends BaseController
     {
         $message = __(':resource has been updated.', ['resource' => $resource]);
 
-        if ($route === null) {
-            return back()->with('success', $message);
-        }
-
-        return redirect()->route($route, $parameters)->with('success', $message);
+        return $this->success($message, $route, $parameters);
     }
 
     /**
@@ -48,11 +40,7 @@ class Controller extends BaseController
     {
         $message = __(':resource has been deleted.', ['resource' => $resource]);
 
-        if ($route === null) {
-            return back()->with('success', $message);
-        }
-
-        return redirect()->route($route, $parameters)->with('success', $message);
+        return $this->success($message, $route, $parameters);
     }
 
     /**
@@ -62,11 +50,7 @@ class Controller extends BaseController
     {
         $message = __(':resource has been restored.', ['resource' => $resource]);
 
-        if ($route === null) {
-            return back()->with('success', $message);
-        }
-
-        return redirect()->route($route, $parameters)->with('success', $message);
+        return $this->success($message, $route, $parameters);
     }
 
     /**
