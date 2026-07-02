@@ -13,11 +13,13 @@ use Redot\Auth\Routes\LogoutRoutes;
 use Redot\Auth\Routes\MagicLinkRoutes;
 use Redot\Auth\Routes\PasswordResetRoutes;
 use Redot\Auth\Routes\RegistrationRoutes;
+use Redot\Auth\Routes\TwoFactorRoutes;
 
 class RedotAuthManager
 {
     protected const REGISTRARS = [
         'login' => LoginRoutes::class,
+        'two-factor' => TwoFactorRoutes::class,
         'register' => RegistrationRoutes::class,
         'password-reset' => PasswordResetRoutes::class,
         'magic-link' => MagicLinkRoutes::class,

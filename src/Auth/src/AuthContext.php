@@ -79,6 +79,7 @@ class AuthContext
             'email-verification',
             'logout',
             'lock-screen',
+            'two-factor',
         ];
 
         $disabled = [];
@@ -91,6 +92,10 @@ class AuthContext
 
         if ($this->api || ! isset($this->views['unlock'])) {
             $disabled['lock-screen'] = true;
+        }
+
+        if (! $this->api && ! isset($this->views['two-factor-challenge'])) {
+            $disabled['two-factor'] = true;
         }
 
         return $disabled;

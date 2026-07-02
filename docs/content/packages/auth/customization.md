@@ -60,6 +60,49 @@ MagicLink::useLoginTokenModel(\App\Models\LoginToken::class);
 MagicLink::useNotificationClass(\App\Notifications\MagicLink::class);
 ```
 
+## Add a two-factor method
+
+Two-factor methods are pluggable. For a method that delivers one-time codes (SMS, WhatsApp, …), extend `Redot\Auth\Methods\OneTimeCode` — code generation, hashing, expiry, and single-use verification are handled for you; you supply the column that marks the method as confirmed and the delivery mechanism:
+
+```php
+use Illuminate\Database\Eloquent\Model;
+use Redot\Auth\Methods\OneTimeCode;
+
+class WhatsApp extends OneTimeCode
+{
+    public function key(): string
+    {
+        return 'whatsapp';
+    }
+
+    protected function column(): string
+    {
+        return 'two_factor_whatsapp_confirmed_at';
+    }
+
+    protected function deliver(Model $user, string $code): void
+    {
+        // Send $code to $user->phone through your gateway.
+    }
+}
+```
+
+Register it from a service provider's `register()` method and it appears in the challenge, setup, and API surfaces automatically:
+
+```php
+use Redot\Auth\Actions\TwoFactor;
+
+TwoFactor::registerMethod(WhatsApp::class);
+```
+
+For full control (hardware keys, push approval, …), extend `Redot\Auth\Methods\TwoFactorMethod` instead and implement the lifecycle yourself. To change the email the built-in `email` method sends, point it at your own notification class — it receives the plain code as its only constructor argument:
+
+```php
+use Redot\Auth\Methods\Email;
+
+Email::useNotificationClass(\App\Notifications\TwoFactorCode::class);
+```
+
 ## Swap a whole flow
 
 When the hooks aren't enough, replace an action entirely. Each flow is resolved from the service container, so bind your own implementation against the default action class in a service provider's `register()` method (not `boot()` — routes load before `boot()` runs):
@@ -80,7 +123,7 @@ class AppServiceProvider extends ServiceProvider
 }
 ```
 
-Your class only has to produce the right response for each step of that flow. If you just want to tweak part of the behavior, extend the default action, override the one piece you care about, and bind your subclass. The same pattern applies to every flow: bind your replacement against `Registration`, `Logout`, `PasswordReset`, `MagicLink`, `EmailVerification`, or `Lock`.
+Your class only has to produce the right response for each step of that flow. If you just want to tweak part of the behavior, extend the default action, override the one piece you care about, and bind your subclass. The same pattern applies to every flow: bind your replacement against `Registration`, `Logout`, `PasswordReset`, `MagicLink`, `EmailVerification`, `TwoFactor`, or `Lock`.
 
 Binding against a disabled feature has no effect — disabled features are never registered.
 

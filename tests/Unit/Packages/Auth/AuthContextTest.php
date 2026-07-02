@@ -78,6 +78,25 @@ it('omits the locked middleware when the context is an api context', function ()
         ->and($context->auth())->toBe(['auth:' . $context->guard]);
 });
 
+it('enables two factor when the challenge view is configured or the context is api', function () {
+    $withView = make_auth_context(['views' => ['two-factor-challenge' => 'auth.two-factor-challenge']]);
+    $withoutView = make_auth_context(['views' => []]);
+    $api = make_auth_context(['api' => true, 'views' => []]);
+
+    expect($withView->featureEnabled('two-factor'))->toBeTrue()
+        ->and($withoutView->featureEnabled('two-factor'))->toBeFalse()
+        ->and($api->featureEnabled('two-factor'))->toBeTrue();
+});
+
+it('honours the explicit two factor disable even when the challenge view is configured', function () {
+    $context = make_auth_context([
+        'views' => ['two-factor-challenge' => 'auth.two-factor-challenge'],
+        'disable' => ['two-factor'],
+    ]);
+
+    expect($context->featureEnabled('two-factor'))->toBeFalse();
+});
+
 it('honours the explicit feature disable list', function () {
     $context = make_auth_context([
         'disable' => ['register', 'magic-link'],

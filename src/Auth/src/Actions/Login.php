@@ -58,8 +58,13 @@ class Login implements LoginAction
             ]);
         }
 
-        $this->touchLastLoginAt($user);
         RateLimiter::clear($this->throttleKey($request, $context));
+
+        if ($context->featureEnabled('two-factor') && TwoFactor::enabledMethods($user)->isNotEmpty()) {
+            return app(TwoFactor::class)->redirectToChallenge($request, $user, $context);
+        }
+
+        $this->touchLastLoginAt($user);
 
         if ($context->api) {
             $token = $user->createToken('auth_token')->plainTextToken;

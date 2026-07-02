@@ -1,6 +1,6 @@
 # Auth Overview
 
-Redot Auth registers a complete authentication stack — login, logout, registration, password reset, magic links, email verification, and a lock screen — for any guard with a single call. You describe a guard and which screens it uses, and the package wires up the routes, validation, throttling, and redirects for you. The same setup works for both web (session) and API (token) guards.
+Redot Auth registers a complete authentication stack — login, two-factor authentication, logout, registration, password reset, magic links, email verification, and a lock screen — for any guard with a single call. You describe a guard and which screens it uses, and the package wires up the routes, validation, throttling, and redirects for you. The same setup works for both web (session) and API (token) guards.
 
 ## Quick start
 
