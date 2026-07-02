@@ -1,6 +1,6 @@
 # Auth Routes
 
-This page covers how to register a guard's authentication routes — see [Auth Overview](/packages/auth/overview) for the bigger picture. One `RedotAuth::routes()` call registers a full auth surface (login, logout, registration, password reset, magic links, email verification, lock screen) for the guard you name.
+This page covers how to register a guard's authentication routes — see [Auth Overview](/packages/auth/overview) for the bigger picture. One `RedotAuth::routes()` call registers a full auth surface (login, two-factor authentication, logout, registration, password reset, magic links, email verification, lock screen) for the guard you name.
 
 ## Usage
 
@@ -30,7 +30,7 @@ Route::name('admin.')->group(function () {
 
 - **`guard`** — the guard to authenticate against (a key under `config/auth.php`). The package reads its provider and model for you.
 - **`scope`** — an optional query callback that constrains which users can authenticate, e.g. only active admins.
-- **`views`** — maps each screen (`login`, `register`, `forgot-password`, `reset-password`, `magic-link`, `magic-link-code`, `two-factor-challenge`, `verify-email`, `unlock`) to a Blade view. Each view receives the resolved auth context as `$context`. Omit a screen to skip rendering it.
+- **`views`** — maps each screen (`login`, `register`, `forgot-password`, `reset-password`, `magic-link`, `magic-link-code`, `two-factor-challenge`, `two-factor`, `verify-email`, `unlock`) to a Blade view. Each view receives the resolved auth context as `$context`. Omit a screen to skip rendering it.
 - **`disable`** — turn off optional features by name: `register`, `magic-link`, `email-verification`, `logout`, `lock-screen`, `two-factor`. Login and password reset are always registered.
 - **`registrars`** — supply your own route definitions for a feature, keyed by feature name (see below).
 - **`home`** — where to send the user after login: a route name, a callback returning a URL, or omit it to use the section's `index` route.

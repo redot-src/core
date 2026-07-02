@@ -1,6 +1,6 @@
 # Auth Actions
 
-Each authentication flow registered by [Auth Routes](/packages/auth/routes) is backed by a self-contained "action" — login, logout, registration, magic link, password reset, email verification, and the lock screen. This page describes what each one does and the small hooks you can tune. To replace a flow wholesale, see [Customize auth](/packages/auth/customization).
+Each authentication flow registered by [Auth Routes](/packages/auth/routes) is backed by a self-contained "action" — login, two-factor authentication, logout, registration, magic link, password reset, email verification, and the lock screen. This page describes what each one does and the small hooks you can tune. To replace a flow wholesale, see [Customize auth](/packages/auth/customization).
 
 Every action adapts to the guard automatically: a web guard starts a session and redirects, an API guard returns JSON and issues a bearer token. You build the forms once and they work for both.
 

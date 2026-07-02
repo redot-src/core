@@ -60,6 +60,7 @@ class Login implements LoginAction
 
         RateLimiter::clear($this->throttleKey($request, $context));
 
+        // Park the login and hand off to the two-factor challenge before issuing a session or token.
         if ($context->featureEnabled('two-factor') && TwoFactor::enabledMethods($user)->isNotEmpty()) {
             return app(TwoFactor::class)->redirectToChallenge($request, $user, $context);
         }

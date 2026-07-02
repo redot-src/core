@@ -11,6 +11,9 @@ use Redot\Auth\Actions\TwoFactor;
 use Redot\Auth\AuthContext;
 use Redot\Auth\Contracts\RouteRegistrar;
 
+/**
+ * Registers the two-factor challenge and management routes for an auth context.
+ */
 class TwoFactorRoutes implements RouteRegistrar
 {
     public function register(AuthContext $context): void

@@ -7,8 +7,14 @@ use Illuminate\Support\Str;
 use Redot\Auth\Actions\TwoFactor;
 use Redot\Auth\Support\Totp;
 
+/**
+ * Equips a user model for two-factor authentication.
+ */
 trait TwoFactorAuthenticatable
 {
+    /**
+     * Merge the two-factor casts and hide the secret columns.
+     */
     public function initializeTwoFactorAuthenticatable(): void
     {
         $this->mergeCasts([
@@ -19,16 +25,25 @@ trait TwoFactorAuthenticatable
         $this->makeHidden(['two_factor_secret', 'two_factor_recovery_codes']);
     }
 
+    /**
+     * Determine whether the user has any two-factor method enabled.
+     */
     public function hasEnabledTwoFactorAuthentication(): bool
     {
         return TwoFactor::enabledMethods($this)->isNotEmpty();
     }
 
+    /**
+     * Get the decrypted authenticator secret.
+     */
     public function twoFactorSecret(): ?string
     {
         return $this->two_factor_secret === null ? null : decrypt($this->two_factor_secret);
     }
 
+    /**
+     * Get the otpauth URL authenticator apps read from a QR code.
+     */
     public function twoFactorQrCodeUrl(): ?string
     {
         if ($this->two_factor_secret === null) {
@@ -42,6 +57,11 @@ trait TwoFactorAuthenticatable
         );
     }
 
+    /**
+     * Get the user's recovery codes.
+     *
+     * @return array<int, string>
+     */
     public function recoveryCodes(): array
     {
         if ($this->two_factor_recovery_codes === null) {
@@ -51,6 +71,11 @@ trait TwoFactorAuthenticatable
         return json_decode(decrypt($this->two_factor_recovery_codes), true);
     }
 
+    /**
+     * Generate and store a fresh set of recovery codes.
+     *
+     * @return array<int, string>
+     */
     public function generateRecoveryCodes(int $count = 8): array
     {
         $codes = Collection::times($count, fn (): string => Str::random(10) . '-' . Str::random(10))->all();
@@ -60,6 +85,9 @@ trait TwoFactorAuthenticatable
         return $codes;
     }
 
+    /**
+     * Swap a used recovery code for a fresh one.
+     */
     public function replaceRecoveryCode(string $code): void
     {
         $codes = $this->recoveryCodes();
@@ -74,6 +102,9 @@ trait TwoFactorAuthenticatable
         $this->forceFill(['two_factor_recovery_codes' => encrypt(json_encode($codes))])->save();
     }
 
+    /**
+     * Remove all recovery codes.
+     */
     public function forgetRecoveryCodes(): void
     {
         $this->forceFill(['two_factor_recovery_codes' => null])->save();
