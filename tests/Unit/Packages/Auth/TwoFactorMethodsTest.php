@@ -111,3 +111,23 @@ it('does not verify an email challenge code before the method is confirmed', fun
 
     expect($method->verify($this->user, $code))->toBeFalse();
 });
+
+it('expires issued one-time codes after the configured lifetime', function () {
+    config(['auth.two_factor.expire' => 10]);
+
+    Notification::fake();
+
+    $method = new Email;
+    $method->enable($this->user);
+
+    $code = null;
+    Notification::assertSentTo($this->user, TwoFactorCodeNotification::class, function ($notification) use (&$code) {
+        $code = $notification->code;
+
+        return true;
+    });
+
+    $this->travel(11)->minutes();
+
+    expect($method->confirm($this->user, $code))->toBeFalse();
+});

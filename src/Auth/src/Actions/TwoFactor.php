@@ -21,21 +21,41 @@ use Redot\Auth\Methods\Email;
 use Redot\Auth\Methods\TwoFactorMethod;
 use Redot\Traits\RespondAsApi;
 
+/**
+ * Handles the two-factor authentication flow for an auth context.
+ *
+ * A pending challenge ("credentials verified, second factor outstanding") lives
+ * in the session for web guards and in the cache — keyed by an opaque
+ * challenge_token the client echoes back — for API guards. Challenge state is
+ * ['id' => user key, 'attempts' => int, 'remember' => bool (web only),
+ * 'expires_at' => timestamp (api only)]. The challenge is invalidated after
+ * auth.two_factor.max_attempts failed attempts or when it expires.
+ */
 class TwoFactor implements TwoFactorAction
 {
     use QueriesUsers, RespondAsApi;
 
+    /**
+     * The registered two-factor method classes.
+     *
+     * @var array<int, class-string<TwoFactorMethod>>
+     */
     protected static array $methods = [
         Authenticator::class,
         Email::class,
     ];
 
+    /**
+     * Register a custom two-factor method.
+     */
     public static function registerMethod(string $class): void
     {
         static::$methods[] = $class;
     }
 
     /**
+     * Get all registered two-factor methods, keyed by method key.
+     *
      * @return Collection<string, TwoFactorMethod>
      */
     public static function methods(): Collection
@@ -45,20 +65,33 @@ class TwoFactor implements TwoFactorAction
             ->keyBy(fn (TwoFactorMethod $method): string => $method->key());
     }
 
-    public static function enabledMethods(?Authenticatable $user): Collection
+    /**
+     * Get the two-factor methods the given user has enabled.
+     *
+     * @return Collection<string, TwoFactorMethod>
+     */
+    public static function enabledMethods(Authenticatable $user): Collection
     {
-        if ($user === null || ! in_array(TwoFactorAuthenticatable::class, class_uses_recursive($user), true)) {
+        // Models without the trait can never have two-factor enabled — API guards
+        // auto-enable 2FA, so trait-less models must short-circuit instead of fatal.
+        if (! in_array(TwoFactorAuthenticatable::class, class_uses_recursive($user), true)) {
             return collect();
         }
 
         return static::methods()->filter(fn (TwoFactorMethod $method): bool => $method->enabled($user));
     }
 
+    /**
+     * Get the session key that holds the guard's pending challenge.
+     */
     public static function sessionKey(string $guard): string
     {
         return "auth.$guard.two_factor";
     }
 
+    /**
+     * Park the verified login and hand off to the two-factor challenge.
+     */
     public function redirectToChallenge(Request $request, Authenticatable $user, AuthContext $context): RedirectResponse|JsonResponse
     {
         if ($context->api) {
@@ -86,9 +119,12 @@ class TwoFactor implements TwoFactorAction
         return redirect()->route($context->routeName('two-factor.challenge'));
     }
 
+    /**
+     * Render the challenge screen for the pending login.
+     */
     public function challenge(Request $request, AuthContext $context): View|RedirectResponse
     {
-        $user = $this->challengedUser($request, $context);
+        $user = $this->challengedUser($context, $this->challengeState($request, $context));
 
         if ($user === null) {
             return redirect()->route($context->routeName('login'));
@@ -100,10 +136,13 @@ class TwoFactor implements TwoFactorAction
         ]);
     }
 
+    /**
+     * Verify the challenge with a method code or a recovery code.
+     */
     public function verify(Request $request, AuthContext $context): RedirectResponse|JsonResponse
     {
         $state = $this->challengeState($request, $context);
-        $user = $this->challengedUser($request, $context, $state);
+        $user = $this->challengedUser($context, $state);
 
         if ($user === null) {
             return $this->challengeExpired($context);
@@ -121,9 +160,12 @@ class TwoFactor implements TwoFactorAction
         return $this->completeLogin($request, $user, $context, $state);
     }
 
+    /**
+     * Send a challenge code to the user through a deliverable method.
+     */
     public function send(Request $request, AuthContext $context, string $method): RedirectResponse|JsonResponse
     {
-        $user = $this->challengedUser($request, $context);
+        $user = $this->challengedUser($context, $this->challengeState($request, $context));
 
         if ($user === null) {
             return $this->challengeExpired($context);
@@ -142,6 +184,9 @@ class TwoFactor implements TwoFactorAction
             : back()->with('success', __('A verification code has been sent to you.'));
     }
 
+    /**
+     * Show the two-factor settings with each method's state.
+     */
     public function edit(Request $request, AuthContext $context): View|JsonResponse
     {
         $user = $this->currentUser($context);
@@ -163,6 +208,9 @@ class TwoFactor implements TwoFactorAction
         ]);
     }
 
+    /**
+     * Begin setup for the given method.
+     */
     public function store(Request $request, AuthContext $context, string $method): RedirectResponse|JsonResponse
     {
         $user = $this->currentUser($context);
@@ -174,13 +222,12 @@ class TwoFactor implements TwoFactorAction
 
         $payload = $instance->enable($user);
 
-        if ($context->api || $request->expectsJson()) {
-            return $this->respond($payload);
-        }
-
-        return back()->with('two_factor_setup', $method);
+        return $context->api ? $this->respond($payload) : back();
     }
 
+    /**
+     * Confirm a pending method setup with a verification code.
+     */
     public function confirm(Request $request, AuthContext $context, string $method): RedirectResponse|JsonResponse
     {
         $user = $this->currentUser($context);
@@ -206,6 +253,9 @@ class TwoFactor implements TwoFactorAction
             ->with('two_factor_recovery_codes', $codes);
     }
 
+    /**
+     * Disable the given method, or cancel its pending setup.
+     */
     public function destroy(Request $request, AuthContext $context, string $method): RedirectResponse|JsonResponse
     {
         $user = $this->currentUser($context);
@@ -229,6 +279,9 @@ class TwoFactor implements TwoFactorAction
         return $context->api ? $this->respond() : back()->with('success', $message);
     }
 
+    /**
+     * Regenerate the user's recovery codes.
+     */
     public function recoveryCodes(Request $request, AuthContext $context): RedirectResponse|JsonResponse
     {
         $user = $this->currentUser($context);
@@ -245,6 +298,9 @@ class TwoFactor implements TwoFactorAction
             : back()->with('success', __('Recovery codes have been regenerated.'))->with('two_factor_recovery_codes', $codes);
     }
 
+    /**
+     * Attempt to verify the submitted method code or recovery code.
+     */
     protected function attempt(Request $request, Authenticatable $user): bool
     {
         if ($request->filled('recovery_code')) {
@@ -265,6 +321,9 @@ class TwoFactor implements TwoFactorAction
         return static::enabledMethods($user)->contains(fn (TwoFactorMethod $method): bool => $method->verify($user, $code));
     }
 
+    /**
+     * Record a failed attempt, invalidating the challenge once the limit is hit.
+     */
     protected function recordFailedAttempt(Request $request, AuthContext $context, array $state): RedirectResponse|JsonResponse
     {
         $state['attempts'] = ($state['attempts'] ?? 0) + 1;
@@ -286,6 +345,9 @@ class TwoFactor implements TwoFactorAction
         ]);
     }
 
+    /**
+     * Complete the parked login once the challenge has passed.
+     */
     protected function completeLogin(Request $request, Authenticatable $user, AuthContext $context, array $state): RedirectResponse|JsonResponse
     {
         $this->touchLastLoginAt($user);
@@ -304,17 +366,19 @@ class TwoFactor implements TwoFactorAction
         return redirect()->intended($context->homeUrl());
     }
 
-    protected function challengedUser(Request $request, AuthContext $context, ?array $state = null): ?Authenticatable
+    /**
+     * Retrieve the challenged user for the given challenge state.
+     */
+    protected function challengedUser(AuthContext $context, ?array $state): ?Authenticatable
     {
-        $state ??= $this->challengeState($request, $context);
-
-        if ($state === null) {
-            return null;
-        }
-
-        return $this->applyScope($context->model::query(), $context->scope)->find($state['id']);
+        return $state === null
+            ? null
+            : $this->applyScope($context->model::query(), $context->scope)->find($state['id']);
     }
 
+    /**
+     * Get the pending challenge state for the request.
+     */
     protected function challengeState(Request $request, AuthContext $context): ?array
     {
         $state = $context->api
@@ -324,9 +388,13 @@ class TwoFactor implements TwoFactorAction
         return is_array($state) ? $state : null;
     }
 
+    /**
+     * Persist the updated challenge state.
+     */
     protected function saveChallengeState(Request $request, AuthContext $context, array $state): void
     {
         if ($context->api) {
+            // Re-put with the remaining TTL so failed attempts never extend the challenge's absolute expiry.
             $remaining = max(1, (int) $state['expires_at'] - now()->getTimestamp());
 
             Cache::put($this->challengeCacheKey($context, (string) $request->input('challenge_token')), $state, $remaining);
@@ -337,6 +405,9 @@ class TwoFactor implements TwoFactorAction
         $request->session()->put(static::sessionKey($context->guard), $state);
     }
 
+    /**
+     * Discard the pending challenge.
+     */
     protected function forgetChallenge(Request $request, AuthContext $context): void
     {
         if ($context->api) {
@@ -348,6 +419,9 @@ class TwoFactor implements TwoFactorAction
         $request->session()->forget(static::sessionKey($context->guard));
     }
 
+    /**
+     * Build the response for a missing or expired challenge.
+     */
     protected function challengeExpired(AuthContext $context): RedirectResponse|JsonResponse
     {
         return $context->api
@@ -355,21 +429,33 @@ class TwoFactor implements TwoFactorAction
             : redirect()->route($context->routeName('login'));
     }
 
+    /**
+     * Get the cache key that holds an API challenge token's state.
+     */
     protected function challengeCacheKey(AuthContext $context, string $token): string
     {
         return 'two-factor:challenge:' . $context->guard . ':' . $token;
     }
 
+    /**
+     * Get the authenticated user for the context's guard.
+     */
     protected function currentUser(AuthContext $context): Authenticatable
     {
         return Auth::guard($context->guard)->user();
     }
 
+    /**
+     * Resolve a registered method by key, or abort with a 404.
+     */
     protected function method(string $key): TwoFactorMethod
     {
         return static::methods()->get($key) ?? abort(404);
     }
 
+    /**
+     * Require the user's current password for the context's guard.
+     */
     protected function validatePassword(Request $request, AuthContext $context): void
     {
         $request->validate([

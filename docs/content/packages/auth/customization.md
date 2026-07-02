@@ -65,7 +65,7 @@ MagicLink::useNotificationClass(\App\Notifications\MagicLink::class);
 Two-factor methods are pluggable. For a method that delivers one-time codes (SMS, WhatsApp, …), extend `Redot\Auth\Methods\OneTimeCode` — code generation, hashing, expiry, and single-use verification are handled for you; you supply the column that marks the method as confirmed and the delivery mechanism:
 
 ```php
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Contracts\Auth\Authenticatable;
 use Redot\Auth\Methods\OneTimeCode;
 
 class WhatsApp extends OneTimeCode
@@ -80,14 +80,14 @@ class WhatsApp extends OneTimeCode
         return 'two_factor_whatsapp_confirmed_at';
     }
 
-    protected function deliver(Model $user, string $code): void
+    protected function deliver(Authenticatable $user, string $code): void
     {
         // Send $code to $user->phone through your gateway.
     }
 }
 ```
 
-Register it from a service provider's `register()` method and it appears in the challenge, setup, and API surfaces automatically:
+Register it from a service provider's `boot()` method and it appears in the challenge, setup, and API surfaces automatically:
 
 ```php
 use Redot\Auth\Actions\TwoFactor;
