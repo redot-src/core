@@ -16,6 +16,9 @@ use Redot\Auth\Routes\RegistrationRoutes;
 
 class RedotAuthManager
 {
+    /**
+     * The default route registrar for each feature.
+     */
     protected const REGISTRARS = [
         'login' => LoginRoutes::class,
         'register' => RegistrationRoutes::class,
@@ -26,6 +29,9 @@ class RedotAuthManager
         'lock-screen' => LockRoutes::class,
     ];
 
+    /**
+     * Register the authentication routes for the given guard.
+     */
     public function routes(
         string $guard,
         ?Closure $scope = null,
@@ -46,6 +52,9 @@ class RedotAuthManager
         }
     }
 
+    /**
+     * Build the auth context for the given guard and options.
+     */
     protected function resolveContext(string $guard, ?Closure $scope, array $views, array $disable, mixed $home): AuthContext
     {
         $guardConfig = config('auth.guards.' . $guard);
@@ -85,6 +94,9 @@ class RedotAuthManager
         );
     }
 
+    /**
+     * Find the password broker configured for the given provider.
+     */
     protected function resolveBroker(string $provider): string
     {
         $passwords = config('auth.passwords', []);
@@ -98,6 +110,9 @@ class RedotAuthManager
         return $provider;
     }
 
+    /**
+     * Get the route name prefix of the innermost active route group.
+     */
     protected function currentNamePrefix(): string
     {
         $router = Route::getFacadeRoot();

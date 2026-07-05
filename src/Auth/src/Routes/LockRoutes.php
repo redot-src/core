@@ -13,12 +13,11 @@ use Redot\Auth\Contracts\RouteRegistrar;
 
 class LockRoutes implements RouteRegistrar
 {
+    /**
+     * Register the lock and unlock routes.
+     */
     public function register(AuthContext $context): void
     {
-        if ($context->api) {
-            return;
-        }
-
         $action = app(Lock::class);
         $locked = $context->lockedMiddleware();
 

@@ -10,7 +10,10 @@ use Throwable;
 
 trait QueriesUsers
 {
-    protected function findUserByIdentifier(string $value, AuthContext $context): ?Model
+    /**
+     * Find the user matching the given identifier value, honouring the context scope.
+     */
+    protected function findUserByIdentifier(string $value, AuthContext $context): (Model&Authenticatable)|null
     {
         $query = $this->applyScope($context->model::query(), $context->scope);
         $identifiers = $context->identifiers;
@@ -24,6 +27,9 @@ trait QueriesUsers
         return $query->first();
     }
 
+    /**
+     * Apply the context's custom scope to the user query.
+     */
     protected function applyScope(Builder $query, ?\Closure $scope): Builder
     {
         if ($scope === null) {
@@ -35,6 +41,9 @@ trait QueriesUsers
         return $result instanceof Builder ? $result : $query;
     }
 
+    /**
+     * Record the user's last login time, if the model supports it.
+     */
     protected function touchLastLoginAt(Authenticatable|Model $user): void
     {
         try {

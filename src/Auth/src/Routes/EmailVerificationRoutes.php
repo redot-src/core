@@ -14,6 +14,9 @@ use Redot\Auth\Contracts\RouteRegistrar;
 
 class EmailVerificationRoutes implements RouteRegistrar
 {
+    /**
+     * Register the email verification prompt, confirmation, and resend routes.
+     */
     public function register(AuthContext $context): void
     {
         $action = app(EmailVerification::class);

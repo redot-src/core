@@ -13,6 +13,9 @@ use Redot\Auth\Contracts\RouteRegistrar;
 
 class RegistrationRoutes implements RouteRegistrar
 {
+    /**
+     * Register the registration screen and sign-up endpoint.
+     */
     public function register(AuthContext $context): void
     {
         $action = app(Registration::class);

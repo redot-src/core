@@ -15,6 +15,9 @@ class EmailVerification implements EmailVerificationAction
 {
     use RespondAsApi;
 
+    /**
+     * Show the verification prompt, or continue home when already verified.
+     */
     public function prompt(Request $request, AuthContext $context): RedirectResponse|View
     {
         $verified = $request->user()->hasVerifiedEmail();
@@ -26,6 +29,9 @@ class EmailVerification implements EmailVerificationAction
         return view($context->views['verify-email'], ['context' => $context]);
     }
 
+    /**
+     * Mark the user's email as verified from a signed link.
+     */
     public function verify(Request $request, AuthContext $context): RedirectResponse|JsonResponse
     {
         if ($request->user()->hasVerifiedEmail()) {
@@ -51,6 +57,9 @@ class EmailVerification implements EmailVerificationAction
         return redirect()->intended($context->homeUrl() . '?verified=1');
     }
 
+    /**
+     * Resend the email verification notification.
+     */
     public function send(Request $request, AuthContext $context): RedirectResponse|JsonResponse
     {
         if ($request->user()->hasVerifiedEmail()) {

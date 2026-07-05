@@ -13,6 +13,9 @@ use Redot\Auth\Contracts\RouteRegistrar;
 
 class PasswordResetRoutes implements RouteRegistrar
 {
+    /**
+     * Register the forgot-password and reset-password routes.
+     */
     public function register(AuthContext $context): void
     {
         $action = app(PasswordReset::class);
@@ -23,7 +26,7 @@ class PasswordResetRoutes implements RouteRegistrar
                 Route::get('reset-password/{token}', fn (Request $request): View => view($context->views['reset-password'], ['request' => $request, 'context' => $context]))->name('password.reset');
             }
 
-            Route::post('forgot-password', fn (Request $request): RedirectResponse|JsonResponse => $action->sendResetLink($request, $context))->name('password.email');
+            Route::post('forgot-password', fn (Request $request): RedirectResponse|JsonResponse => $action->send($request, $context))->name('password.email');
             Route::post('reset-password', fn (Request $request): RedirectResponse|JsonResponse => $action->reset($request, $context))->name('password.store');
         });
     }

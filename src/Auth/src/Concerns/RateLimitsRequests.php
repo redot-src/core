@@ -11,6 +11,9 @@ use Redot\Auth\AuthContext;
 
 trait RateLimitsRequests
 {
+    /**
+     * Build the rate limiter key for the request.
+     */
     protected function throttleKey(Request $request, AuthContext $context, string $prefix = ''): string
     {
         $inputName = $context->identifierInputName();
@@ -21,7 +24,10 @@ trait RateLimitsRequests
         return $prefix === '' ? $key : $prefix . ':' . $key;
     }
 
-    protected function ensureNotRateLimited(Request $request, AuthContext $context, string $prefix = '', int $attempts = 5, bool $dispatch = true): void
+    /**
+     * Abort with a throttle error when too many attempts have been made.
+     */
+    protected function throttle(Request $request, AuthContext $context, string $prefix = '', int $attempts = 5, bool $dispatch = true): void
     {
         $key = $this->throttleKey($request, $context, $prefix);
 
@@ -42,5 +48,25 @@ trait RateLimitsRequests
                 'minutes' => ceil($seconds / 60),
             ]),
         ]);
+    }
+
+    /**
+     * Record a failed attempt and abort with a failed-authentication error.
+     */
+    protected function reject(Request $request, AuthContext $context, string $prefix = '', int $decaySeconds = 60): never
+    {
+        RateLimiter::hit($this->throttleKey($request, $context, $prefix), $decaySeconds);
+
+        throw ValidationException::withMessages([
+            $context->identifierInputName() => __('auth.failed'),
+        ]);
+    }
+
+    /**
+     * Clear the rate limiter for the request.
+     */
+    protected function clear(Request $request, AuthContext $context, string $prefix = ''): void
+    {
+        RateLimiter::clear($this->throttleKey($request, $context, $prefix));
     }
 }

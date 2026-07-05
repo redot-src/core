@@ -78,6 +78,15 @@ it('omits the locked middleware when the context is an api context', function ()
         ->and($context->auth())->toBe(['auth:' . $context->guard]);
 });
 
+it('disables magic links when the context is an api context', function () {
+    $context = make_auth_context([
+        'api' => true,
+        'views' => ['magic-link' => 'auth.magic-link'],
+    ]);
+
+    expect($context->featureEnabled('magic-link'))->toBeFalse();
+});
+
 it('honours the explicit feature disable list', function () {
     $context = make_auth_context([
         'disable' => ['register', 'magic-link'],

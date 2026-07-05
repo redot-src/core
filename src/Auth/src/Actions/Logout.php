@@ -14,6 +14,9 @@ class Logout implements LogoutAction
 {
     use RespondAsApi;
 
+    /**
+     * Log the user out, revoking the access token or invalidating the session.
+     */
     public function logout(Request $request, AuthContext $context): RedirectResponse|JsonResponse
     {
         if ($context->api) {

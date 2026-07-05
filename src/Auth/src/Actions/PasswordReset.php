@@ -18,7 +18,10 @@ class PasswordReset implements PasswordResetAction
 {
     use RespondAsApi;
 
-    public function sendResetLink(Request $request, AuthContext $context): RedirectResponse|JsonResponse
+    /**
+     * Email a password reset link to the user.
+     */
+    public function send(Request $request, AuthContext $context): RedirectResponse|JsonResponse
     {
         $request->validate([
             'email' => 'required|email',
@@ -33,6 +36,9 @@ class PasswordReset implements PasswordResetAction
         return back()->with('success', __(Password::RESET_LINK_SENT));
     }
 
+    /**
+     * Reset the user's password from a valid reset token.
+     */
     public function reset(Request $request, AuthContext $context): RedirectResponse|JsonResponse
     {
         $request->validate([

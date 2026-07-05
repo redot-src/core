@@ -9,7 +9,13 @@ use Redot\Auth\AuthContext;
 
 interface PasswordResetAction
 {
-    public function sendResetLink(Request $request, AuthContext $context): RedirectResponse|JsonResponse;
+    /**
+     * Email a password reset link to the user.
+     */
+    public function send(Request $request, AuthContext $context): RedirectResponse|JsonResponse;
 
+    /**
+     * Reset the user's password from a valid reset token.
+     */
     public function reset(Request $request, AuthContext $context): RedirectResponse|JsonResponse;
 }

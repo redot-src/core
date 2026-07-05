@@ -12,6 +12,9 @@ use Redot\Auth\Contracts\RouteRegistrar;
 
 class LogoutRoutes implements RouteRegistrar
 {
+    /**
+     * Register the logout endpoint.
+     */
     public function register(AuthContext $context): void
     {
         $action = app(Logout::class);

@@ -16,11 +16,17 @@ class Lock implements LockAction
 {
     use RespondAsApi;
 
+    /**
+     * Build the session key that marks the given guard as locked.
+     */
     public static function sessionKey(string $guard): string
     {
         return "auth.$guard.locked";
     }
 
+    /**
+     * Lock the current session behind the unlock screen.
+     */
     public function lock(Request $request, AuthContext $context): RedirectResponse|JsonResponse
     {
         if ($context->api) {
@@ -33,6 +39,9 @@ class Lock implements LockAction
         return redirect()->route($context->routeName('unlock'));
     }
 
+    /**
+     * Show the unlock screen.
+     */
     public function view(Request $request, AuthContext $context): View|RedirectResponse
     {
         if (! $request->session()->has(static::sessionKey($context->guard))) {
@@ -45,6 +54,9 @@ class Lock implements LockAction
         ]);
     }
 
+    /**
+     * Unlock the session by re-verifying the user's password.
+     */
     public function unlock(Request $request, AuthContext $context): RedirectResponse|JsonResponse
     {
         if ($context->api) {

@@ -13,6 +13,9 @@ use Redot\Auth\Contracts\RouteRegistrar;
 
 class LoginRoutes implements RouteRegistrar
 {
+    /**
+     * Register the login screen and sign-in endpoint.
+     */
     public function register(AuthContext $context): void
     {
         $action = app(Login::class);
