@@ -207,6 +207,39 @@ it('signs in with a recovery code and rotates only the used code', function () {
     $this->assertGuest('admins');
 });
 
+it('sends the email code automatically when redirecting to the challenge', function () {
+    Notification::fake();
+
+    $user = challenge_user([
+        'two_factor_secret' => null,
+        'two_factor_confirmed_at' => null,
+        'two_factor_email_confirmed_at' => now(),
+    ]);
+
+    challenge_login($user)->assertRedirect(route('dashboard.two-factor.challenge'));
+
+    $code = null;
+    Notification::assertSentTo($user, TwoFactorCodeNotification::class, function ($notification) use (&$code) {
+        $code = $notification->code;
+
+        return true;
+    });
+
+    // The auto-sent code passes the challenge without an explicit send request.
+    $this->post(route('dashboard.two-factor.challenge.store'), ['code' => $code])
+        ->assertRedirect(route('dashboard.index'));
+
+    $this->assertAuthenticated('admins');
+});
+
+it('does not auto-send codes when only non-deliverable methods are enabled', function () {
+    Notification::fake();
+
+    challenge_login(challenge_user())->assertRedirect(route('dashboard.two-factor.challenge'));
+
+    Notification::assertNothingSent();
+});
+
 it('emails a challenge code on demand and accepts it exactly once', function () {
     Notification::fake();
 
@@ -269,6 +302,35 @@ it('returns a challenge token instead of a bearer token for api guards', functio
         ->assertJsonPath('payload.two_factor', true)
         ->assertJsonStructure(['payload' => ['two_factor', 'challenge_token']])
         ->assertJsonMissingPath('payload.token');
+});
+
+it('sends the email code alongside the challenge token for api guards', function () {
+    Notification::fake();
+
+    $user = challenge_user([
+        'two_factor_secret' => null,
+        'two_factor_confirmed_at' => null,
+        'two_factor_email_confirmed_at' => now(),
+    ]);
+
+    $challengeToken = $this->postJson(route('api.login.store'), [
+        'email' => $user->email,
+        'password' => 'password',
+    ])->json('payload.challenge_token');
+
+    $code = null;
+    Notification::assertSentTo($user, TwoFactorCodeNotification::class, function ($notification) use (&$code) {
+        $code = $notification->code;
+
+        return true;
+    });
+
+    $this->postJson(route('api.two-factor.challenge.store'), [
+        'challenge_token' => $challengeToken,
+        'code' => $code,
+    ])
+        ->assertOk()
+        ->assertJsonStructure(['payload' => ['token', 'token_type']]);
 });
 
 it('exchanges a challenge token and code for a bearer token', function () {

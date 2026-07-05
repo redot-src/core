@@ -94,6 +94,12 @@ class TwoFactor implements TwoFactorAction
      */
     public function redirectToChallenge(Request $request, Authenticatable $user, AuthContext $context): RedirectResponse|JsonResponse
     {
+        // Codes for deliverable methods go out now — once per login, not per page
+        // view — so the challenge never greets the user without a code on the way.
+        static::enabledMethods($user)
+            ->filter(fn (TwoFactorMethod $method): bool => $method->deliverable())
+            ->each(fn (TwoFactorMethod $method) => $method->send($user));
+
         if ($context->api) {
             $token = Str::random(60);
             $expire = (int) config('auth.two_factor.expire', 10);
