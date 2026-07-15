@@ -14,7 +14,7 @@ class Phone implements ValidationRule
      * Create a new rule instance.
      */
     public function __construct(
-        protected $country = 'EG',
+        protected string $country = 'EG',
     ) {}
 
     /**

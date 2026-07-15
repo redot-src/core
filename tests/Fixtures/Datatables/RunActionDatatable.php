@@ -49,10 +49,12 @@ class RunActionDatatable extends Datatable
                 }),
             Action::make('Explode', 'fas fa-bomb')
                 ->action('explode', fn () => throw new RuntimeException('Unhandled failure')),
-            ActionGroup::make('More', 'fas fa-ellipsis-v')->actions([
-                Action::make('Archive', 'fas fa-archive')
-                    ->action('archive', fn (RunActionPost $row) => $row->update(['approved' => false])),
-            ]),
+            ActionGroup::make('More', 'fas fa-ellipsis-v')
+                ->condition(fn (RunActionPost $row) => $row->approved)
+                ->actions([
+                    Action::make('Archive', 'fas fa-archive')
+                        ->action('archive', fn (RunActionPost $row) => $row->update(['approved' => false])),
+                ]),
         ];
     }
 }

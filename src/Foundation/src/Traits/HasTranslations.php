@@ -9,6 +9,16 @@ trait HasTranslations
     use BaseHasTranslations;
 
     /**
+     * @return array<string, mixed>
+     */
+    abstract public function attributesToArray();
+
+    /**
+     * @return array<string, mixed>
+     */
+    abstract public function relationsToArray();
+
+    /**
      * Convert the model to an array.
      *
      * @return array

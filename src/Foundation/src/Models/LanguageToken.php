@@ -36,9 +36,7 @@ class LanguageToken extends Model
     protected static function booted(): void
     {
         static::updating(function (self $token) {
-            if ($token->isDirty('value')) {
-                $token->is_published = false;
-            }
+            if ($token->isDirty('value')) $token->is_published = false;
         });
     }
 

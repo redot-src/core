@@ -48,7 +48,7 @@ trait Taggable
         $currentTags = $this->{static::$tagsAttribute} ?? [];
         $updatedTags = array_merge($currentTags, $tags);
 
-        $this->syncTags(array_unique($updatedTags));
+        $this->syncTags(array_values(array_unique($updatedTags)));
     }
 
     /**

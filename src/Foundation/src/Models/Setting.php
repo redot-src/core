@@ -9,6 +9,43 @@ use Redot\Casts\Union;
 class Setting extends Model
 {
     /**
+     * The attributes that are mass assignable.
+     *
+     * @var array<int, string>
+     */
+    protected $fillable = [
+        'key',
+        'value',
+    ];
+
+    /**
+     * The attributes that should be cast.
+     *
+     * @var array<string, string>
+     */
+    protected $casts = [
+        'value' => Union::class,
+    ];
+
+    /**
+     * Perform any actions required after the model boots.
+     */
+    protected static function booted()
+    {
+        static::created(function ($setting) {
+            static::forgetCachedValue($setting);
+        });
+
+        static::updated(function ($setting) {
+            static::forgetCachedValue($setting);
+        });
+
+        static::deleted(function ($setting) {
+            static::forgetCachedValue($setting);
+        });
+    }
+
+    /**
      * Get the settings schema.
      */
     public static function schema(): array
@@ -70,39 +107,6 @@ class Setting extends Model
     }
 
     /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
-     */
-    protected $fillable = [
-        'key',
-        'value',
-    ];
-
-    /**
-     * The attributes that should be cast.
-     *
-     * @var array<string, string>
-     */
-    protected $casts = [
-        'value' => Union::class,
-    ];
-
-    /**
-     * Perform any actions required after the model boots.
-     */
-    protected static function booted()
-    {
-        static::created(function ($setting) {
-            static::forgetCachedValue($setting);
-        });
-
-        static::updated(function ($setting) {
-            static::forgetCachedValue($setting);
-        });
-    }
-
-    /**
      * Forget cached setting values, including nested keys cached separately.
      */
     protected static function forgetCachedValue(self $setting): void
@@ -129,28 +133,48 @@ class Setting extends Model
             cache()->forget('settings.' . $key);
         }
 
-        return cache()->rememberForever('settings.' . $key, function () use ($key, $default) {
-            $default = $default ?? static::default($key);
+        $cacheKey = 'settings.' . $key;
+        $value = cache()->get($cacheKey);
 
-            // Handle nested settings
-            if (str_contains($key, '.')) {
-                [$settingKey, $jsonKey] = explode('.', $key, 2);
+        if (! is_null($value)) {
+            return $value;
+        }
 
-                $setting = static::where('key', $settingKey)->first();
+        $nestedSettingFound = false;
 
-                if ($setting) {
-                    $value = $setting->value;
+        // Handle nested settings
+        if (str_contains($key, '.')) {
+            [$settingKey, $jsonKey] = explode('.', $key, 2);
 
-                    if (is_array($value) && array_key_exists($jsonKey, $value)) {
-                        return $value[$jsonKey];
-                    }
+            $setting = static::where('key', $settingKey)->first();
 
-                    return data_get($value, $jsonKey);
+            if ($setting) {
+                $nestedSettingFound = true;
+                $value = $setting->value;
+
+                if (is_array($value) && array_key_exists($jsonKey, $value)) {
+                    $value = $value[$jsonKey];
+                } else {
+                    $value = data_get($value, $jsonKey);
                 }
+            } else {
+                $value = static::where('key', $key)->value('value');
             }
+        } else {
+            $value = static::where('key', $key)->value('value');
+        }
 
-            return static::where('key', $key)->value('value') ?? $default;
-        });
+        if (! is_null($value)) {
+            cache()->forever($cacheKey, $value);
+
+            return $value;
+        }
+
+        if ($nestedSettingFound) {
+            return null;
+        }
+
+        return $default ?? static::default($key);
     }
 
     /**

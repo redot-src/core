@@ -64,11 +64,16 @@ class BuildDependenciesCommand extends Command
      */
     protected function buildLanguageFile(string $locale)
     {
+        $locale = strtolower($locale);
         $path = lang_path($locale . '.json');
-        $translations = json_decode(File::get($path) ?: '{}', true);
+        $translations = [];
 
-        // Push path to the dependencies array.
-        $this->dependsOnFile($path);
+        if (File::exists($path)) {
+            $translations = json_decode(File::get($path) ?: '{}', true);
+
+            // Push path to the dependencies array.
+            $this->dependsOnFile($path);
+        }
 
         foreach (glob(lang_path($locale . '/*.php')) as $file) {
             // Push path to the dependencies array.
@@ -147,11 +152,6 @@ class BuildDependenciesCommand extends Command
     {
         $path = dist_path('lock.json');
 
-        // Remove the lock file if it exists.
-        if (file_exists($path)) {
-            File::delete($path);
-        }
-
         $lock = [
             'files' => [],
             'directories' => [],
@@ -169,6 +169,6 @@ class BuildDependenciesCommand extends Command
 
         // Write the lock file.
         File::ensureDirectoryExists(dirname($path));
-        File::put($path, json_encode($lock, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
+        File::replace($path, json_encode($lock, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
     }
 }

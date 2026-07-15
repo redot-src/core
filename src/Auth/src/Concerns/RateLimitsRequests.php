@@ -2,6 +2,7 @@
 
 namespace Redot\Auth\Concerns;
 
+use Carbon\CarbonInterval;
 use Illuminate\Auth\Events\Lockout;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\RateLimiter;
@@ -16,10 +17,17 @@ trait RateLimitsRequests
      */
     protected function throttleKey(Request $request, AuthContext $context, string $prefix = ''): string
     {
-        $inputName = $context->identifierInputName();
-        $value = (string) $request->input($inputName);
+        $value = (string) $request->input($context->identifierInputName());
 
-        $key = Str::transliterate(Str::lower($value) . '|' . $request->ip());
+        return $this->throttleKeyFor($value, $request->ip(), $prefix);
+    }
+
+    /**
+     * Build the rate limiter key for the given identifier and IP address.
+     */
+    protected function throttleKeyFor(string $identifier, ?string $ip, string $prefix = ''): string
+    {
+        $key = Str::transliterate(Str::lower($identifier) . '|' . $ip);
 
         return $prefix === '' ? $key : $prefix . ':' . $key;
     }
@@ -43,9 +51,8 @@ trait RateLimitsRequests
         $inputName = $context->identifierInputName();
 
         throw ValidationException::withMessages([
-            $inputName => __('auth.throttle', [
-                'seconds' => $seconds,
-                'minutes' => ceil($seconds / 60),
+            $inputName => __('Too many attempts. Please try again in :time.', [
+                'time' => CarbonInterval::seconds($seconds)->cascade()->forHumans(['parts' => 2, 'join' => true]),
             ]),
         ]);
     }

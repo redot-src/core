@@ -3,6 +3,7 @@
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Validation\ValidationException;
+use Redot\Http\Middleware\RoutePermission;
 use Redot\Models\Setting;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
@@ -28,6 +29,8 @@ it('returns the input unchanged when the collection is at or under the limit', f
 });
 
 it('returns an authenticated json error payload for authentication exceptions', function () {
+    config()->set('app.debug', false);
+
     $response = throw_api_exception(new AuthenticationException);
 
     expect($response->getStatusCode())->toBe(401)
@@ -97,4 +100,15 @@ it('resolves a route name from a url that matches a registered route', function 
 
 it('returns null when the url does not match any registered route', function () {
     expect(route_from_url('http://localhost/no-such-route'))->toBeNull();
+});
+
+it('only applies route authorization to urls on the application host', function () {
+    Route::get('/protected', fn () => 'protected')
+        ->middleware(RoutePermission::class)
+        ->name('protected');
+    Route::getRoutes()->refreshNameLookups();
+
+    expect(url_allowed('https://evil.example/protected?return=http://localhost'))->toBeTrue()
+        ->and(url_allowed('http://localhost/protected'))->toBeFalse()
+        ->and(url_allowed('/protected'))->toBeFalse();
 });

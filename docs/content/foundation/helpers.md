@@ -30,8 +30,10 @@ Blade — without importing anything.
 ## URLs & routing
 
 - **`route_allowed('route.name')`** — whether the current admin may access a
-  named route. Use it to show/hide permission-gated UI. Unprotected routes are
-  always allowed; protected ones defer to the gate. See
+  named route. Use it to show/hide permission-gated UI. It applies the same
+  conventional and explicit permission aliases as route middleware. Routes that
+  opt out of permission middleware are allowed; protected routes defer to the
+  gate. See
   [Datatables](/packages/datatables/overview) for the common use.
 
   ```php

@@ -60,9 +60,7 @@ trait UserAuditable
      */
     public function createdBy()
     {
-        $provider = $this->getUserAuditableProvider();
-
-        return $provider ? $this->belongsTo($provider, 'created_by') : null;
+        return $this->userAuditableRelation('created_by');
     }
 
     /**
@@ -70,9 +68,7 @@ trait UserAuditable
      */
     public function updatedBy()
     {
-        $provider = $this->getUserAuditableProvider();
-
-        return $provider ? $this->belongsTo($provider, 'updated_by') : null;
+        return $this->userAuditableRelation('updated_by');
     }
 
     /**
@@ -80,8 +76,16 @@ trait UserAuditable
      */
     public function deletedBy()
     {
+        return $this->userAuditableRelation('deleted_by');
+    }
+
+    /**
+     * Build the auditable user relation for the given foreign key.
+     */
+    protected function userAuditableRelation(string $foreignKey)
+    {
         $provider = $this->getUserAuditableProvider();
 
-        return $provider ? $this->belongsTo($provider, 'deleted_by') : null;
+        return $provider ? $this->belongsTo($provider, $foreignKey) : null;
     }
 }

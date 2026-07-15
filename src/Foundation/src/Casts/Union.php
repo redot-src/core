@@ -20,7 +20,7 @@ class Union implements CastsAttributes
         }
 
         if (is_numeric($value)) {
-            return (int) $value;
+            return $this->castNumericString($value);
         }
 
         if (is_string($value) && (str_starts_with($value, '{') || str_starts_with($value, '['))) {
@@ -28,6 +28,28 @@ class Union implements CastsAttributes
         }
 
         return $value;
+    }
+
+    /**
+     * Cast a numeric string to int or float when it round-trips safely.
+     *
+     * Leading-zero strings (e.g. phone numbers) and integers that overflow
+     * PHP's int range are left as strings.
+     */
+    protected function castNumericString(mixed $value): int|float|string
+    {
+        // Early return if value is already an int or float
+        if (is_int($value) || is_float($value)) return $value;
+
+        // If value is a string and starts with a leading zero, return it as is
+        if (preg_match('/^[-+]?0\d/', $value)) return $value;
+
+        // If value is a string and contains a dot or e, return it as a float
+        if (str_contains($value, '.') || stripos($value, 'e') !== false) return (float) $value;
+
+        $int = (int) $value;
+
+        return (string) $int === $value || (string) $int === ltrim($value, '+') ? $int : $value;
     }
 
     /**

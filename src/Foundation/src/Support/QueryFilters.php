@@ -56,7 +56,7 @@ class QueryFilters
     /**
      * Derive filter definitions from a model's table schema.
      */
-    private function modelFilters(string $model): array
+    protected function modelFilters(string $model): array
     {
         if (! class_exists($model)) {
             throw new InvalidArgumentException("Query filters model [{$model}] does not exist.");
@@ -92,7 +92,7 @@ class QueryFilters
     /**
      * Map a database column type to a filter type.
      */
-    private function mapColumnType(string $rawType): ?string
+    protected function mapColumnType(string $rawType): ?string
     {
         $type = strtolower($rawType);
 
@@ -112,7 +112,7 @@ class QueryFilters
     /**
      * Build a single filter definition for the UI.
      */
-    private function buildDefinition(string $key, array $definition): array
+    protected function buildDefinition(string $key, array $definition): array
     {
         $type = $definition['type'];
         $hasValuesKey = isset($definition['values']);
@@ -154,7 +154,7 @@ class QueryFilters
     /**
      * Normalize a definition's `values` (callable, iterable, or absent).
      */
-    private function resolveValues(array $definition): ?array
+    protected function resolveValues(array $definition): ?array
     {
         if (! isset($definition['values'])) return null;
 
@@ -167,7 +167,7 @@ class QueryFilters
     /**
      * Default HTML input kind for a filter type.
      */
-    private function defaultInputFor(string $type): string
+    protected function defaultInputFor(string $type): string
     {
         return match ($type) {
             'boolean' => 'select',
@@ -179,7 +179,7 @@ class QueryFilters
     /**
      * Allowed operators for a filter type.
      */
-    private function operatorsFor(string $type): array
+    protected function operatorsFor(string $type): array
     {
         return match ($type) {
             'integer', 'double' => ['equal', 'not_equal', 'in', 'not_in', 'less', 'less_or_equal', 'greater', 'greater_or_equal', 'between', 'not_between', 'is_null', 'is_not_null'],
@@ -193,7 +193,7 @@ class QueryFilters
     /**
      * Apply a rules group to the query.
      */
-    private function applyGroup(EloquentBuilder|BaseQueryBuilder $query, array $group): void
+    protected function applyGroup(EloquentBuilder|BaseQueryBuilder $query, array $group): void
     {
         $condition = $this->resolveCondition($group);
         $rules = array_values(array_filter($group['rules'] ?? [], 'is_array'));
@@ -212,7 +212,7 @@ class QueryFilters
     /**
      * Wrap a nested rules group inside the query.
      */
-    private function applyNestedGroup(EloquentBuilder|BaseQueryBuilder $query, array $group, string $boolean): void
+    protected function applyNestedGroup(EloquentBuilder|BaseQueryBuilder $query, array $group, string $boolean): void
     {
         $method = $boolean === 'or' ? 'orWhere' : 'where';
 
@@ -222,7 +222,7 @@ class QueryFilters
     /**
      * Apply a single rule to the query.
      */
-    private function applyRule(EloquentBuilder|BaseQueryBuilder $query, array $rule, string $boolean): void
+    protected function applyRule(EloquentBuilder|BaseQueryBuilder $query, array $rule, string $boolean): void
     {
         [$prefix, $field] = explode(':', $this->decryptField($rule), 2);
         $operator = $rule['operator'] ?? null;
@@ -259,7 +259,7 @@ class QueryFilters
     /**
      * Resolve the AND/OR condition of a rules group.
      */
-    private function resolveCondition(array $group): string
+    protected function resolveCondition(array $group): string
     {
         return strtolower($group['condition'] ?? 'and') === 'or' ? 'or' : 'and';
     }
@@ -267,7 +267,7 @@ class QueryFilters
     /**
      * Decrypt the field name from a rule.
      */
-    private function decryptField(array $rule): string
+    protected function decryptField(array $rule): string
     {
         if (! isset($rule['field']) || ! is_string($rule['field'])) {
             throw new InvalidArgumentException('Query filter rule is missing a valid field.');

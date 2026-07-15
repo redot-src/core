@@ -19,6 +19,10 @@ class DateFilter extends Filter
         $from = $value['from'] ?? null;
         $to = $value['to'] ?? null;
 
+        // Discard non-scalar values (e.g. crafted array input).
+        $from = is_scalar($from) ? $from : null;
+        $to = is_scalar($to) ? $to : null;
+
         // Early return if the from and to are empty.
         if (! $from && ! $to) {
             return;
@@ -31,7 +35,8 @@ class DateFilter extends Filter
             } elseif (! $from && $to) {
                 $query->whereDate($column, '<=', $to);
             } elseif ($from && $to) {
-                $query->whereBetween($column, [$from, $to]);
+                $query->whereDate($column, '>=', $from)
+                    ->whereDate($column, '<=', $to);
             }
         });
     }

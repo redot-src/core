@@ -133,7 +133,7 @@ class Action
     }
 
     /**
-     * Create a new action instance.
+     * Create a new action instance statically.
      */
     public static function make(?string $label = null, ?string $icon = null): static
     {
@@ -141,17 +141,25 @@ class Action
     }
 
     /**
-     * Create a new view action instance.
+     * Create a new preset action instance.
      */
-    public static function view(?string $route = null, array $parameters = []): static
+    protected static function preset(string $label, string $icon, ?string $route = null, array $parameters = []): static
     {
-        $action = static::make(__('datatables::datatable.actions.view'), 'fas fa-eye')->fancybox();
+        $action = static::make($label, $icon);
 
         if ($route) {
             $action->route($route, $parameters);
         }
 
         return $action;
+    }
+
+    /**
+     * Create a new view action instance.
+     */
+    public static function view(?string $route = null, array $parameters = []): static
+    {
+        return static::preset(__('datatables::datatable.actions.view'), 'fas fa-eye', $route, $parameters)->fancybox();
     }
 
     /**
@@ -159,13 +167,7 @@ class Action
      */
     public static function edit(?string $route = null, array $parameters = []): static
     {
-        $action = static::make(__('datatables::datatable.actions.edit'), 'fas fa-edit');
-
-        if ($route) {
-            $action->route($route, $parameters);
-        }
-
-        return $action;
+        return static::preset(__('datatables::datatable.actions.edit'), 'fas fa-edit', $route, $parameters);
     }
 
     /**
@@ -173,13 +175,7 @@ class Action
      */
     public static function delete(?string $route = null, array $parameters = []): static
     {
-        $action = static::make(__('datatables::datatable.actions.delete'), 'fas fa-trash-alt')->method('delete')->confirmable();
-
-        if ($route) {
-            $action->route($route, $parameters);
-        }
-
-        return $action;
+        return static::preset(__('datatables::datatable.actions.delete'), 'fas fa-trash-alt', $route, $parameters)->method('delete')->confirmable();
     }
 
     /**
@@ -187,13 +183,7 @@ class Action
      */
     public static function restore(?string $route = null, array $parameters = []): static
     {
-        $action = static::make(__('datatables::datatable.actions.restore'), 'fas fa-trash-restore')->method('post')->confirmable();
-
-        if ($route) {
-            $action->route($route, $parameters);
-        }
-
-        return $action;
+        return static::preset(__('datatables::datatable.actions.restore'), 'fas fa-trash-restore', $route, $parameters)->method('post')->confirmable();
     }
 
     /**
@@ -201,13 +191,7 @@ class Action
      */
     public static function export(?string $route = null, array $parameters = []): static
     {
-        $action = static::make(__('datatables::datatable.actions.export'), 'fas fa-file-export');
-
-        if ($route) {
-            $action->route($route, $parameters);
-        }
-
-        return $action;
+        return static::preset(__('datatables::datatable.actions.export'), 'fas fa-file-export', $route, $parameters);
     }
 
     /**
@@ -436,9 +420,9 @@ class Action
     /**
      * Determine if the action should be rendered.
      */
-    public function shouldRender(Model $row): bool
+    public function shouldRender(mixed ...$args): bool
     {
-        return $this->visible && ($this->condition ? call_user_func($this->condition, $row) : true);
+        return $this->visible && ($this->condition ? call_user_func($this->condition, ...$args) : true);
     }
 
     /**

@@ -2,11 +2,11 @@
 
 namespace Redot\Auth\Concerns;
 
+use Closure;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Redot\Auth\AuthContext;
-use Throwable;
 
 trait QueriesUsers
 {
@@ -30,7 +30,7 @@ trait QueriesUsers
     /**
      * Apply the context's custom scope to the user query.
      */
-    protected function applyScope(Builder $query, ?\Closure $scope): Builder
+    protected function applyScope(Builder $query, ?Closure $scope): Builder
     {
         if ($scope === null) {
             return $query;
@@ -46,10 +46,21 @@ trait QueriesUsers
      */
     protected function touchLastLoginAt(Authenticatable|Model $user): void
     {
-        try {
-            $user->update(['last_login_at' => now()]);
-        } catch (Throwable) {
-            // Ignore errors if the model lacks last_login_at.
+        if (! $user->isFillable('last_login_at')) {
+            return;
         }
+
+        // Memoized per connection and table: the schema cannot change mid-process,
+        // so pay the introspection query at most once instead of on every login.
+        static $hasColumn = [];
+
+        $key = $user->getConnectionName() . ':' . $user->getTable();
+        $hasColumn[$key] ??= $user->getConnection()->getSchemaBuilder()->hasColumn($user->getTable(), 'last_login_at');
+
+        if (! $hasColumn[$key]) {
+            return;
+        }
+
+        $user->update(['last_login_at' => now()]);
     }
 }

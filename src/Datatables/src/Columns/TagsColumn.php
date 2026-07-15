@@ -46,13 +46,13 @@ class TagsColumn extends Column
      */
     protected function defaultGetter(mixed $value, Model $row): mixed
     {
-        if (! $value || empty($value)) {
+        if (empty($value)) {
             return null;
         }
 
-        $count = count($value);
-        $tags = collect($value)->take($this->limit)->when($count > $this->limit, fn ($collection) => $collection->push($this->ellipsis));
-        $tags = $tags->map(fn ($tag) => sprintf('<span class="tag">%s</span>', $tag))->join('');
+        $value = collect($value);
+        $tags = $value->take($this->limit)->when($value->count() > $this->limit, fn ($collection) => $collection->push($this->ellipsis));
+        $tags = $tags->map(fn ($tag) => sprintf('<span class="tag">%s</span>', e($tag)))->join('');
 
         return sprintf('<div class="tags-list">%s</div>', $tags);
     }

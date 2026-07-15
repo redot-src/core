@@ -34,12 +34,24 @@ it('runs inline actions nested inside action groups', function () {
     expect($post->fresh()->approved)->toBeFalse();
 });
 
+it('rejects grouped inline actions when the action group is not available for the row', function () {
+    $post = RunActionPost::query()->create(['approved' => false]);
+
+    Livewire::test(RunActionDatatable::class)
+        ->call('runAction', 'archive', $post->getKey());
+})->throws(InvalidActionException::class, 'Action [archive] not found.');
+
 it('throws when the inline action name is unknown', function () {
     $post = RunActionPost::query()->create(['approved' => false]);
 
     Livewire::test(RunActionDatatable::class)
         ->call('runAction', 'missing', $post->getKey());
 })->throws(InvalidActionException::class, 'Action [missing] not found.');
+
+it('throws when the row is missing for a model without soft deletes', function () {
+    Livewire::test(RunActionDatatable::class)
+        ->call('runAction', 'approve', 999);
+})->throws(InvalidActionException::class, 'Row [999] not found.');
 
 it('throws when the inline action is not available for the row', function () {
     $post = RunActionPost::query()->create(['approved' => true]);

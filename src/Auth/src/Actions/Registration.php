@@ -12,30 +12,19 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rules;
 use Redot\Auth\AuthContext;
+use Redot\Auth\Concerns\IssuesApiTokens;
+use Redot\Auth\Concerns\ResolvesValidationRules;
 use Redot\Auth\Contracts\RegistrationAction;
 use Redot\Traits\RespondAsApi;
 
 class Registration implements RegistrationAction
 {
-    use RespondAsApi;
-
-    /**
-     * Custom registration validation rules, keyed by provider.
-     */
-    protected static array $rules = [];
+    use IssuesApiTokens, ResolvesValidationRules, RespondAsApi;
 
     /**
      * Custom user creation callbacks, keyed by provider.
      */
     protected static array $createUsing = [];
-
-    /**
-     * Override the registration validation rules for the given provider.
-     */
-    public static function validationRules(string $provider, array|Closure $rules): void
-    {
-        static::$rules[$provider] = $rules;
-    }
 
     /**
      * Override how users are created for the given provider.
@@ -57,37 +46,20 @@ class Registration implements RegistrationAction
         event(new Registered($user));
 
         if ($context->api) {
-            $token = $user->createToken('auth_token')->plainTextToken;
-
-            return $this->respond(
-                code: 201,
-                payload: [
-                    'token' => $token,
-                    'token_type' => 'Bearer',
-                ],
-            );
+            return $this->issueToken($user, 201);
         }
 
         Auth::guard($context->guard)->login($user);
+        $request->session()->regenerate();
 
         return redirect()->intended($context->homeUrl());
     }
 
     /**
-     * Resolve the validation rules for the registration request.
+     * Get the default validation rules for the registration request.
      */
-    protected function rules(AuthContext $context): array
+    protected function defaultRules(AuthContext $context): array
     {
-        $rules = static::$rules[$context->provider] ?? null;
-
-        if ($rules instanceof Closure) {
-            return ($rules)($context);
-        }
-
-        if (is_array($rules)) {
-            return $rules;
-        }
-
         return [
             'email' => ['required', 'string', 'email', 'max:255', 'unique:' . $context->model],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],

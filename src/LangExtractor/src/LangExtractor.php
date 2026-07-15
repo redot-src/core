@@ -28,21 +28,19 @@ class LangExtractor
     protected array $translations = [];
 
     /**
+     * The functions to extract translations from.
+     */
+    public static array $functions = ['__', 'trans', '@lang'];
+
+    /**
      * Create a new instance.
      */
     public function __construct($directories = [], $extensions = [])
     {
-        $this->directories = $directories;
+        if (count($directories) > 0) $this->searchIn(...$directories);
+        if (count($extensions) > 0) $this->withExtensions(...$extensions);
 
-        if (count($this->directories) === 0) {
-            $this->searchIn(resource_path(), app_path('Http'), app_path('Livewire'));
-        }
-
-        if (count($extensions) > 0) {
-            $this->withExtensions(...$extensions);
-        }
-
-        $this->pattern = $this->generatePatternUsing('__', 'trans', '@lang');
+        $this->pattern = $this->generatePatternUsing(...self::$functions);
     }
 
     /**
@@ -85,7 +83,7 @@ class LangExtractor
 
         $ignore = count($ignore) > 0 ? '(?!' . implode('|', $ignore) . ')' : '';
 
-        return '/(?:' . implode('|', $functions) . ")\s*\(\s*(['\"])(?<translation>{$ignore}(?:\\\\.|(?!\\1).)+?)(?<!\\\\)\\1/s";
+        return '/(?<![A-Za-z0-9_])(?:' . implode('|', $functions) . ")\s*\(\s*(['\"])(?<translation>{$ignore}(?:\\\\.|(?!\\1).)+?)(?<!\\\\)\\1/s";
     }
 
     /**
@@ -93,6 +91,12 @@ class LangExtractor
      */
     public function extract(): static
     {
+        if (count($this->directories) === 0) {
+            $defaults = array_filter([resource_path(), app_path('Http'), app_path('Livewire')], fn ($directory) => is_dir($directory));
+
+            $this->searchIn(...$defaults);
+        }
+
         $translations = collect();
 
         $files = Finder::create()->files()->ignoreVCSIgnored(true);
@@ -120,9 +124,9 @@ class LangExtractor
      */
     protected function extractMatchesFromString(string $contents): array
     {
-        preg_match_all($this->pattern, $contents, $matches);
+        preg_match_all($this->pattern, $contents, $matches, PREG_SET_ORDER);
 
-        return $matches['translation'];
+        return array_map(fn ($match) => strtr($match['translation'], ['\\' . $match[1] => $match[1]]), $matches);
     }
 
     /**
@@ -130,8 +134,7 @@ class LangExtractor
      */
     protected function formatTranslations(array $translations): array
     {
-        $replacements = ['\"' => '"', '\\\'' => '\''];
-        $translations = collect($translations)->map(fn ($translation) => trim(strtr($translation, $replacements)));
+        $translations = collect($translations)->map(fn ($translation) => trim($translation));
 
         $translations = $translations->filter()->unique(strict: true)->values()->toArray();
 
@@ -143,7 +146,7 @@ class LangExtractor
      */
     public function mergeWithFile(string $path): static
     {
-        $old = File::exists($path) ? json_decode(File::get($path), true) : [];
+        $old = File::exists($path) ? json_decode(File::get($path), true) ?? [] : [];
 
         if (count($old) > 0) {
             $this->translations = array_merge($this->translations, $old);

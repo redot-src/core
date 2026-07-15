@@ -70,10 +70,8 @@ class TernaryColumn extends Column
     {
         parent::prepareAttributes($row);
 
-        // Get the value of the column.
-        $value = $this->get($row, true);
-
-        if ($value === $this->true) {
+        // Style on the raw value's truthiness, mirroring defaultGetter's test.
+        if ($this->get($row, raw: true)) {
             $this->class('bg-success-lt');
         } else {
             $this->class('bg-danger-lt');

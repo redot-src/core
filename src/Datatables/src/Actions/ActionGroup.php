@@ -33,7 +33,7 @@ class ActionGroup
     public bool $visible = true;
 
     /**
-     * The condition callback of the action.
+     * The condition callback of the action group.
      */
     public ?Closure $condition = null;
 
@@ -57,7 +57,7 @@ class ActionGroup
     }
 
     /**
-     * Create a new action group instance.
+     * Create a new action group instance statically.
      */
     public static function make(?string $label = null, ?string $icon = null): static
     {
@@ -139,11 +139,12 @@ class ActionGroup
     /**
      * Determine if the action group should be rendered.
      */
-    public function shouldRender(Model $row): bool
+    public function shouldRender(mixed ...$args): bool
     {
-        $hasChildren = ! empty(array_filter($this->actions, fn (Action $action) => $action->shouldRender($row)));
+        $visible = $this->visible && ($this->condition ? call_user_func($this->condition, ...$args) : true);
+        $hasChildren = ! empty(array_filter($this->actions, fn (Action $action) => $action->shouldRender(...$args)));
 
-        return $this->visible && ($this->condition ? call_user_func($this->condition, $row) : true) && $hasChildren;
+        return $visible && $hasChildren;
     }
 
     /**

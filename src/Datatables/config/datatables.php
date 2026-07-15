@@ -14,16 +14,8 @@ return [
     */
 
     'assets' => [
-        'css' => [
-            'file' => dirname(__DIR__) . '/resources/css/datatables.css',
-            'uri' => 'datatables/datatables.css',
-            'route' => 'datatables.css',
-        ],
-        'js' => [
-            'file' => dirname(__DIR__) . '/resources/js/datatables.js',
-            'uri' => 'datatables/datatables.js',
-            'route' => 'datatables.js',
-        ],
+        'css' => 'vendor/datatables/datatables.css',
+        'js' => 'vendor/datatables/datatables.js',
     ],
 
     'export' => [

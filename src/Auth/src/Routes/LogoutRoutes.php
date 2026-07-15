@@ -20,10 +20,7 @@ class LogoutRoutes implements RouteRegistrar
         $action = app(Logout::class);
 
         Route::middleware($context->auth())->group(function () use ($context, $action) {
-            $route = match ($context->api) {
-                true => Route::delete('logout', fn (Request $request): RedirectResponse|JsonResponse => $action->logout($request, $context)),
-                false => Route::post('logout', fn (Request $request): RedirectResponse|JsonResponse => $action->logout($request, $context)),
-            };
+            $route = Route::match(['delete', 'post'], 'logout', fn (Request $request): RedirectResponse|JsonResponse => $action->logout($request, $context));
 
             if ($context->featureEnabled('lock-screen')) {
                 $route->withoutMiddleware($context->lockedMiddleware());

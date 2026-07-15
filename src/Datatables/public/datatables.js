@@ -46,7 +46,7 @@ $(document).on('click', '.datatable-action[method]:not([method="get"])', (event)
     };
 
     // Early return if no confirmation is required
-    if ($action.hasAttr('confirm') === false) {
+    if ($action.is('[confirm]') === false) {
         return callback();
     }
 
@@ -76,7 +76,7 @@ $(document).on('click', '.datatable-action[action-name]', (event) => {
 
     const run = () => wire.call('runAction', name, key);
 
-    if ($action.hasAttr('confirm') === false) {
+    if ($action.is('[confirm]') === false) {
         return run();
     }
 

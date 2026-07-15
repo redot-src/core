@@ -35,6 +35,6 @@ class IconColumn extends Column
             return null;
         }
 
-        return sprintf('<i class="%s"></i>', $value);
+        return sprintf('<i class="%s"></i>', e($value));
     }
 }

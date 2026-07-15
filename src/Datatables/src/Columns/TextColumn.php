@@ -195,11 +195,11 @@ class TextColumn extends Column
         }
 
         if ($this->email) {
-            return sprintf('<a href="mailto:%s">%s</a>', $value, $value);
+            return sprintf('<a href="mailto:%s">%s</a>', e($value), e($value));
         }
 
         if ($this->phone) {
-            return sprintf('<a href="tel:%s">%s</a>', $value, $value);
+            return sprintf('<a href="tel:%s">%s</a>', e($value), e($value));
         }
 
         if ($this->url) {
@@ -213,14 +213,20 @@ class TextColumn extends Column
 
                 $url = route($urlOptions['route'], array_merge([$row], $parameters));
             } else {
-                $url = $value;
+                $url = $this->safeUrl($value);
+            }
+
+            $text = $this->evaluate($urlOptions['text'], $value, $row) ?? $value;
+
+            if (is_null($url)) {
+                return e($text);
             }
 
             return sprintf('<a href="%s" target="%s"%s>%s</a>',
-                $url,
-                $urlOptions['target'],
+                e($url),
+                e($urlOptions['target']),
                 $urlOptions['fancybox'] ? ' data-fancybox' : '',
-                $this->evaluate($urlOptions['text'], $value, $row) ?? $value,
+                e($text),
             );
         }
 
@@ -237,5 +243,23 @@ class TextColumn extends Column
         }
 
         return $value;
+    }
+
+    /**
+     * Reject URLs with unsafe schemes such as "javascript:".
+     */
+    protected function safeUrl(string $url): ?string
+    {
+        // Browsers ignore control characters when parsing schemes
+        // (e.g. "java\tscript:"), so strip them before validating.
+        $normalized = preg_replace('/[\x00-\x20]/', '', $url);
+
+        $hasScheme = preg_match('/^([a-z][a-z0-9+.\-]*):/i', $normalized, $matches);
+
+        if ($hasScheme && ! in_array(strtolower($matches[1]), ['http', 'https'], true)) {
+            return null;
+        }
+
+        return $url;
     }
 }

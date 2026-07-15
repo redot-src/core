@@ -4,6 +4,7 @@ namespace Redot\Rules;
 
 use Closure;
 use Illuminate\Contracts\Validation\ValidationRule;
+use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Translation\PotentiallyTranslatedString;
 
@@ -46,17 +47,17 @@ class Captcha implements ValidationRule
         $endpoint = 'https://challenges.cloudflare.com/turnstile/v0/siteverify';
 
         // Early return if the secret key is not set
-        if (! $secret) {
+        if (! $secret) return false;
+
+        try {
+            $response = Http::timeout(5)->post($endpoint, [
+                'secret' => $secret,
+                'response' => $token,
+            ]);
+        } catch (ConnectionException) {
             return false;
         }
 
-        $response = Http::post($endpoint, [
-            'secret' => $secret,
-            'response' => $token,
-        ]);
-
-        $response = $response->json();
-
-        return $response['success'];
+        return $response->successful() && (bool) $response->json('success', false);
     }
 }
