@@ -2,7 +2,6 @@
 
 namespace Redot\Auth\Actions;
 
-use Closure;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -10,14 +9,16 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Redot\Auth\AuthContext;
+use Redot\Auth\Concerns\IssuesApiTokens;
 use Redot\Auth\Concerns\QueriesUsers;
 use Redot\Auth\Concerns\RateLimitsRequests;
+use Redot\Auth\Concerns\ResolvesValidationRules;
 use Redot\Auth\Contracts\LoginAction;
 use Redot\Traits\RespondAsApi;
 
 class Login implements LoginAction
 {
-    use QueriesUsers, RateLimitsRequests, RespondAsApi;
+    use IssuesApiTokens, QueriesUsers, RateLimitsRequests, ResolvesValidationRules, RespondAsApi;
 
     /**
      * The identifier columns used to look up users, keyed by provider.
@@ -25,24 +26,11 @@ class Login implements LoginAction
     protected static array $identifiers = [];
 
     /**
-     * Custom login validation rules, keyed by provider.
-     */
-    protected static array $rules = [];
-
-    /**
      * Override the identifier columns used to look up users for the given provider.
      */
     public static function identifiers(string $provider, array $identifiers): void
     {
         static::$identifiers[$provider] = $identifiers;
-    }
-
-    /**
-     * Override the login validation rules for the given provider.
-     */
-    public static function validationRules(string $provider, array|Closure $rules): void
-    {
-        static::$rules[$provider] = $rules;
     }
 
     /**
@@ -74,12 +62,7 @@ class Login implements LoginAction
         $this->clear($request, $context);
 
         if ($context->api) {
-            $token = $user->createToken('auth_token')->plainTextToken;
-
-            return $this->respond([
-                'token' => $token,
-                'token_type' => 'Bearer',
-            ]);
+            return $this->issueToken($user);
         }
 
         Auth::guard($context->guard)->login($user, $request->boolean('remember'));
@@ -93,25 +76,28 @@ class Login implements LoginAction
      */
     protected function checkCredentials(?Authenticatable $user, Request $request): bool
     {
-        return $user !== null
-            && Hash::check((string) $request->input('password'), (string) $user->password);
+        $hash = $user !== null ? (string) $user->password : $this->dummyHash();
+
+        return Hash::check((string) $request->input('password'), $hash)
+            && $user !== null;
     }
 
     /**
-     * Resolve the validation rules for the login request.
+     * Get a hash used to equalize credential checks for missing users.
+     *
+     * Precomputed (bcrypt, cost 12 — the framework default) so the missing-user
+     * path costs exactly one hash verification, the same as a real user.
      */
-    protected function rules(AuthContext $context): array
+    protected function dummyHash(): string
     {
-        $rules = static::$rules[$context->provider] ?? null;
+        return '$2y$12$IzkCRAaKJXyD6YA.rcaXR.e0lJ/xGoficfrXqmJ0fqSpUSbhY4IHW';
+    }
 
-        if ($rules instanceof Closure) {
-            return ($rules)($context);
-        }
-
-        if (is_array($rules)) {
-            return $rules;
-        }
-
+    /**
+     * Get the default validation rules for the login request.
+     */
+    protected function defaultRules(AuthContext $context): array
+    {
         $inputName = $context->identifierInputName();
 
         return [

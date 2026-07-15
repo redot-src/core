@@ -13,6 +13,9 @@ use Livewire\Component;
  */
 class LivewireToastifier
 {
+    /**
+     * Create a new LivewireToastifier instance.
+     */
     public function __construct(protected Component $component) {}
 
     /**

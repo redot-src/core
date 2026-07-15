@@ -58,6 +58,22 @@ link.
 
 - **`--name`** — the name of the link to create (defaults to `public_html`).
 
+## `datatables:link`
+
+```bash
+php artisan datatables:link
+php artisan datatables:link --force
+php artisan datatables:link --relative
+```
+
+Creates a symbolic link from `public/vendor/datatables` to the Datatables
+package assets. Required once per install (and again after upgrades) so the
+table's CSS/JS are served statically. Prefer
+`vendor:publish --tag=datatables::assets` if symlinks are unavailable.
+
+- **`--force`** — recreate the symlink if it already exists.
+- **`--relative`** — create a relative symlink.
+
 ## `permissions:sync`
 
 ```bash
@@ -65,10 +81,14 @@ php artisan permissions:sync
 ```
 
 Auto-discovers permission-guarded routes and persists them as Spatie permission
-records, using the route name as the permission name. Existing permissions are
-left untouched. Run it (or re-seed) whenever you add or rename permission-guarded
-routes. See [Middleware](/foundation/middleware) for how routes opt into
-permission checks.
+records. Discovery includes every HTTP verb. Conventional `store` routes share
+their `create` permission, conventional `update` routes share their `edit`
+permission, and overrides configured with `usePermission()` or resource-level
+`usePermissions()` use their explicit permissions. Existing permissions are
+left untouched. Run it (or re-seed)
+whenever you add or rename permission-guarded routes. See
+[Middleware](/foundation/middleware) for permission resolution and opt-out
+details.
 
 ## Language token commands
 

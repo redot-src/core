@@ -4,13 +4,8 @@ namespace Redot\Datatables\Filters;
 
 use Illuminate\Database\Eloquent\Builder;
 
-class NumberFilter extends Filter
+class NumberFilter extends OperatorFilter
 {
-    /**
-     * Filter operations.
-     */
-    public array $operators = [];
-
     /**
      * The filter's view.
      */
@@ -32,28 +27,18 @@ class NumberFilter extends Filter
     }
 
     /**
-     * Apply the filter to the given query.
+     * Apply the given operator constraint to the query column.
      */
-    public function apply(Builder $query, mixed $value): void
+    protected function applyOperator(Builder $query, string $column, string $operator, mixed $value): void
     {
-        $operator = isset($value['operator']) ? $value['operator'] : 'equals';
-        $value = isset($value['value']) ? $value['value'] : '';
-
-        // Early return if the value is empty.
-        if (empty($value)) {
-            return;
-        }
-
-        // Apply the filter to all columns with OR logic.
-        $this->applyToColumns($query, function (Builder $query, string $column) use ($operator, $value) {
-            match ($operator) {
-                'equals' => $query->where($column, $value),
-                'not_equals' => $query->where($column, '!=', $value),
-                'greater_than' => $query->where($column, '>', $value),
-                'greater_than_or_equals' => $query->where($column, '>=', $value),
-                'less_than' => $query->where($column, '<', $value),
-                'less_than_or_equals' => $query->where($column, '<=', $value),
-            };
-        });
+        match ($operator) {
+            'equals' => $query->where($column, $value),
+            'not_equals' => $query->where($column, '!=', $value),
+            'greater_than' => $query->where($column, '>', $value),
+            'greater_than_or_equals' => $query->where($column, '>=', $value),
+            'less_than' => $query->where($column, '<', $value),
+            'less_than_or_equals' => $query->where($column, '<=', $value),
+            default => null,
+        };
     }
 }

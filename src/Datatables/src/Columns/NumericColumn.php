@@ -26,6 +26,10 @@ class NumericColumn extends Column
      */
     protected function defaultGetter(mixed $value, Model $row): mixed
     {
+        if (is_null($value)) {
+            return null;
+        }
+
         if ($this->precision !== null) {
             return number_format($value, $this->precision);
         }

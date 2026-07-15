@@ -10,8 +10,11 @@ use Illuminate\Foundation\Console\AboutCommand;
 use Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\Paginator;
+use Illuminate\Routing\PendingResourceRegistration;
+use Illuminate\Routing\Route as RoutingRoute;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Blade;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\URL;
@@ -36,6 +39,7 @@ use Redot\Models\Language;
 use Redot\Rules\Captcha;
 use Redot\Rules\Phone;
 use Redot\Sidebar\Sidebar;
+use Redot\Support\PermissionNameResolver;
 use Redot\Toastify\LaravelToastifyServiceProvider;
 
 class RedotServiceProvider extends ServiceProvider
@@ -74,14 +78,11 @@ class RedotServiceProvider extends ServiceProvider
      */
     protected function config(): void
     {
-        $this->mergeConfigFrom(
-            dirname(__DIR__) . '/config/redot.php',
-            'redot'
-        );
-
         $this->publishes([
-            dirname(__DIR__) . '/config/redot.php' => config_path('redot.php'),
+            __DIR__ . '/../config/redot.php' => config_path('redot.php'),
         ], 'redot::config');
+
+        $this->mergeConfigFrom(__DIR__ . '/../config/redot.php', 'redot');
     }
 
     /**
@@ -109,7 +110,10 @@ class RedotServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        $this->optimizes('dependencies:build', key: 'dependencies');
+
         $this->configureAboutCommand();
+        $this->configurePermissionRoutes();
 
         $this->configureBlade();
         $this->configurePaginatorView();
@@ -122,6 +126,24 @@ class RedotServiceProvider extends ServiceProvider
 
         $this->configureValidationRules();
         $this->configureJsonCast();
+    }
+
+    /**
+     * Configure permission aliases on dashboard routes.
+     */
+    protected function configurePermissionRoutes(): void
+    {
+        RoutingRoute::macro('usePermission', function (string $permission) {
+            $this->action[PermissionNameResolver::ACTION_KEY] = $permission;
+
+            return $this;
+        });
+
+        PendingResourceRegistration::macro('usePermissions', function (array $permissions) {
+            return $this->metadata([
+                'redot' => ['permissions' => $permissions],
+            ]);
+        });
     }
 
     /**
@@ -173,11 +195,22 @@ class RedotServiceProvider extends ServiceProvider
      */
     protected function configureApplicationLocales(): void
     {
+        // Invalidate the cached locales and built dependencies on Language changes
+        $invalidate = function () {
+            Cache::forget('redot.locales');
+            trigger_dependencies_build();
+        };
+
+        Language::saved($invalidate);
+        Language::deleted($invalidate);
+
         try {
-            config(['app.locales' => Language::pluck('name', 'code')->toArray()]);
+            $locales = Cache::rememberForever('redot.locales', fn () => Language::pluck('name', 'code')->toArray());
         } catch (Exception) {
-            config(['app.locales' => array_column(config('redot.locales'), 'name', 'code')]);
+            $locales = array_column(config('redot.locales'), 'name', 'code');
         }
+
+        config(['app.locales' => $locales]);
 
         // Set the default locale to the first locale in the locales array
         URL::defaults(['locale' => Arr::first(array_keys(config('app.locales')))]);

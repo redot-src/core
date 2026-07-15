@@ -2,6 +2,14 @@
 
 return [
 
+    /*--------------------------------------------------------------------------
+    | Toastifiers
+    |--------------------------------------------------------------------------
+    |
+    | The toastifiers that are available for the application.
+    |
+    */
+
     'toastifiers' => [
         'toast' => [
             'icon' => 'fas fa-bell',
@@ -24,6 +32,14 @@ return [
             'color' => 'var(--tblr-warning)',
         ],
     ],
+
+    /*--------------------------------------------------------------------------
+    | Toastify Defaults
+    |--------------------------------------------------------------------------
+    |
+    | The default values for the toastifiers.
+    |
+    */
 
     'defaults' => [
         'position' => 'bottom-right',

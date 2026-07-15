@@ -30,8 +30,10 @@ Blade — without importing anything.
 ## URLs & routing
 
 - **`route_allowed('route.name')`** — whether the current admin may access a
-  named route. Use it to show/hide permission-gated UI. Unprotected routes are
-  always allowed; protected ones defer to the gate. See
+  named route. Use it to show/hide permission-gated UI. It applies the same
+  conventional and explicit permission aliases as route middleware. Routes that
+  opt out of permission middleware are allowed; protected routes defer to the
+  gate. See
   [Datatables](/packages/datatables/overview) for the common use.
 
   ```php
@@ -74,8 +76,8 @@ Blade — without importing anything.
   }
   ```
 
-- **`is_mobile()` / `is_desktop()`** — detect the device from the request's
-  user agent. Both return `false` safely when there is no request (e.g. console).
+- **`is_mobile()`** — detect a mobile device from the request's user agent.
+  Returns `false` safely when there is no request (e.g. console).
 
   ```php
   if (is_mobile()) {
@@ -92,14 +94,6 @@ Blade — without importing anything.
   ```php
   format_phone('01001234567');        // +201001234567
   format_phone('2025550123', 'US');   // +12025550123
-  ```
-
-- **`switch_badge($value, $true, $false)`** — render a green/red yes/no badge for
-  a truthy/falsy value. Returns raw HTML, so echo it unescaped.
-
-  ```blade
-  {!! switch_badge($post->is_active) !!}
-  {!! switch_badge($post->published, __('Published'), __('Draft')) !!}
   ```
 
 - **`no_content()`** — a muted "No content" placeholder for empty rich-text

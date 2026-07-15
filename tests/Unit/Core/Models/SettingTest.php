@@ -8,6 +8,23 @@ it('falls back to the configured schema default when the setting is not persiste
         ->and(Setting::get('theme.primary'))->toBe('blue');
 });
 
+it('does not cache caller defaults for settings that are not persisted', function () {
+    expect(Setting::get('items_per_page', 25))->toBe(25)
+        ->and(Setting::get('items_per_page', 50))->toBe(50)
+        ->and(cache()->has('settings.items_per_page'))->toBeFalse();
+});
+
+it('continues to cache persisted setting values', function () {
+    Setting::set('items_per_page', 25);
+
+    expect(Setting::get('items_per_page'))->toBe(25);
+
+    Setting::where('key', 'items_per_page')->update(['value' => 50]);
+
+    expect(Setting::get('items_per_page'))->toBe(25)
+        ->and(Setting::get('items_per_page', fresh: true))->toBe(50);
+});
+
 it('returns the configured default for a key including nested dot paths', function () {
     expect(Setting::default('theme.primary'))->toBe('blue')
         ->and(Setting::default('app_name.en'))->toBe('Dashboard')
@@ -33,6 +50,16 @@ it('invalidates the top-level cache when the setting record changes', function (
     Setting::where('key', 'app_name')->first()->update(['value' => ['en' => 'New']]);
 
     expect(Setting::get('app_name.en'))->toBe('New');
+});
+
+it('invalidates the cache when the setting record is deleted', function () {
+    Setting::set('page_loader_enabled', true);
+
+    expect(Setting::get('page_loader_enabled'))->toBeTrue();
+
+    Setting::where('key', 'page_loader_enabled')->first()->delete();
+
+    expect(Setting::get('page_loader_enabled'))->toBeFalse();
 });
 
 it('exposes the validation rules declared per setting and per nested path', function () {

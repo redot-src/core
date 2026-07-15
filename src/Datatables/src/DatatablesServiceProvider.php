@@ -4,37 +4,35 @@ namespace Redot\Datatables;
 
 use Illuminate\Support\ServiceProvider;
 use Redot\Datatables\Commands\DatatableMakeCommand;
+use Redot\Datatables\Commands\DatatablesLinkCommand;
 
 class DatatablesServiceProvider extends ServiceProvider
 {
+    /**
+     * Register the application services.
+     */
+    public function register(): void
+    {
+        $this->mergeConfigFrom(__DIR__ . '/../config/datatables.php', 'datatables');
+    }
+
     /**
      * Bootstrap the application services.
      */
     public function boot(): void
     {
-        $this->config();
-        $this->views();
-        $this->lang();
-        $this->routes();
-
-        $this->commands([
-            DatatableMakeCommand::class,
-        ]);
-    }
-
-    /**
-     * Register the package configuration.
-     */
-    protected function config(): void
-    {
-        $this->mergeConfigFrom(
-            __DIR__ . '/../config/datatables.php',
-            'datatables'
-        );
-
         $this->publishes([
             __DIR__ . '/../config/datatables.php' => config_path('datatables.php'),
         ], 'datatables::config');
+
+        $this->views();
+        $this->lang();
+        $this->assets();
+
+        $this->commands([
+            DatatableMakeCommand::class,
+            DatatablesLinkCommand::class,
+        ]);
     }
 
     /**
@@ -68,20 +66,12 @@ class DatatablesServiceProvider extends ServiceProvider
     }
 
     /**
-     * Register the package routes.
+     * Register the package public assets.
      */
-    protected function routes(): void
+    protected function assets(): void
     {
-        $this->loadRoutesFrom(
-            __DIR__ . '/../routes/datatable.php'
-        );
-    }
-
-    /**
-     * Register the application services.
-     */
-    public function register(): void
-    {
-        // ...
+        $this->publishes([
+            __DIR__ . '/../public' => public_path('vendor/datatables'),
+        ], 'datatables::assets');
     }
 }

@@ -68,7 +68,24 @@ A datatable is a Livewire component, so mount it with Livewire's tag syntax. Pub
 
 ## Assets
 
-The package serves its own JS and CSS — there's no build step or `npm` publish. The table injects them on the page automatically the first time one renders, so you don't wire anything up by hand. The scripts expect jQuery, Bootstrap dropdowns, and Livewire to be present globally, so make sure your layout loads all three. See the [Asset & Init System](/frontend/asset-system) for how front-end assets are served.
+The package ships plain JS and CSS under `public/vendor/datatables` — there's no build step or `npm` publish. Link them once (like `storage:link`), then the table injects them automatically the first time one renders:
+
+```bash
+php artisan datatables:link
+php artisan datatables:link --force
+php artisan datatables:link --relative
+```
+
+- **`--force`** — recreate the symlink if it already exists.
+- **`--relative`** — create a relative symlink (useful in some deploy layouts).
+
+Prefer a copy instead of a symlink? Publish the assets:
+
+```bash
+php artisan vendor:publish --tag=datatables::assets --force
+```
+
+Re-run the link (or publish with `--force`) after upgrading `redot/core` so CSS/JS stay current. The scripts expect jQuery, Bootstrap dropdowns, and Livewire to be present globally. See the [Asset & Init System](/frontend/asset-system) for how front-end assets are served.
 
 If you define a global `warnBeforeAction` function, confirmable [actions](/packages/datatables/actions) use it for their prompt; otherwise the browser's native confirm dialog is used.
 

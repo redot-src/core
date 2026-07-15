@@ -71,6 +71,13 @@ $this->deleteFileFromUrl($user->avatar);
 
 - **URLs in, URLs out.** `uploadFile()` returns absolute URLs; delete with
   `deleteFileFromUrl()`, not `deleteFile()`.
+- **File types are detected from their contents.** Executable and active web
+  formats such as PHP, HTML, and SVG are rejected because uploads are served
+  from the public directory. Unsupported types throw `InvalidArgumentException`.
+  Customize the allowlist through `redot.uploads.allowed_extensions`; only add
+  formats that are safe to serve directly from your application's public origin.
+- **Deletion stays inside the public directory.** `deleteFileFromUrl()` accepts
+  only local URLs under `uploads/`; traversal and external URLs return `false`.
 - **Image helpers expect filesystem paths**, so wrap stored relative paths with
   `public_path()` before calling `is_image()` / `create_thumbnail()`.
 - **Image optimization** requires the `intervention/image` and

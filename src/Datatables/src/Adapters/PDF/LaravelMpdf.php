@@ -4,26 +4,15 @@ namespace Redot\Datatables\Adapters\PDF;
 
 use Illuminate\Support\Collection;
 use Mccarlosen\LaravelMpdf\Facades\LaravelMpdf as PDF;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class LaravelMpdf extends Adapter
 {
     /**
-     * Download the PDF file.
+     * Generate the PDF instance.
      */
-    public function download(string $template, array $headings, Collection $rows, array $options = []): StreamedResponse|Response
+    protected function generate(string $template, array $headings, Collection $rows, array $options = []): object
     {
-        $filename = sprintf('export-%s.pdf', now()->format('Y-m-d_H-i-s'));
-
-        $pdf = PDF::chunkLoadView('<!-- chunk -->', $template, compact('headings', 'rows'), [], $options);
-
-        return response()->stream(function () use ($pdf) {
-            echo $pdf->output();
-        }, 200, [
-            'Content-Type' => 'application/pdf',
-            'Content-Disposition' => "attachment; filename=\"$filename\"",
-        ]);
+        return PDF::chunkLoadView('<!-- chunk -->', $template, compact('headings', 'rows'), [], $options);
     }
 
     /**

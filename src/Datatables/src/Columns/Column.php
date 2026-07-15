@@ -98,6 +98,11 @@ class Column
     public bool $visible = true;
 
     /**
+     * The condition callback of the column.
+     */
+    public ?Closure $condition = null;
+
+    /**
      * Determine if the column is exportable.
      */
     public bool $exportable = true;
@@ -124,19 +129,19 @@ class Column
     }
 
     /**
+     * Create a new column instance statically.
+     */
+    public static function make(?string $name = null, ?string $label = null): static
+    {
+        return new static($name, $label);
+    }
+
+    /**
      * Initialize the column.
      */
     public function init(): void
     {
         //
-    }
-
-    /**
-     * Make a new column instance.
-     */
-    public static function make(?string $name = null, ?string $label = null): static
-    {
-        return new static($name, $label);
     }
 
     /**
@@ -306,9 +311,25 @@ class Column
      */
     public function hidden(bool $hidden = true): static
     {
-        $this->visible = ! $hidden;
+        return $this->visible(! $hidden);
+    }
+
+    /**
+     * Set the condition callback of the column.
+     */
+    public function condition(Closure $condition): static
+    {
+        $this->condition = $condition;
 
         return $this;
+    }
+
+    /**
+     * Determine if the column should be rendered.
+     */
+    public function shouldRender(mixed ...$args): bool
+    {
+        return $this->visible && ($this->condition ? call_user_func($this->condition, ...$args) : true);
     }
 
     /**
@@ -334,24 +355,23 @@ class Column
     /**
      * Get the value of the column.
      */
-    public function get(Model $row, bool $returnActualValue = false): mixed
+    public function get(Model $row, bool $raw = false): mixed
     {
         $value = $this->name ? data_get($row, $this->name) : $this->default;
 
-        if ($this->getter) {
-            $value = $this->evaluate($this->getter, $value, $row);
-        }
+        // If a getter is defined, evaluate it with the current value and row.
+        if ($this->getter) $value = $this->evaluate($this->getter, $value, $row);
 
+        // If the raw flag is set, return the value without further processing.
+        if ($raw) return $value;
+
+        // Apply the default getter to the value and row.
         $value = $this->defaultGetter($value, $row);
 
-        if ($returnActualValue) {
-            return $value;
-        }
+        // If the value is null, evaluate the empty value with the current row.
+        if (is_null($value)) $value = $this->evaluate($this->empty, $row);
 
-        if (is_null($value)) {
-            $value = $this->evaluate($this->empty, $row);
-        }
-
+        // If the column is set to HTML, return the value as is; otherwise, escape it for safe output.
         return $this->html ? $value : e($value);
     }
 

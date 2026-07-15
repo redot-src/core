@@ -86,9 +86,12 @@ class Application extends LaravelApplication
                     Locked::class . ':admins,dashboard.unlock',
                 ]);
 
+                $middleware->api(prepend: [
+                    EnsureFrontendRequestsAreStateful::class,
+                ]);
+
                 $middleware->api(append: [
                     'throttle:api',
-                    EnsureFrontendRequestsAreStateful::class,
                 ]);
             })
 

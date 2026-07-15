@@ -50,14 +50,19 @@ class Item
     public array $children = [];
 
     /**
-     * The hidden status of the item.
-     */
-    public bool|Closure $hidden = false;
-
-    /**
      * Determine if the item is active.
      */
     public bool $active = false;
+
+    /**
+     * Determine if the item is visible.
+     */
+    public bool $visible = true;
+
+    /**
+     * The condition callback of the item.
+     */
+    public ?Closure $condition = null;
 
     /**
      * The badge callable of the item.
@@ -65,7 +70,7 @@ class Item
     public ?Closure $badge = null;
 
     /**
-     * Create a new item instance.
+     * Create a new sidebar item instance.
      */
     public static function make(): static
     {
@@ -139,13 +144,51 @@ class Item
     }
 
     /**
-     * Set the hidden status of the item.
+     * Set the visibility of the item.
      */
-    public function hidden(bool|Closure $hidden): static
+    public function visible(bool $visible = true): static
     {
-        $this->hidden = $hidden;
+        $this->visible = $visible;
 
         return $this;
+    }
+
+    /**
+     * Set the hidden status of the item.
+     */
+    public function hidden(bool|Closure $hidden = true): static
+    {
+        if ($hidden instanceof Closure) {
+            return $this->condition(fn (...$args) => ! $hidden(...$args));
+        }
+
+        return $this->visible(! $hidden);
+    }
+
+    /**
+     * Set the condition callback of the item.
+     */
+    public function condition(Closure $condition): static
+    {
+        $this->condition = $condition;
+
+        return $this;
+    }
+
+    /**
+     * Determine if the item should be rendered.
+     */
+    public function shouldRender(mixed ...$args): bool
+    {
+        return $this->visible && ($this->condition ? call_user_func($this->condition, ...$args) : true);
+    }
+
+    /**
+     * Get the hidden status of the item.
+     */
+    public function isHidden(...$args): bool
+    {
+        return ! $this->shouldRender(...$args);
     }
 
     /**
@@ -156,18 +199,6 @@ class Item
         $this->badge = $badge;
 
         return $this;
-    }
-
-    /**
-     * Get the hidden status of the item.
-     */
-    public function isHidden(...$args): bool
-    {
-        if (is_callable($this->hidden)) {
-            return call_user_func($this->hidden, ...$args);
-        }
-
-        return $this->hidden;
     }
 
     /**

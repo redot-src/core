@@ -1,5 +1,9 @@
 <?php
 
+use Illuminate\Foundation\Auth\User;
+use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Route;
+use Redot\Http\Middleware\RoutePermission;
 use Redot\Sidebar\Item;
 use Redot\Sidebar\Sidebar;
 
@@ -72,4 +76,28 @@ it('falls back to # as the url when neither url nor route is provided', function
     ]);
 
     expect($sidebar->getItems()[0]->url)->toBe('#');
+});
+
+it('checks route permissions with the sidebar guard', function () {
+    config()->set('auth.guards.web', ['driver' => 'session', 'provider' => 'admins']);
+
+    $admin = (new User)->setAttribute('id', 1);
+    $websiteUser = (new User)->setAttribute('id', 2);
+
+    $this->actingAs($admin, 'admins');
+    $this->actingAs($websiteUser, 'web');
+
+    Gate::define('sidebar.website', fn (User $user): bool => $user->getKey() === 2);
+
+    Route::get('/sidebar/website', fn () => 'website')
+        ->middleware(RoutePermission::class)
+        ->name('sidebar.website');
+    Route::getRoutes()->refreshNameLookups();
+
+    $items = Sidebar::make([
+        Item::make()->title('Website')->route('sidebar.website'),
+    ], 'web')->getItems();
+
+    expect($items)->toHaveCount(1)
+        ->and($items[0]->title)->toBe('Website');
 });

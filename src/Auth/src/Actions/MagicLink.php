@@ -5,6 +5,7 @@ namespace Redot\Auth\Actions;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
 use Redot\Auth\AuthContext;
@@ -63,22 +64,24 @@ class MagicLink implements MagicLinkAction
             false,
         );
 
+        // Count every attempt, so the throttle stays uniform for known and unknown identifiers.
+        RateLimiter::hit(
+            $this->throttleKey($request, $context, 'magic-link'),
+            (int) config('auth.magic_link.throttle.decay_minutes', 60) * 60,
+        );
+
         $user = $this->findUserByIdentifier((string) $request->input($inputName), $context);
 
-        if ($user === null) {
-            $this->reject($request, $context, 'magic-link', (int) config('auth.magic_link.throttle.decay_minutes', 60) * 60);
+        if ($user !== null) {
+            $tokenModel = static::$loginTokenModel;
+            $notificationClass = static::$notificationClass;
+
+            $loginToken = $tokenModel::generate($user->email, $context->guard);
+            $user->notify(new $notificationClass($loginToken, $context->routeName('magic-link-code.show')));
         }
 
-        $tokenModel = static::$loginTokenModel;
-        $notificationClass = static::$notificationClass;
-
-        $loginToken = $tokenModel::generate($user->email, $context->guard);
-        $user->notify(new $notificationClass($loginToken, $context->routeName('magic-link-code.show')));
-
-        $this->clear($request, $context, 'magic-link');
-
         return redirect()->route($context->routeName('magic-link-code.create'), [
-            'email' => base64_encode((string) $user->email),
+            'email' => base64_encode((string) $request->input($inputName)),
         ]);
     }
 
@@ -110,12 +113,6 @@ class MagicLink implements MagicLinkAction
             return redirect()->route($context->routeName('magic-link.create'));
         }
 
-        $exists = static::$loginTokenModel::where('email', $email)->forGuard($context->guard)->valid()->exists();
-
-        if (! $exists) {
-            return redirect()->route($context->routeName('magic-link.create'));
-        }
-
         return view($context->views['magic-link-code'], [
             'email' => $email,
             'context' => $context,
@@ -128,13 +125,17 @@ class MagicLink implements MagicLinkAction
     public function confirm(Request $request, AuthContext $context): RedirectResponse
     {
         $request->validate([
-            'email' => ['required', 'email'],
+            'email' => ['required', 'string'],
             'code' => ['required', 'string', 'size:6'],
         ]);
 
+        // The "email" input carries the identifier the user asked the link for,
+        // which may not be an email address; tokens are always stored by email.
+        $user = $this->findUserByIdentifier((string) $request->input('email'), $context);
+
         $loginToken = static::$loginTokenModel::findByCode(
             $request->input('code'),
-            $request->input('email'),
+            $user?->email ?? (string) $request->input('email'),
             $context->guard,
         );
 
@@ -167,6 +168,10 @@ class MagicLink implements MagicLinkAction
         Auth::guard($context->guard)->login($user);
         $this->touchLastLoginAt($user);
         request()->session()->regenerate();
+
+        // Lift the send throttle so the user isn't still locked out of
+        // requesting links by attempts made before this successful login.
+        RateLimiter::clear($this->throttleKeyFor((string) $loginToken->email, request()->ip(), 'magic-link'));
 
         return redirect()->intended($context->homeUrl());
     }

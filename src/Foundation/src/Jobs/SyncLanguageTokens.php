@@ -27,7 +27,7 @@ class SyncLanguageTokens implements ShouldQueue
      */
     public function handle(): void
     {
-        $locale = $this->language->code;
+        $locale = strtolower($this->language->code);
 
         // Delete all tokens for the language
         $this->language->tokens()->delete();

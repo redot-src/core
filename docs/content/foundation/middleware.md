@@ -20,8 +20,32 @@ effect immediately. See [Localization](/foundation/localization).
 
 Dashboard routes are gated by their **route name**, treated as a permission
 name. A request is allowed when the current admin passes the gate for that route
-name; otherwise it is aborted with `403`. Routes with no matching permission
-record are open to any authenticated admin, and unnamed routes always pass.
+name; otherwise it is aborted with `403`. Named routes are denied when no gate
+grants the resolved permission, while unnamed routes always pass.
+
+Conventional form and mutation routes share a permission automatically:
+
+- `*.create` and `*.store` use the `*.create` permission.
+- `*.edit` and `*.update` use the `*.edit` permission.
+
+For a custom pair that cannot be inferred from its final route-name segment,
+set the shared permission explicitly with `usePermission()`:
+
+```php
+Route::post('users/{user}/suspend', [UserController::class, 'suspend'])
+    ->name('users.suspend.store')
+    ->usePermission('users.suspend');
+```
+
+Resource routes accept action-specific overrides with `usePermissions()`. Any
+action omitted from the map keeps its conventional permission:
+
+```php
+Route::resource('users', UserController::class)->usePermissions([
+    'store' => 'users.onboard',
+    'destroy' => 'users.archive',
+]);
+```
 
 Gate the matching UI on the same check so the dashboard stays consistent — use
 the [`route_allowed()` / `url_allowed()`](/foundation/helpers) helpers:
@@ -49,7 +73,8 @@ Route::get('profile', [ProfileController::class, 'edit'])
     ->withoutMiddleware(RoutePermission::class);
 ```
 
-The set of permission names is derived from the gated routes. Sync them with:
+The set of resolved permission names is derived from every gated route,
+including write routes. Sync them with:
 
 ```bash
 php artisan permissions:sync

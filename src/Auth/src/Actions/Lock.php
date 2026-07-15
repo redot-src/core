@@ -10,12 +10,9 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\View\View;
 use Redot\Auth\AuthContext;
 use Redot\Auth\Contracts\LockAction;
-use Redot\Traits\RespondAsApi;
 
 class Lock implements LockAction
 {
-    use RespondAsApi;
-
     /**
      * Build the session key that marks the given guard as locked.
      */
@@ -29,10 +26,6 @@ class Lock implements LockAction
      */
     public function lock(Request $request, AuthContext $context): RedirectResponse|JsonResponse
     {
-        if ($context->api) {
-            return $this->fail('Lock screen is not supported for API guards.', 400);
-        }
-
         $request->session()->put(static::sessionKey($context->guard), true);
         $request->session()->put('url.intended', url()->previous());
 
@@ -59,10 +52,6 @@ class Lock implements LockAction
      */
     public function unlock(Request $request, AuthContext $context): RedirectResponse|JsonResponse
     {
-        if ($context->api) {
-            return $this->fail('Lock screen is not supported for API guards.', 400);
-        }
-
         $request->validate([
             'password' => 'required|string',
         ]);

@@ -6,6 +6,7 @@ use Illuminate\Console\Command;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Route;
 use Redot\Http\Middleware\RoutePermission;
+use Redot\Support\PermissionNameResolver;
 use Spatie\Permission\Models\Permission;
 
 use function Laravel\Prompts\info;
@@ -37,7 +38,10 @@ class SyncPermissionsCommand extends Command
         progress(
             label: 'Syncing permissions',
             steps: $permissions,
-            callback: fn ($permission) => Permission::firstOrCreate(['name' => $permission]),
+            callback: fn ($permission) => Permission::firstOrCreate([
+                'name' => $permission,
+                'guard_name' => 'admins',
+            ]),
             hint: 'This may take a while...',
         );
 
@@ -56,13 +60,12 @@ class SyncPermissionsCommand extends Command
                 return false;
             }
 
-            if (! in_array('GET', $route->methods()) && ! in_array('DELETE', $route->methods())) {
-                return false;
-            }
-
             return collect(Route::gatherRouteMiddleware($route))->contains(RoutePermission::class);
         });
 
-        return $routes->map(fn ($route) => $route->getName());
+        return $routes
+            ->map(fn ($route) => PermissionNameResolver::resolve($route))
+            ->unique()
+            ->values();
     }
 }

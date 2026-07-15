@@ -56,16 +56,20 @@ class ViewMakeCommand extends Command
      */
     protected function resolveStubPath($stub)
     {
-        $customPath = base_path('stubs/' . $stub);
-        $packagePath = __DIR__ . '/../../stubs/' . $stub;
+        $stub = trim($stub, '/');
+        $isFrameworkStub = str_starts_with($stub, 'stubs/');
+        $customPath = base_path(($isFrameworkStub ? '' : 'stubs/') . $stub);
+        $packagePath = __DIR__ . '/../../' . ($isFrameworkStub ? '' : 'stubs/') . $stub;
 
-        $path = file_exists($customPath) ? $customPath : $packagePath;
-
-        if (! file_exists($path)) {
-            throw new FileNotFoundException("Stub file not found: $stub");
+        if (file_exists($customPath)) {
+            return $customPath;
         }
 
-        return $path;
+        if (file_exists($packagePath)) {
+            return $packagePath;
+        }
+
+        return parent::resolveStubPath('/' . $stub);
     }
 
     /**

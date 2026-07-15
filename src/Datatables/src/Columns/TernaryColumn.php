@@ -71,7 +71,7 @@ class TernaryColumn extends Column
         parent::prepareAttributes($row);
 
         // Get the value of the column.
-        $value = $this->get($row, true);
+        $value = $this->get($row);
 
         if ($value === $this->true) {
             $this->class('bg-success-lt');

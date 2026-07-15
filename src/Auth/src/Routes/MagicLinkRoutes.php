@@ -24,7 +24,7 @@ class MagicLinkRoutes implements RouteRegistrar
             Route::post('magic-link', fn (Request $request): RedirectResponse => $action->send($request, $context))->name('magic-link.store');
             Route::get('magic-link/verify/{token}', fn (string $token): RedirectResponse => $action->verify($token, $context))->name('magic-link-code.show');
             Route::get('magic-link/code', fn (Request $request): View|RedirectResponse => $action->view($request, $context))->name('magic-link-code.create');
-            Route::post('magic-link/code', fn (Request $request): RedirectResponse => $action->confirm($request, $context))->name('magic-link-code.store');
+            Route::post('magic-link/code', fn (Request $request): RedirectResponse => $action->confirm($request, $context))->middleware('throttle:6,1')->name('magic-link-code.store');
         });
     }
 }

@@ -17,7 +17,7 @@ class RoutePermission
     {
         $name = $request->route()->getName();
 
-        if (! $name || route_allowed($name)) {
+        if (! $name || route_allowed($request->route())) {
             return $next($request);
         }
 

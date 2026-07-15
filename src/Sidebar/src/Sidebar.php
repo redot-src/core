@@ -109,11 +109,11 @@ class Sidebar
      */
     protected function prepareItem(Item $item)
     {
-        if ($item->route && ! route_allowed($item->route)) {
+        if ($item->route && ! route_allowed($item->route, $this->guard)) {
             return false;
         }
 
-        if (is_callable($item->hidden) ? call_user_func($item->hidden, auth($this->guard)->user()) : $item->hidden) {
+        if ($item->isHidden(auth($this->guard)->user())) {
             return false;
         }
 

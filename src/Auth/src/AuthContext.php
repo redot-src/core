@@ -2,6 +2,10 @@
 
 namespace Redot\Auth;
 
+use Closure;
+use Laravel\SerializableClosure\Contracts\Serializable as SerializableClosureContract;
+use Laravel\SerializableClosure\SerializableClosure;
+use Laravel\SerializableClosure\UnsignedSerializableClosure;
 use Redot\Auth\Middleware\Locked;
 
 class AuthContext
@@ -19,7 +23,7 @@ class AuthContext
         public readonly string $provider,
         public readonly string $broker,
         public readonly string $model,
-        public readonly ?\Closure $scope,
+        public readonly ?Closure $scope,
         public readonly bool $api,
         public readonly string $namePrefix,
         public readonly array $views,
@@ -128,5 +132,36 @@ class AuthContext
         }
 
         return $disabled;
+    }
+
+    /**
+     * Prepare callback values for serialization inside cached routes.
+     */
+    public function __serialize(): array
+    {
+        $data = get_object_vars($this);
+
+        foreach ($data as &$value) {
+            if ($value instanceof Closure) {
+                $value = SerializableClosure::unsigned($value);
+            }
+        }
+
+        return $data;
+    }
+
+    /**
+     * Restore callback values after loading cached routes.
+     */
+    public function __unserialize(array $data): void
+    {
+        foreach ($data as $property => $value) {
+            $convert = $value instanceof SerializableClosure || $value instanceof UnsignedSerializableClosure || $value instanceof SerializableClosureContract;
+
+            // Convert serializable closures to regular closures.
+            if ($convert) $value = $value->getClosure();
+
+            $this->{$property} = $value;
+        }
     }
 }

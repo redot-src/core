@@ -3,11 +3,15 @@
 namespace Redot\Datatables;
 
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\Relation;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Js;
 use Illuminate\Support\Str;
 use Illuminate\Support\Traits\Macroable;
 use Illuminate\View\View;
+use Livewire\Attributes\Locked;
 use Livewire\Attributes\Url;
 use Livewire\Component;
 use Livewire\WithPagination;
@@ -16,8 +20,8 @@ use Redot\Datatables\Actions\ActionGroup;
 use Redot\Datatables\Adapters\PDF\Adapter;
 use Redot\Datatables\Columns\Column;
 use Redot\Datatables\Filters\Filter;
-use Redot\Datatables\Traits\InteractsWithRelations;
 use Redot\Toastify\Concerns\InteractsWithToastify;
+use Redot\Traits\InteractsWithRelations;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\StreamedResponse;
@@ -33,6 +37,7 @@ abstract class Datatable extends Component
     /**
      * Unique identifier for the datatable.
      */
+    #[Locked]
     public string $id;
 
     /**
@@ -43,6 +48,7 @@ abstract class Datatable extends Component
     /**
      * The default per page options.
      */
+    #[Locked]
     public array $perPageOptions = [5, 10, 25, 50, 100, 250, 500];
 
     /**
@@ -78,57 +84,56 @@ abstract class Datatable extends Component
     /**
      * Set the datatable maximum height.
      */
+    #[Locked]
     public string $height = 'auto';
 
     /**
      * Determine if the datatable has a sticky header.
      */
+    #[Locked]
     public bool $stickyHeader = true;
 
     /**
      * Determine if the datatable is bordered.
      */
+    #[Locked]
     public bool $bordered = true;
 
     /**
      * Allowed export formats.
      */
+    #[Locked]
     public array $allowedExports;
 
     /**
      * Determine if the datatable is exportable.
      */
+    #[Locked]
     public bool $exportable = true;
 
     /**
      * PDF view template.
      */
+    #[Locked]
     public string $pdfTemplate;
 
     /**
      * PDF adapter class.
      */
+    #[Locked]
     public string $pdfAdapter;
 
     /**
      * PDF adapter options.
      */
+    #[Locked]
     public array $pdfOptions = [];
 
     /**
      * Set the datatable empty message.
      */
+    #[Locked]
     public ?string $emptyMessage = null;
-
-    /**
-     * JavaScript assets url.
-     */
-    public string $jsAssetsUrl;
-
-    /**
-     * CSS assets url.
-     */
-    public string $cssAssetsUrl;
 
     /**
      * Create a new datatable instance.
@@ -142,10 +147,6 @@ abstract class Datatable extends Component
         $this->pdfTemplate ??= config('datatables.export.pdf.template');
         $this->pdfAdapter ??= config('datatables.export.pdf.adapter');
         $this->pdfOptions = array_merge(config('datatables.export.pdf.options') ?? [], $this->pdfOptions);
-
-        // Set the assets urls
-        $this->cssAssetsUrl = route(config('datatables.assets.css.route'), ['v' => md5(filemtime(config('datatables.assets.css.file')))]);
-        $this->jsAssetsUrl = route(config('datatables.assets.js.route'), ['v' => md5(filemtime(config('datatables.assets.js.file')))]);
 
         // Set the allowed export formats
         if (! isset($this->allowedExports)) {
@@ -185,14 +186,12 @@ abstract class Datatable extends Component
     {
         $offset = is_mobile() ? 0 : 2;
 
+        // If we have $offset + 1 actions total, just show all of them directly
+        if (count($actions) <= $offset + 1) return $actions;
+
         // Display the first $offset actions directly, group the rest if there are more than $offset + 1 total
         $mainActions = array_slice($actions, 0, $offset);
         $remainingActions = array_slice($actions, $offset);
-
-        // If we have $offset + 1 actions total, just show all of them directly
-        if (count($actions) <= $offset + 1) {
-            return $actions;
-        }
 
         // Otherwise, show the first $offset actions and group the rest
         return array_merge(
@@ -242,19 +241,7 @@ abstract class Datatable extends Component
      */
     public function toXlsx(): BinaryFileResponse
     {
-        if (! class_exists('Maatwebsite\Excel\Excel')) {
-            throw new Exceptions\MissingDependencyException('Please install the "maatwebsite/excel" package to use the toXlsx method.');
-        }
-
-        [$headings, $rows] = $this->getExportData(sanitize: true);
-
-        $filename = sprintf('export-%s.xlsx', now()->format('Y-m-d_H-i-s'));
-        $rows->prepend($headings)->storeExcel($filename, null, 'Xlsx');
-
-        $disk = config('filesystems.default');
-        $root = config("filesystems.disks.$disk.root");
-
-        return response()->download($root . '/' . $filename)->deleteFileAfterSend(true);
+        return $this->exportViaExcel('xlsx');
     }
 
     /**
@@ -262,14 +249,24 @@ abstract class Datatable extends Component
      */
     public function toCsv(): BinaryFileResponse
     {
+        return $this->exportViaExcel('csv');
+    }
+
+    /**
+     * Export the datatable via the Excel package to the given format.
+     */
+    protected function exportViaExcel(string $format): BinaryFileResponse
+    {
+        $this->ensureExportIsAllowed($format);
+
         if (! class_exists('Maatwebsite\Excel\Excel')) {
-            throw new Exceptions\MissingDependencyException('Please install the "maatwebsite/excel" package to use the toCsv method.');
+            throw new Exceptions\MissingDependencyException(sprintf('Please install the "maatwebsite/excel" package to use the to%s method.', ucfirst($format)));
         }
 
-        [$headings, $rows] = $this->getExportData(sanitize: true);
+        [$headings, $rows] = $this->getExportData(raw: true);
 
-        $filename = sprintf('export-%s.csv', now()->format('Y-m-d_H-i-s'));
-        $rows->prepend($headings)->storeExcel($filename, null, 'Csv');
+        $filename = sprintf('export-%s.%s', now()->format('Y-m-d_H-i-s'), $format);
+        $rows->prepend($headings)->storeExcel($filename, null, ucfirst($format));
 
         $disk = config('filesystems.default');
         $root = config("filesystems.disks.$disk.root");
@@ -282,7 +279,9 @@ abstract class Datatable extends Component
      */
     public function toJson(): StreamedResponse
     {
-        [$headings, $rows] = $this->getExportData(sanitize: true);
+        $this->ensureExportIsAllowed('json');
+
+        [$headings, $rows] = $this->getExportData(raw: true);
 
         $items = $rows->map(fn ($row) => array_combine($headings, $row))->toArray();
         $filename = sprintf('export-%s.json', now()->format('Y-m-d_H-i-s'));
@@ -301,27 +300,37 @@ abstract class Datatable extends Component
      */
     public function toPdf(): StreamedResponse|Response
     {
+        $this->ensureExportIsAllowed('pdf');
+
         $pdfAdapter = new $this->pdfAdapter;
 
         if (! $pdfAdapter instanceof Adapter || ! $pdfAdapter->supported()) {
             throw new Exceptions\MissingDependencyException(sprintf('The PDF adapter "%s" is not supported.', $this->pdfAdapter));
         }
 
-        [$headings, $rows] = $this->getExportData(sanitize: false);
+        [$headings, $rows] = $this->getExportData(raw: false);
 
         return $pdfAdapter->download($this->pdfTemplate, $headings, $rows, $this->pdfOptions);
     }
 
     /**
+     * Ensure the requested export format is available for the datatable.
+     */
+    protected function ensureExportIsAllowed(string $format): void
+    {
+        abort_unless($this->exportable && in_array($format, $this->allowedExports, true), 403);
+    }
+
+    /**
      * Get export data.
      */
-    protected function getExportData(bool $sanitize = false): array
+    protected function getExportData(bool $raw = false): array
     {
         $columns = array_filter($this->columns(), fn (Column $column) => $column->exportable && $column->visible);
         $headings = array_column($columns, 'label');
 
         $rows = $this->getQueryBuilder($this->filters())->get();
-        $rows = $rows->map(fn ($row) => array_map(fn (Column $column) => $sanitize ? strip_tags($column->get($row)) : $column->get($row), $columns));
+        $rows = $rows->map(fn ($row) => array_map(fn (Column $column) => $column->get($row, raw: $raw), $columns));
 
         return [$headings, $rows];
     }
@@ -339,16 +348,21 @@ abstract class Datatable extends Component
      */
     public function runAction(string $name, mixed $key): mixed
     {
-        $action = $this->findActionByName($name);
+        $query = $this->query();
+        $row = $query->find($key);
 
-        if (! $action || ! $action->callback) {
-            throw new Exceptions\InvalidActionException("Action [$name] not found.");
+        if (! $row && in_array(SoftDeletes::class, class_uses_recursive($query->getModel()), true)) {
+            $row = $this->query()->withTrashed()->find($key);
         }
-
-        $row = $this->query()->findOr($key, fn () => $this->query()->withTrashed()->find($key));
 
         if (! $row) {
             throw new Exceptions\InvalidActionException("Row [$key] not found.");
+        }
+
+        $action = $this->findActionByName($name, $row);
+
+        if (! $action || ! $action->callback) {
+            throw new Exceptions\InvalidActionException("Action [$name] not found.");
         }
 
         if (! $action->shouldRender($row)) {
@@ -377,10 +391,14 @@ abstract class Datatable extends Component
     /**
      * Find an action by its unique name.
      */
-    protected function findActionByName(string $name): ?Action
+    protected function findActionByName(string $name, Model $row): ?Action
     {
         foreach ($this->actions() as $action) {
             if ($action->isActionGroup) {
+                if (! $action->shouldRender($row)) {
+                    continue;
+                }
+
                 foreach ($action->actions as $groupAction) {
                     if ($groupAction->name === $name) {
                         return $groupAction;
@@ -411,8 +429,9 @@ abstract class Datatable extends Component
      */
     public function viewData(): array
     {
-        // Reset filters counter for each render
-        Filter::$counter = 0;
+        if (! in_array($this->perPage, $this->perPageOptions, true)) {
+            $this->perPage = (int) ($this->perPageOptions[0] ?? 10);
+        }
 
         $columns = $this->getVisibleColumns();
         $actions = $this->getVisibleActions();
@@ -581,6 +600,10 @@ abstract class Datatable extends Component
      */
     protected function applySorting(Builder $query): void
     {
+        if (! in_array($this->sortDirection, ['asc', 'desc'], true)) {
+            $this->sortDirection = 'desc';
+        }
+
         if (! $this->sortColumn) {
             $primaryKey = $this->query()->getModel()->getKeyName();
             $query->orderBy($primaryKey, $this->sortDirection);
@@ -594,7 +617,12 @@ abstract class Datatable extends Component
         });
 
         if (! $column) {
-            throw new Exceptions\InvalidColumnException(sprintf('Could not find column with name "%s"', $this->sortColumn));
+            $this->sortColumn = '';
+
+            $primaryKey = $this->query()->getModel()->getKeyName();
+            $query->orderBy($primaryKey, $this->sortDirection);
+
+            return;
         }
 
         if ($column->sorter) {
@@ -619,9 +647,44 @@ abstract class Datatable extends Component
         $field = array_pop($relations);
 
         // The name of the aggregate column
-        $name = Str::snake(implode('', $relations)) . '_' . $field;
+        $name = Str::snake(implode(' ', [...$relations, $field]));
 
-        $query->withAggregate($relations, $field);
+        if (count($relations) === 1) {
+            $query->withAggregate($relations[0], $field);
+        } else {
+            if (is_null($query->getQuery()->columns)) {
+                $query->select($query->getModel()->qualifyColumn('*'));
+            }
+
+            $query->selectSub($this->nestedRelationSubquery($query, $relations, $field)->limit(1), $name);
+        }
+
         $query->orderBy($name, $this->sortDirection);
+    }
+
+    /**
+     * Build a correlated subquery for a column reached through nested relations.
+     */
+    protected function nestedRelationSubquery(Builder $parentQuery, array $relations, string $field): Builder
+    {
+        $relationName = array_shift($relations);
+        $relation = Relation::noConstraints(fn () => $parentQuery->getModel()->{$relationName}());
+        $relatedQuery = $relation->getRelated()->newQuery();
+
+        if (count($relations) === 0) {
+            $query = $relation->getRelationExistenceQuery(
+                $relatedQuery,
+                $parentQuery,
+                $relation->getRelated()->qualifyColumn($field),
+            );
+        } else {
+            $query = $relation->getRelationExistenceQuery($relatedQuery, $parentQuery);
+            $query->select([])->selectSub(
+                $this->nestedRelationSubquery($relatedQuery, $relations, $field)->limit(1),
+                'nested_relation_value',
+            );
+        }
+
+        return $query->mergeConstraintsFrom($relation->getQuery());
     }
 }

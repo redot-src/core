@@ -5,9 +5,10 @@ namespace Redot\Datatables\Filters;
 use Closure;
 use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Str;
 use Illuminate\Support\Traits\Macroable;
 use Redot\Datatables\Traits\BuildAttributes;
-use Redot\Datatables\Traits\InteractsWithRelations;
+use Redot\Traits\InteractsWithRelations;
 
 abstract class Filter
 {
@@ -16,14 +17,9 @@ abstract class Filter
     use Macroable;
 
     /**
-     * Static counter for filters.
-     */
-    public static int $counter = 0;
-
-    /**
      * Unique identifier for the filter.
      */
-    public int $index;
+    public string $index;
 
     /**
      * The filter's livewire key.
@@ -65,9 +61,6 @@ abstract class Filter
      */
     public function __construct(string|array|null $column = null, ?string $label = null)
     {
-        $this->index = ++static::$counter;
-        $this->wireKey ??= sprintf('filtered.%s', $this->index);
-
         if ($column) {
             $this->column($column);
         }
@@ -77,6 +70,27 @@ abstract class Filter
         }
 
         $this->init();
+
+        $this->index = $this->deriveIndex();
+        $this->wireKey ??= sprintf('filtered.%s', $this->index);
+    }
+
+    /**
+     * Create a new filter instance statically.
+     */
+    public static function make(string|array|null $column = null, ?string $label = null): static
+    {
+        return new static($column, $label);
+    }
+
+    /**
+     * Derive a stable identifier for the filter from its column or label.
+     */
+    protected function deriveIndex(): string
+    {
+        $source = $this->column ? implode('-', (array) $this->column) : $this->label;
+
+        return Str::slug($source ?? class_basename(static::class));
     }
 
     /**
@@ -85,14 +99,6 @@ abstract class Filter
     protected function init(): void
     {
         //
-    }
-
-    /**
-     * Make a new filter instance.
-     */
-    public static function make(string|array|null $column = null, ?string $label = null): static
-    {
-        return new static($column, $label);
     }
 
     /**

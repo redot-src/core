@@ -70,6 +70,25 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Uploads
+    |--------------------------------------------------------------------------
+    |
+    | File extensions that may be stored in the public uploads directory. The
+    | extension is detected from the file contents, not the client filename.
+    |
+    */
+
+    'uploads' => [
+        'allowed_extensions' => [
+            '7z', 'aac', 'avi', 'avif', 'bmp', 'csv', 'doc', 'docx', 'flac', 'gif',
+            'gz', 'jpeg', 'jpg', 'm4a', 'mkv', 'mov', 'mp3', 'mp4', 'mpeg', 'odp',
+            'ods', 'odt', 'oga', 'ogg', 'pdf', 'png', 'ppt', 'pptx', 'rar', 'tar',
+            'tif', 'tiff', 'txt', 'wav', 'webm', 'webp', 'xls', 'xlsx', 'zip',
+        ],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Settings
     |--------------------------------------------------------------------------
     |

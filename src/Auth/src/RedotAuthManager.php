@@ -89,7 +89,7 @@ class RedotAuthManager
             namePrefix: $namePrefix,
             views: $views,
             home: $home,
-            identifiers: Login::getIdentifiers($provider),
+            identifiers: app(Login::class)::getIdentifiers($provider),
             disable: $disable,
         );
     }
@@ -118,9 +118,7 @@ class RedotAuthManager
         $router = Route::getFacadeRoot();
         $stack = $router->getGroupStack();
 
-        if ($stack === []) {
-            return '';
-        }
+        if ($stack === []) return '';
 
         return (string) ($stack[array_key_last($stack)]['as'] ?? '');
     }

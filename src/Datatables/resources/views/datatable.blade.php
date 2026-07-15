@@ -1,6 +1,6 @@
 @assets
-    <link rel="stylesheet" href="{{ $cssAssetsUrl }}" />
-    <script src="{{ $jsAssetsUrl }}" defer></script>
+    <link rel="stylesheet" href="{{ hashed_asset(config('datatables.assets.css')) }}" />
+    <script src="{{ hashed_asset(config('datatables.assets.js')) }}" defer></script>
 @endassets
 
 <div class="card datatable" @style(['max-height: ' . $height]) id="{{ $id }}" wire:ignore.self x-data="{ filtersOpen: {{ $filtersOpen ? 'true' : 'false' }} }">

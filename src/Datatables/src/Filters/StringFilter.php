@@ -4,13 +4,8 @@ namespace Redot\Datatables\Filters;
 
 use Illuminate\Database\Eloquent\Builder;
 
-class StringFilter extends Filter
+class StringFilter extends OperatorFilter
 {
-    /**
-     * Filter operations.
-     */
-    public array $operators = [];
-
     /**
      * The filter's view.
      */
@@ -34,30 +29,20 @@ class StringFilter extends Filter
     }
 
     /**
-     * Apply the filter to the given query.
+     * Apply the given operator constraint to the query column.
      */
-    public function apply(Builder $query, $value): void
+    protected function applyOperator(Builder $query, string $column, string $operator, mixed $value): void
     {
-        $operator = isset($value['operator']) ? $value['operator'] : 'equals';
-        $value = isset($value['value']) ? $value['value'] : '';
-
-        // Early return if the value is empty.
-        if (empty($value)) {
-            return;
-        }
-
-        // Apply the filter to all columns with OR logic.
-        $this->applyToColumns($query, function (Builder $query, string $column) use ($operator, $value) {
-            match ($operator) {
-                'equals' => $query->where($column, $value),
-                'not_equals' => $query->where($column, '!=', $value),
-                'contains' => $query->where($column, 'like', "%$value%"),
-                'not_contains' => $query->where($column, 'not like', "%$value%"),
-                'starts_with' => $query->where($column, 'like', "$value%"),
-                'not_starts_with' => $query->where($column, 'not like', "$value%"),
-                'ends_with' => $query->where($column, 'like', "%$value"),
-                'not_ends_with' => $query->where($column, 'not like', "%$value"),
-            };
-        });
+        match ($operator) {
+            'equals' => $query->where($column, $value),
+            'not_equals' => $query->where($column, '!=', $value),
+            'contains' => $query->where($column, 'like', "%$value%"),
+            'not_contains' => $query->where($column, 'not like', "%$value%"),
+            'starts_with' => $query->where($column, 'like', "$value%"),
+            'not_starts_with' => $query->where($column, 'not like', "$value%"),
+            'ends_with' => $query->where($column, 'like', "%$value"),
+            'not_ends_with' => $query->where($column, 'not like', "%$value"),
+            default => null,
+        };
     }
 }

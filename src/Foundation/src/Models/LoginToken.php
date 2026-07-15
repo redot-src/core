@@ -37,13 +37,22 @@ class LoginToken extends Model
         // Delete any existing tokens for this email and guard
         static::where('email', $email)->where('guard', $guard)->delete();
 
-        return static::create([
+        $token = Str::random(64);
+        $code = Str::random(6);
+
+        $instance = static::create([
             'email' => $email,
-            'token' => Str::random(64),
-            'code' => Str::random(6),
+            'token' => hash('sha256', $token),
+            'code' => hash('sha256', $code),
             'guard' => $guard,
             'expires_at' => now()->addMinutes((int) config('auth.magic_link.expire', 15)),
         ]);
+
+        // Expose the plaintext values on the instance for delivery; only hashes are stored.
+        $instance->token = $token;
+        $instance->code = $code;
+
+        return $instance;
     }
 
     /**
@@ -75,7 +84,7 @@ class LoginToken extends Model
      */
     public static function findByToken(string $token, string $guard): ?self
     {
-        return static::where('token', $token)
+        return static::where('token', hash('sha256', $token))
             ->forGuard($guard)
             ->valid()
             ->first();
@@ -86,7 +95,7 @@ class LoginToken extends Model
      */
     public static function findByCode(string $code, string $email, string $guard): ?self
     {
-        return static::where('code', $code)
+        return static::where('code', hash('sha256', $code))
             ->where('email', $email)
             ->forGuard($guard)
             ->valid()
