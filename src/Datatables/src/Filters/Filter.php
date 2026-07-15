@@ -19,12 +19,7 @@ abstract class Filter
     /**
      * Unique identifier for the filter.
      */
-    public string $index;
-
-    /**
-     * The filter's livewire key.
-     */
-    public string $wireKey;
+    public ?string $index = null;
 
     /**
      * The filter's label.
@@ -69,10 +64,10 @@ abstract class Filter
             $this->label($label);
         }
 
-        $this->init();
+        // Derive the index if it is not set.
+        if ($this->index === null) $this->index($this->deriveIndex());
 
-        $this->index = $this->deriveIndex();
-        $this->wireKey ??= sprintf('filtered.%s', $this->index);
+        $this->init();
     }
 
     /**
@@ -84,13 +79,23 @@ abstract class Filter
     }
 
     /**
+     * Set the filter's index.
+     */
+    public function index(string $index): static
+    {
+        $this->index = $index;
+
+        return $this;
+    }
+
+    /**
      * Derive a stable identifier for the filter from its column or label.
      */
     protected function deriveIndex(): string
     {
-        $source = $this->column ? implode('-', (array) $this->column) : $this->label;
+        $source = $this->column ? implode('-', (array) $this->column) : null;
 
-        return Str::slug($source ?? class_basename(static::class));
+        return Str::slug($source ?: class_basename(static::class));
     }
 
     /**
