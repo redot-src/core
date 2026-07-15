@@ -45,3 +45,52 @@ it('syncs every protected verb under its resolved permission', function () {
             ['permission-test.users.suspend', 'admins'],
         ]);
 });
+
+it('stamps discovered permissions without touching manually created ones', function () {
+    Route::middleware(RoutePermission::class)->group(function () {
+        Route::get('/permission-test/users', fn () => 'index')->name('permission-test.users.index');
+    });
+
+    $custom = Permission::create(['name' => 'permission-test.custom', 'guard_name' => 'admins']);
+
+    $this->artisan('permissions:sync')->assertSuccessful();
+
+    expect(Permission::findByName('permission-test.users.index', 'admins')->discovered_at)->not->toBeNull()
+        ->and($custom->fresh()->discovered_at)->toBeNull();
+});
+
+it('prunes stale discovered permissions but keeps custom and current ones', function () {
+    Route::middleware(RoutePermission::class)->group(function () {
+        Route::get('/permission-test/users', fn () => 'index')->name('permission-test.users.index');
+    });
+
+    Permission::create(['name' => 'permission-test.stale', 'guard_name' => 'admins', 'discovered_at' => now()]);
+    Permission::create(['name' => 'permission-test.custom', 'guard_name' => 'admins']);
+
+    $this->artisan('permissions:sync --prune')
+        ->expectsConfirmation('Delete 1 stale permission(s)?', 'yes')
+        ->assertSuccessful();
+
+    expect(Permission::query()
+        ->where('name', 'like', 'permission-test.%')
+        ->orderBy('name')
+        ->pluck('name')
+        ->all())->toBe([
+            'permission-test.custom',
+            'permission-test.users.index',
+        ]);
+});
+
+it('keeps stale permissions when pruning is not confirmed', function () {
+    Route::middleware(RoutePermission::class)->group(function () {
+        Route::get('/permission-test/users', fn () => 'index')->name('permission-test.users.index');
+    });
+
+    Permission::create(['name' => 'permission-test.stale', 'guard_name' => 'admins', 'discovered_at' => now()]);
+
+    $this->artisan('permissions:sync --prune')
+        ->expectsConfirmation('Delete 1 stale permission(s)?')
+        ->assertSuccessful();
+
+    expect(Permission::where('name', 'permission-test.stale')->exists())->toBeTrue();
+});

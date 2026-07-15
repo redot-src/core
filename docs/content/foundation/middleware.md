@@ -80,6 +80,10 @@ including write routes. Sync them with:
 php artisan permissions:sync
 ```
 
+Pass `--prune` to also remove previously discovered permissions whose routes no
+longer exist; permissions created by hand are never pruned. See
+[Commands](/commands/overview) for details.
+
 ## On-demand asset building
 
 On each web request the framework checks whether tracked front-end sources have

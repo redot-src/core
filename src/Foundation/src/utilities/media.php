@@ -1,6 +1,7 @@
 <?php
 
-use Intervention\Image\Laravel\Facades\Image;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Image;
 
 /**
  * Check if the given path is an image.
@@ -39,7 +40,8 @@ function create_thumbnail(string $path, int $width = 100, int $height = 100, int
         return str_replace(public_path(), '', $thumbnailPath);
     }
 
-    Image::decode($path)->scale($width, $height)->save($thumbnailPath, quality: $quality);
+    $thumbnail = Image::fromPath($path)->scale($width, $height)->quality($quality);
+    File::put($thumbnailPath, $thumbnail->toBytes());
 
     return str_replace(public_path(), '', $thumbnailPath);
 }

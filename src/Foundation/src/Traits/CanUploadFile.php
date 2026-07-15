@@ -4,10 +4,10 @@ namespace Redot\Traits;
 
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Image;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
-use Intervention\Image\Laravel\Facades\Image;
 use InvalidArgumentException;
 use Spatie\LaravelImageOptimizer\Facades\ImageOptimizer;
 
@@ -46,7 +46,7 @@ trait CanUploadFile
         $file->move(public_path($path), $filename);
 
         if ($optimize && is_image($absolutePath)) {
-            Image::decode($absolutePath)->orient()->save($absolutePath);
+            File::put($absolutePath, Image::fromPath($absolutePath)->orient()->toBytes());
             ImageOptimizer::optimize($absolutePath);
         }
 

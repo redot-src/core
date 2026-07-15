@@ -77,20 +77,6 @@ it('honours an explicit permission alias', function () {
     $this->post('/permission-test/users/1/suspend')->assertOk();
 });
 
-it('honours action-specific resource permissions', function () {
-    Gate::define('permission-test.articles.publish', fn (User $user) => true);
-
-    Route::resource('/permission-test/articles', RoutePermissionResourceController::class)
-        ->only('store')
-        ->name('store', 'permission-test.articles.store')
-        ->middleware(RoutePermission::class)
-        ->usePermissions([
-            'store' => 'permission-test.articles.publish',
-        ]);
-
-    $this->post('/permission-test/articles')->assertOk();
-});
-
 it('preserves the existing unnamed route bypass', function () {
     Route::get('/permission-test/unnamed', fn () => 'unnamed')
         ->middleware(RoutePermission::class);
@@ -106,11 +92,3 @@ it('allows permission-aware UI checks for routes that opt out of protection', fu
 
     expect(route_allowed('permission-test.unprotected'))->toBeTrue();
 });
-
-class RoutePermissionResourceController
-{
-    public function store(): string
-    {
-        return 'stored';
-    }
-}

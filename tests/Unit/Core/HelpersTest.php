@@ -1,11 +1,16 @@
 <?php
 
 use Illuminate\Auth\AuthenticationException;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Validation\ValidationException;
 use Redot\Http\Middleware\RoutePermission;
 use Redot\Models\Setting;
 use Symfony\Component\HttpKernel\Exception\HttpException;
+
+afterEach(function () {
+    File::deleteDirectory(public_path('helper-image-test'));
+});
 
 it('trims, drops empty entries, and normalises csv strings and arrays', function () {
     expect(parse_csv(' alpha, beta ,,gamma '))->toBe(['alpha', 'beta', 'gamma'])
@@ -26,6 +31,23 @@ it('limits collections and appends a localized remaining-count notice', function
 it('returns the input unchanged when the collection is at or under the limit', function () {
     expect(collect_ellipsis(['a', 'b'], 2)->all())->toBe(['a', 'b'])
         ->and(collect_ellipsis(['a'], 2)->all())->toBe(['a']);
+});
+
+it('creates proportionally scaled image thumbnails', function () {
+    $directory = public_path('helper-image-test');
+    $source = $directory . '/source.png';
+    File::ensureDirectoryExists($directory);
+
+    $image = imagecreatetruecolor(200, 100);
+    imagepng($image, $source);
+    imagedestroy($image);
+
+    $thumbnail = create_thumbnail($source, 100, 100, 90);
+    $thumbnailPath = public_path($thumbnail);
+
+    expect($thumbnail)->toBe('/helper-image-test/thumbnails/source-thumb.png')
+        ->and(File::exists($thumbnailPath))->toBeTrue()
+        ->and(getimagesize($thumbnailPath))->toMatchArray([100, 50]);
 });
 
 it('returns an authenticated json error payload for authentication exceptions', function () {

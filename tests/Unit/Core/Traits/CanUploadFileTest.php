@@ -4,6 +4,8 @@ use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\File;
 use Illuminate\Validation\ValidationException;
 use Redot\Traits\CanUploadFile;
+use Spatie\LaravelImageOptimizer\Facades\ImageOptimizer;
+use Spatie\LaravelImageOptimizer\ImageOptimizerServiceProvider;
 
 beforeEach(function () {
     $this->uploader = new class
@@ -50,6 +52,18 @@ it('uses the configured allowed extensions', function () {
 
     expect($path)->toEndWith('.json')
         ->and(File::exists(public_path($path)))->toBeTrue();
+});
+
+it('orients and optimizes image uploads when requested', function () {
+    app()->register(ImageOptimizerServiceProvider::class);
+    ImageOptimizer::shouldReceive('optimize')->once();
+    $file = UploadedFile::fake()->image('avatar.jpg', 40, 20);
+
+    $url = $this->uploader->uploadFile($file, 'can-upload-file-test', optimize: true);
+    $path = public_path(parse_url($url, PHP_URL_PATH));
+
+    expect(File::exists($path))->toBeTrue()
+        ->and(getimagesize($path))->toMatchArray([40, 20]);
 });
 
 it('rejects upload paths outside the uploads directory', function () {

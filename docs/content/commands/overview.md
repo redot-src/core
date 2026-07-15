@@ -84,9 +84,15 @@ Auto-discovers permission-guarded routes and persists them as Spatie permission
 records. Discovery includes every HTTP verb. Conventional `store` routes share
 their `create` permission, conventional `update` routes share their `edit`
 permission, and overrides configured with `usePermission()` or resource-level
-`usePermissions()` use their explicit permissions. Existing permissions are
-left untouched. Run it (or re-seed)
-whenever you add or rename permission-guarded routes. See
+`usePermissions()` use their explicit permissions. Synced permissions are
+stamped with a `discovered_at` timestamp; permissions created by hand are never
+stamped. Existing permissions are left untouched by default. Run it (or
+re-seed) whenever you add, rename, or remove permission-guarded routes.
+
+- **`--prune`** — after syncing, delete previously discovered permissions that
+  no longer match any route. The command lists the stale permissions and asks
+  for confirmation before deleting. Permissions created by hand (without a
+  `discovered_at` stamp) always survive pruning. See
 [Middleware](/foundation/middleware) for permission resolution and opt-out
 details.
 
