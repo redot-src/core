@@ -85,12 +85,14 @@ class Login implements LoginAction
     /**
      * Get a hash used to equalize credential checks for missing users.
      *
-     * Precomputed (bcrypt, cost 12 — the framework default) so the missing-user
-     * path costs exactly one hash verification, the same as a real user.
+     * Built with the configured hasher (driver and cost) so the missing-user
+     * path costs the same hash verification as a real user.
      */
     protected function dummyHash(): string
     {
-        return '$2y$12$IzkCRAaKJXyD6YA.rcaXR.e0lJ/xGoficfrXqmJ0fqSpUSbhY4IHW';
+        static $hash = null;
+
+        return $hash ??= Hash::make('redot-dummy-password');
     }
 
     /**

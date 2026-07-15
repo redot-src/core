@@ -69,10 +69,11 @@ class PublishLanguageTokens implements ShouldQueue
             ]];
         });
 
+        $published = [];
+
         foreach ($translations as $filename => $items) {
             $path = lang_path($locale . DIRECTORY_SEPARATOR . $filename . '.php');
             $content = File::get($path);
-            $published = [];
 
             foreach ($items as $item) {
                 $key = preg_quote($item['exact_key'], '/');
@@ -97,11 +98,13 @@ class PublishLanguageTokens implements ShouldQueue
             }
 
             File::put($path, $content);
+        }
 
-            // Drop the translator's in-memory cache so later publishes in the
-            // same process (queue worker) read the freshly written file.
-            app('translator')->setLoaded([]);
+        // Drop the translator's in-memory cache so later publishes in the
+        // same process (queue worker) read the freshly written files.
+        app('translator')->setLoaded([]);
 
+        if (count($published) > 0) {
             $this->language->tokens()->whereKey($published)->update(['is_published' => true]);
         }
     }

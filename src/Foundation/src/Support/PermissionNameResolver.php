@@ -46,14 +46,7 @@ class PermissionNameResolver
             return $route;
         }
 
-        $routes = RouteFacade::getRoutes();
-
-        // Check if the route is registered by name first, then check if it's registered by action.
-        if ($registeredRoute = $routes->getByName($route)) {
-            return $registeredRoute;
-        }
-
-        return collect($routes->getRoutes())->first(fn (Route $registeredRoute) => $registeredRoute->getName() === $route);
+        return RouteFacade::getRoutes()->getByName($route);
     }
 
     /**

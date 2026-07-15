@@ -145,13 +145,13 @@ class MagicLink implements MagicLinkAction
             ]);
         }
 
-        return $this->authenticate($loginToken, $context);
+        return $this->authenticate($loginToken, $context, (string) $request->input('email'));
     }
 
     /**
      * Log the token's user into the guard and consume the token.
      */
-    protected function authenticate(object $loginToken, AuthContext $context): RedirectResponse
+    protected function authenticate(object $loginToken, AuthContext $context, ?string $identifier = null): RedirectResponse
     {
         $user = $this->findUserByIdentifier((string) $loginToken->email, $context);
 
@@ -171,7 +171,13 @@ class MagicLink implements MagicLinkAction
 
         // Lift the send throttle so the user isn't still locked out of
         // requesting links by attempts made before this successful login.
+        // Hits are recorded under the identifier the user typed, which may
+        // not be the token's email, so clear both keys.
         RateLimiter::clear($this->throttleKeyFor((string) $loginToken->email, request()->ip(), 'magic-link'));
+
+        if ($identifier !== null && $identifier !== '') {
+            RateLimiter::clear($this->throttleKeyFor($identifier, request()->ip(), 'magic-link'));
+        }
 
         return redirect()->intended($context->homeUrl());
     }

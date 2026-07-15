@@ -58,6 +58,12 @@ abstract class Datatable extends Component
     public int $perPage = 10;
 
     /**
+     * The per page value declared by the datatable class, accepted
+     * even when it is not listed in the per page options.
+     */
+    protected int $defaultPerPage;
+
+    /**
      * Search term for the datatable.
      */
     #[Url(as: 'q')]
@@ -142,6 +148,7 @@ abstract class Datatable extends Component
     {
         $this->id ??= uniqid('datatable-');
         $this->emptyMessage ??= __('datatables::datatable.empty');
+        $this->defaultPerPage = $this->perPage;
 
         // Set the PDF adapter and options
         $this->pdfTemplate ??= config('datatables.export.pdf.template');
@@ -326,7 +333,7 @@ abstract class Datatable extends Component
      */
     protected function getExportData(bool $raw = false): array
     {
-        $columns = array_filter($this->columns(), fn (Column $column) => $column->exportable && $column->visible);
+        $columns = array_filter($this->columns(), fn (Column $column) => $column->exportable && $column->shouldRender());
         $headings = array_column($columns, 'label');
 
         $rows = $this->getQueryBuilder($this->filters())->get();
@@ -429,8 +436,8 @@ abstract class Datatable extends Component
      */
     public function viewData(): array
     {
-        if (! in_array($this->perPage, $this->perPageOptions, true)) {
-            $this->perPage = (int) ($this->perPageOptions[0] ?? 10);
+        if ($this->perPage !== $this->defaultPerPage && ! in_array($this->perPage, $this->perPageOptions, true)) {
+            $this->perPage = $this->defaultPerPage;
         }
 
         $columns = $this->getVisibleColumns();
@@ -462,7 +469,7 @@ abstract class Datatable extends Component
      */
     protected function getVisibleColumns(): array
     {
-        return array_filter($this->columns(), fn (Column $column) => $column->visible);
+        return array_filter($this->columns(), fn (Column $column) => $column->shouldRender());
     }
 
     /**
@@ -486,7 +493,7 @@ abstract class Datatable extends Component
      */
     protected function getColspanForColumns(array $columns, array $actions): int
     {
-        $colspan = count(array_filter($columns, fn (Column $column) => $column->visible));
+        $colspan = count(array_filter($columns, fn (Column $column) => $column->shouldRender()));
 
         // Add one for the actions column
         if (count($actions) > 0) {

@@ -2,6 +2,7 @@
 
 namespace Redot\Commands;
 
+use Illuminate\Auth\Middleware\Authenticate;
 use Illuminate\Console\Command;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Route;
@@ -38,10 +39,7 @@ class SyncPermissionsCommand extends Command
         progress(
             label: 'Syncing permissions',
             steps: $permissions,
-            callback: fn ($permission) => Permission::firstOrCreate([
-                'name' => $permission,
-                'guard_name' => 'admins',
-            ]),
+            callback: fn ($permission) => Permission::firstOrCreate($permission),
             hint: 'This may take a while...',
         );
 
@@ -64,8 +62,25 @@ class SyncPermissionsCommand extends Command
         });
 
         return $routes
-            ->map(fn ($route) => PermissionNameResolver::resolve($route))
+            ->map(fn ($route) => [
+                'name' => PermissionNameResolver::resolve($route),
+                'guard_name' => $this->guardForRoute($route),
+            ])
             ->unique()
             ->values();
+    }
+
+    /**
+     * Resolve the guard a route authenticates against.
+     */
+    protected function guardForRoute($route): string
+    {
+        foreach (Route::gatherRouteMiddleware($route) as $middleware) {
+            if (is_string($middleware) && str_starts_with($middleware, Authenticate::class . ':')) {
+                return explode(',', substr($middleware, strlen(Authenticate::class) + 1))[0];
+            }
+        }
+
+        return 'admins';
     }
 }

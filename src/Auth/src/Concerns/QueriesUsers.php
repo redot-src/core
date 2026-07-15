@@ -50,7 +50,14 @@ trait QueriesUsers
             return;
         }
 
-        if (! $user->getConnection()->getSchemaBuilder()->hasColumn($user->getTable(), 'last_login_at')) {
+        // Memoized per connection and table: the schema cannot change mid-process,
+        // so pay the introspection query at most once instead of on every login.
+        static $hasColumn = [];
+
+        $key = $user->getConnectionName() . ':' . $user->getTable();
+        $hasColumn[$key] ??= $user->getConnection()->getSchemaBuilder()->hasColumn($user->getTable(), 'last_login_at');
+
+        if (! $hasColumn[$key]) {
             return;
         }
 

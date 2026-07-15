@@ -20,6 +20,8 @@ it('uses an explicit permission for routes outside the conventional groups', fun
         ->name('users.suspend.store')
         ->usePermission('users.suspend');
 
+    Route::getRoutes()->refreshNameLookups();
+
     expect(PermissionNameResolver::resolve($route))->toBe('users.suspend')
         ->and(PermissionNameResolver::resolve('users.suspend.store'))->toBe('users.suspend');
 });

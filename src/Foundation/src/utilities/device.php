@@ -20,3 +20,11 @@ function is_mobile(): bool
         $userAgent
     );
 }
+
+/**
+ * Check if the request from a desktop device.
+ */
+function is_desktop(): bool
+{
+    return ! is_mobile();
+}

@@ -102,6 +102,8 @@ it('allows permission-aware UI checks for routes that opt out of protection', fu
     Route::get('/permission-test/unprotected', fn () => 'unprotected')
         ->name('permission-test.unprotected');
 
+    Route::getRoutes()->refreshNameLookups();
+
     expect(route_allowed('permission-test.unprotected'))->toBeTrue();
 });
 
