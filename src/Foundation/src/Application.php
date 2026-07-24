@@ -52,6 +52,9 @@ class Application extends LaravelApplication
 
                 if (config('redot.routing.append_locale_to_url')) {
                     $group->prefix('{locale}')->where(['locale' => '([a-zA-Z]{2})']);
+
+                    // Redirect the root URL to the default locale
+                    Route::get('/', fn () => redirect(app()->getLocale()));
                 }
 
                 $group->group(function () {
