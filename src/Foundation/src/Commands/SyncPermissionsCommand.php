@@ -4,13 +4,16 @@ namespace Redot\Commands;
 
 use Illuminate\Auth\Middleware\Authenticate;
 use Illuminate\Console\Command;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Route;
 use Redot\Http\Middleware\RoutePermission;
 use Redot\Support\PermissionNameResolver;
 use Spatie\Permission\Models\Permission;
+use Symfony\Component\Console\Command\Command as SymfonyCommand;
 
 use function Laravel\Prompts\confirm;
+use function Laravel\Prompts\error;
 use function Laravel\Prompts\info;
 use function Laravel\Prompts\progress;
 use function Laravel\Prompts\table;
@@ -26,6 +29,7 @@ class SyncPermissionsCommand extends Command
         permissions:sync
         {--prune : Delete previously discovered permissions that no longer match a route}
         {--force : Force prune permissions without asking for confirmation}
+        {--grant= : Assign synced permissions to an admin by id or email}
     ';
 
     /**
@@ -38,7 +42,7 @@ class SyncPermissionsCommand extends Command
     /**
      * Execute the console command.
      */
-    public function handle()
+    public function handle(): int
     {
         $permissions = $this->getPermissions();
 
@@ -53,7 +57,15 @@ class SyncPermissionsCommand extends Command
             $this->prunePermissions($permissions);
         }
 
+        if ($this->option('grant') !== null) {
+            if (! $this->grantPermissions($permissions, (string) $this->option('grant'))) {
+                return SymfonyCommand::FAILURE;
+            }
+        }
+
         info('Permissions synced successfully');
+
+        return SymfonyCommand::SUCCESS;
     }
 
     /**
@@ -100,6 +112,75 @@ class SyncPermissionsCommand extends Command
         $stale->each->delete();
 
         info(sprintf('Pruned %d stale permission(s)', $stale->count()));
+    }
+
+    /**
+     * Assign the synced permissions to an admin identified by id or email.
+     */
+    protected function grantPermissions(Collection $permissions, string $grant): bool
+    {
+        $admin = $this->resolveGrantee($grant);
+
+        if (! $admin) {
+            error(sprintf('No admin found for grant target [%s]', $grant));
+
+            return false;
+        }
+
+        if (! method_exists($admin, 'givePermissionTo')) {
+            error(sprintf(
+                'Admin model [%s] must use Spatie\'s HasRoles (or HasPermissions) trait to receive grants',
+                $admin::class,
+            ));
+
+            return false;
+        }
+
+        if ($permissions->isEmpty()) {
+            info(sprintf('No synced permissions to grant to admin [%s]', $admin->getKey()));
+
+            return true;
+        }
+
+        $admin->givePermissionTo(
+            $permissions
+                ->map(fn (array $permission) => Permission::findByName($permission['name'], $permission['guard_name']))
+                ->all(),
+        );
+
+        info(sprintf(
+            'Granted %d permission(s) to admin [%s]',
+            $permissions->count(),
+            $admin->getKey(),
+        ));
+
+        return true;
+    }
+
+    /**
+     * Resolve an admin model by primary key or email.
+     */
+    protected function resolveGrantee(string $grant): ?Model
+    {
+        $model = $this->adminModel();
+
+        if (filter_var($grant, FILTER_VALIDATE_INT) !== false) {
+            return $model::query()->find((int) $grant);
+        }
+
+        return $model::query()->where('email', $grant)->first();
+    }
+
+    /**
+     * Resolve the eloquent model behind the admins guard.
+     *
+     * @return class-string<Model>
+     */
+    protected function adminModel(): string
+    {
+        $provider = config('auth.guards.admins.provider', 'admins');
+
+        return config("auth.providers.{$provider}.model");
     }
 
     /**

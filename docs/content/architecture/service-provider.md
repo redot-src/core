@@ -67,6 +67,10 @@ deliberate if you override them.
   consistently, including non-Latin content (e.g. Arabic) without escaping.
 - **Production safety.** Destructive database commands (`migrate:fresh`,
   `db:wipe`, …) are blocked in the `production` environment.
+- **Local permission bypass.** When `redot.permissions.bypass` is on and the
+  environment is `local`, every Gate check passes so dashboard work does not
+  require syncing permissions. See
+  [Configuration](/architecture/configuration#permissions).
 - **About section.** `php artisan about` reports the installed `redot/core`
   version.
 

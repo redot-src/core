@@ -84,6 +84,14 @@ Pass `--prune` to also remove previously discovered permissions whose routes no
 longer exist; permissions created by hand are never pruned. See
 [Commands](/commands/overview) for details.
 
+### Local development bypass
+
+While developing locally you can skip syncing and assigning permissions by
+setting `redot.permissions.bypass`. When
+enabled in the `local` environment, every Gate check — including
+`RoutePermission` and `route_allowed()` — passes. The bypass is never honored
+outside `local`. See [Configuration](/architecture/configuration#permissions).
+
 ## On-demand asset building
 
 On each web request the framework checks whether tracked front-end sources have

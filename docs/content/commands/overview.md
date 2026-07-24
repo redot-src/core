@@ -92,7 +92,20 @@ re-seed) whenever you add, rename, or remove permission-guarded routes.
 - **`--prune`** — after syncing, delete previously discovered permissions that
   no longer match any route. The command lists the stale permissions and asks
   for confirmation before deleting. Permissions created by hand (without a
-  `discovered_at` stamp) always survive pruning. See
+  `discovered_at` stamp) always survive pruning. Pass `--force` to skip the
+  confirmation prompt.
+- **`--grant=`** — after syncing, assign every discovered permission to an
+  admin identified by id (`--grant=1`) or email (`--grant=admin@example.com`).
+  The target must use Spatie's `HasRoles` (or `HasPermissions`) trait. Grants
+  are additive — existing assignments are kept.
+
+```bash
+php artisan permissions:sync --grant=1
+php artisan permissions:sync --prune --force --grant=admin@example.com
+```
+
+For day-to-day local work without syncing at all, prefer
+[`redot.permissions.bypass`](/architecture/configuration#permissions). See
 [Middleware](/foundation/middleware) for permission resolution and opt-out
 details.
 

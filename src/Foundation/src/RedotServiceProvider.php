@@ -16,6 +16,7 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\Validator;
@@ -114,6 +115,7 @@ class RedotServiceProvider extends ServiceProvider
 
         $this->configureAboutCommand();
         $this->configurePermissionRoutes();
+        $this->configurePermissionBypass();
 
         $this->configureBlade();
         $this->configurePaginatorView();
@@ -143,6 +145,23 @@ class RedotServiceProvider extends ServiceProvider
             return $this->metadata([
                 'redot' => ['permissions' => $permissions],
             ]);
+        });
+    }
+
+    /**
+     * Allow every Gate check while developing locally with bypass enabled.
+     *
+     * The callback always returns null when inactive so Spatie and app-defined
+     * abilities keep working. Bypass is never honored outside local.
+     */
+    protected function configurePermissionBypass(): void
+    {
+        Gate::before(function ($user, string $ability) {
+            if (! config('redot.permissions.bypass') || ! app()->isLocal()) {
+                return null;
+            }
+
+            return true;
         });
     }
 

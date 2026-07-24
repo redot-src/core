@@ -62,6 +62,18 @@ directly. See [Localization](/foundation/localization).
   redirected to its locale-prefixed equivalent (preserving the query string).
   When off, such URLs return a 404 instead.
 
+## Permissions
+
+`redot.permissions` controls local development shortcuts around route gating.
+
+- **`bypass`** — when `true` **and** the app environment is `local`, every Gate
+  check passes for authenticated users. Use this so you do not have to run
+  `permissions:sync` and re-assign permissions on every route change. The flag
+  is never honored outside `local`.
+
+See [Middleware](/foundation/middleware) for how route permissions are resolved,
+and [Commands](/commands/overview) for `permissions:sync --grant`.
+
 ## Settings
 
 `redot.settings` is the schema for **persisted** application settings — values

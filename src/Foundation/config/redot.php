@@ -70,6 +70,22 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Permissions
+    |--------------------------------------------------------------------------
+    |
+    | Dashboard route gating is driven by Spatie permissions resolved from
+    | route names. Set bypass to true while developing locally so every Gate
+    | check passes without syncing or assigning permissions. Bypass is never
+    | honored outside the local environment.
+    |
+    */
+
+    'permissions' => [
+        'bypass' => true,
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Uploads
     |--------------------------------------------------------------------------
     |
