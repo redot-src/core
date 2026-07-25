@@ -232,7 +232,7 @@ class RedotServiceProvider extends ServiceProvider
         config(['app.locales' => $locales]);
 
         // Set the default locale to the first locale in the locales array
-        URL::defaults(['locale' => Arr::first(array_keys(config('app.locales')))]);
+        URL::defaults(['locale' => config('app.locale')]);
     }
 
     /**
