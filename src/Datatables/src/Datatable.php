@@ -201,6 +201,9 @@ abstract class Datatable extends Component
         $mainActions = array_slice($actions, 0, $offset);
         $remainingActions = array_slice($actions, $offset);
 
+        // If the remaining actions are equal to or less than 1, just show them directly
+        if (count($remainingActions) <= 1) return array_merge($mainActions, $remainingActions);
+
         // Otherwise, show the first $offset actions and group the rest
         return array_merge(
             $mainActions,
