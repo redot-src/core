@@ -192,9 +192,10 @@ abstract class Datatable extends Component
     public static function defaultActionGroup(array $actions, ?string $label = null, ?string $icon = null): array
     {
         $offset = is_mobile() ? 0 : 2;
+        $count = count(array_filter($actions, fn (Action $action) => $action->visible));
 
         // If we have $offset + 1 actions total, just show all of them directly
-        if (count($actions) <= $offset + 1) return $actions;
+        if ($count <= $offset + 1) return $actions;
 
         // Display the first $offset actions directly, group the rest if there are more than $offset + 1 total
         $mainActions = array_slice($actions, 0, $offset);
