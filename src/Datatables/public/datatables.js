@@ -52,7 +52,7 @@ $(document).on('click', '.datatable-action[method]:not([method="get"])', (event)
 
     // Use warnBeforeAction if available
     if (typeof warnBeforeAction !== 'undefined') {
-        return warnBeforeAction(callback, { content: $action.attr('confirm') });
+        return warnBeforeAction(callback, { message: $action.attr('confirm') });
     }
 
     // Fallback to native confirm
@@ -81,7 +81,7 @@ $(document).on('click', '.datatable-action[action-name]', (event) => {
     }
 
     if (typeof warnBeforeAction !== 'undefined') {
-        return warnBeforeAction(run, { content: $action.attr('confirm') });
+        return warnBeforeAction(run, { message: $action.attr('confirm') });
     }
 
     if (confirm($action.attr('confirm'))) {
