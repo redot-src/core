@@ -28,8 +28,10 @@ class ExtractLanguageTokens implements ShouldQueue
     {
         $directories = [
             app_path(),
+            base_path('routes'),
+            database_path('seeders'),
             public_path('assets'),
-            resource_path('views'),
+            resource_path(),
         ];
 
         $extractor = new LangExtractor;
