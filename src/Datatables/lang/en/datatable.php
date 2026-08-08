@@ -43,10 +43,10 @@ return [
     ],
 
     'bulk' => [
-        'selected' => '{1} :count entry selected|[2,*] :count entries selected',
+        'actions' => 'Bulk actions',
+        'selected' => ':count selected',
         'select_row' => 'Select entry',
         'select_page' => 'Select every entry on this page',
-        'clear' => 'Clear selection',
         'confirm' => 'Are you sure you want to perform this action on the selected entries?',
     ],
 

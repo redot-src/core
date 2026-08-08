@@ -7,13 +7,19 @@
             <thead @class(['sticky-top' => $stickyHeader])>
                 <tr>
                     @if ($selectable)
-                        <th class="w-1 datatable-select"
-                            x-data="{ page: @js($rows->map(fn($row) => (string) $row->getKey())->values()) }">
+                        @php($pageKeys = $rows->map(fn ($row) => (string) $row->getKey())->values())
+
+                        {{-- Keyed on the page contents so Alpine re-reads $pageKeys whenever the rows change. --}}
+                        <th class="w-1 datatable-select" wire:key="{{ $id }}-select-page-{{ md5($pageKeys->implode(',')) }}"
+                            x-data="{ page: @js($pageKeys) }">
                             <input type="checkbox" class="form-check-input m-0 align-middle"
-                                aria-label="@lang('datatables::datatable.bulk.select_page')" wire:click="toggleSelection"
-                                x-bind:checked="page.every((key) => $wire.selected.includes(key))"
-                                x-bind:indeterminate="page.some((key) => $wire.selected.includes(key)) &&
-                                    !page.every((key) => $wire.selected.includes(key))" />
+                                aria-label="@lang('datatables::datatable.bulk.select_page')"
+                                x-bind:checked="page.every((key) => selected.includes(key))"
+                                x-bind:indeterminate="page.some((key) => selected.includes(key)) &&
+                                    !page.every((key) => selected.includes(key))"
+                                x-on:click="selected = page.every((key) => selected.includes(key))
+                                    ? selected.filter((key) => !page.includes(key))
+                                    : [...new Set([...selected, ...page])]" />
                         </th>
                     @endif
 
@@ -56,7 +62,7 @@
                         <td class="datatable-select">
                             <input type="checkbox" class="form-check-input m-0 align-middle"
                                 aria-label="@lang('datatables::datatable.bulk.select_row')" value="{{ $row->getKey() }}"
-                                wire:model.live="selected" />
+                                x-model="selected" />
                         </td>
                     @endif
 

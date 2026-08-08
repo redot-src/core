@@ -25,27 +25,39 @@ it('exposes a delete factory that deletes the selected records', function () {
         ->and($action->callback)->not->toBeNull();
 });
 
-it('sends the current selection in the request body of route driven bulk actions', function () {
+it('names the request key carrying the selection on route driven bulk actions', function () {
     Route::name('posts.bulk-destroy')->delete('/posts', fn () => 'destroy');
 
-    $action = BulkAction::delete('posts.bulk-destroy')->selected(['1', '2']);
+    $action = BulkAction::delete('posts.bulk-destroy');
 
     $attributes = $action->buildAttributes()->getAttributes();
-    $body = json_decode(base64_decode($attributes['request-body']), true);
 
     expect($action->callback)->toBeNull()
         ->and($attributes['method'])->toBe('delete')
-        ->and($body)->toBe(['keys' => ['1', '2']]);
+        ->and($attributes['bulk-keys'])->toBe('keys')
+        ->and(json_decode(base64_decode($attributes['request-body']), true))->toBe([]);
+});
+
+it('marks a get bulk action so the selection can be appended to the query string', function () {
+    Route::name('posts.bulk-export')->get('/posts/export', fn () => 'export');
+
+    $attributes = BulkAction::make('Export', 'fas fa-file-export')
+        ->route('posts.bulk-export')
+        ->keys('ids')
+        ->buildAttributes()
+        ->getAttributes();
+
+    expect($attributes['method'])->toBe('get')
+        ->and($attributes['bulk-keys'])->toBe('ids')
+        ->and($attributes['href'])->toContain('/posts/export');
 });
 
 it('renames the request key holding the selection', function () {
     Route::name('posts.bulk-destroy')->delete('/posts', fn () => 'destroy');
 
-    $action = BulkAction::delete('posts.bulk-destroy')->keys('ids')->selected(['3']);
+    $action = BulkAction::delete('posts.bulk-destroy')->keys('ids');
 
-    $body = json_decode(base64_decode($action->buildAttributes()->getAttributes()['request-body']), true);
-
-    expect($body)->toBe(['ids' => ['3']]);
+    expect($action->buildAttributes()->getAttributes()['bulk-keys'])->toBe('ids');
 });
 
 it('keeps the selection out of the action instance once attributes are built', function () {

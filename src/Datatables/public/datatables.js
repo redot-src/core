@@ -1,3 +1,6 @@
+// Read the row selection, it lives in Alpine so ticking a checkbox never hits the server
+const datatableSelection = ($action) => window.Alpine.$data($action.closest('[wire\\:id]').get(0)).selected;
+
 // Deattach dropdown menu from datatable-actions dropdown
 $(document).on('show.bs.dropdown', '.datatable-actions .dropdown', (event) => {
     const $dropdown = $(event.target).closest('.dropdown');
@@ -28,6 +31,11 @@ $(document).on('click', '.datatable-action[method]:not([method="get"])', (event)
 
         // Get request body
         let body = JSON.parse(atob($action.attr('request-body')));
+
+        // Bulk actions carry the selection as it stands at click time
+        if ($action.is('[bulk-keys]')) {
+            body = { ...body, [$action.attr('bulk-keys')]: datatableSelection($action) };
+        }
 
         // Append request body to the form
         if (body && typeof body === 'object') {
@@ -61,6 +69,18 @@ $(document).on('click', '.datatable-action[method]:not([method="get"])', (event)
     }
 });
 
+// Handle GET bulk action click, the selection rides in the query string
+$(document).on('click', '.datatable-action[bulk-keys][method="get"]', (event) => {
+    event.preventDefault();
+
+    const $action = $(event.target).closest('.datatable-action');
+    const url = new URL($action.attr('href'), window.location.origin);
+
+    datatableSelection($action).forEach((key) => url.searchParams.append(`${$action.attr('bulk-keys')}[]`, key));
+
+    window.open(url, $action.attr('target') || '_self');
+});
+
 // Handle inline datatable action click
 $(document).on('click', '.datatable-action[action-name]', (event) => {
     event.preventDefault();
@@ -75,7 +95,9 @@ $(document).on('click', '.datatable-action[action-name]', (event) => {
     const wire = window.Livewire.find(wireId);
 
     const run = () =>
-        $action.attr('action-scope') === 'bulk' ? wire.call('runBulkAction', name) : wire.call('runAction', name, key);
+        $action.attr('action-scope') === 'bulk'
+            ? wire.call('runBulkAction', name, datatableSelection($action))
+            : wire.call('runAction', name, key);
 
     if ($action.is('[confirm]') === false) {
         return run();

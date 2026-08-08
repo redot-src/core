@@ -90,11 +90,6 @@ abstract class Datatable extends Component
     public array $filtered = [];
 
     /**
-     * The keys of the rows selected for bulk actions.
-     */
-    public array $selected = [];
-
-    /**
      * Set the datatable maximum height.
      */
     #[Locked]
@@ -443,36 +438,12 @@ abstract class Datatable extends Component
     }
 
     /**
-     * Toggle the selection of every row on the current page.
-     */
-    public function toggleSelection(): void
-    {
-        $keys = $this->getQueryBuilder($this->filters())
-            ->paginate($this->perPage)
-            ->getCollection()
-            ->map(fn (Model $row) => (string) $row->getKey())
-            ->all();
-
-        $selected = array_map('strval', $this->selected);
-
-        // Deselect the page when it is already fully selected, select it otherwise.
-        $this->selected = array_diff($keys, $selected) === []
-            ? array_values(array_diff($selected, $keys))
-            : array_values(array_unique(array_merge($selected, $keys)));
-    }
-
-    /**
-     * Clear the current row selection.
-     */
-    public function clearSelection(): void
-    {
-        $this->selected = [];
-    }
-
-    /**
      * Run a bulk action against the selected rows.
+     *
+     * The selection lives in the browser so ticking a checkbox never hits the
+     * server, which means the keys arrive here as untrusted client input.
      */
-    public function runBulkAction(string $name): mixed
+    public function runBulkAction(string $name, array $keys = []): mixed
     {
         $action = $this->findBulkActionByName($name);
 
@@ -480,7 +451,7 @@ abstract class Datatable extends Component
             throw new Exceptions\InvalidActionException("Bulk action [$name] not found.");
         }
 
-        $records = $this->getSelectedRecords();
+        $records = $this->getSelectedRecords($keys);
 
         if ($records->isEmpty() || ! $action->shouldRender($records)) {
             throw new Exceptions\InvalidActionException("Bulk action [$name] is not available for the selected rows.");
@@ -522,11 +493,19 @@ abstract class Datatable extends Component
     }
 
     /**
+     * Clear the row selection held by the browser.
+     */
+    protected function clearSelection(): void
+    {
+        $this->js('selected = []');
+    }
+
+    /**
      * Get the selected rows, scoped to the datatable query.
      */
-    protected function getSelectedRecords(): Collection
+    protected function getSelectedRecords(array $keys): Collection
     {
-        $keys = array_values(array_unique(array_map('strval', $this->selected)));
+        $keys = array_values(array_unique(array_map('strval', array_filter($keys, 'is_scalar'))));
 
         if ($keys === []) {
             return new Collection;
@@ -616,8 +595,9 @@ abstract class Datatable extends Component
     {
         $actions = array_filter($this->bulkActions(), fn (BulkAction $action) => $action->visible);
 
+        // Bulk actions always live in the header dropdown, never inline.
         foreach ($actions as $action) {
-            $action->selected($this->selected);
+            $action->grouped(true);
         }
 
         return $actions;

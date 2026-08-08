@@ -89,7 +89,7 @@ A group hides itself when none of its actions would show for the row.
 
 ## Bulk actions
 
-Bulk actions operate on the rows the user ticked instead of a single row. Return them from `bulkActions()` and the table grows a selection column plus a bar that appears as soon as something is selected — no extra wiring, no extra flags:
+Bulk actions operate on the rows the user ticked instead of a single row. Return them from `bulkActions()` and the table grows a selection column plus an icon-only dropdown in the header that appears as soon as something is selected — no extra wiring, no extra flags:
 
 ```php
 use Redot\Datatables\Actions\BulkAction;
@@ -102,12 +102,13 @@ public function bulkActions(): array
 }
 ```
 
-Return an empty array (the default) and nothing changes: no checkboxes, no bar.
+Return an empty array (the default) and nothing changes: no checkboxes, no dropdown.
 
 `BulkAction` extends `Action`, so labels, icons, `visible`/`hidden`, `confirmable`, `success`, `failure`, and custom attributes all behave the same. The differences are the ones that have to differ:
 
 - **`action`** — the callback receives an Eloquent **collection** of the selected rows instead of a single model.
 - **`condition`** — also receives the collection, and is checked when the action runs rather than per row.
+- **`grouped`** — always on: every bulk action renders as an item in the header dropdown, so `expanded` has no effect.
 - **`keys`** — for route-driven bulk actions, the request key carrying the selected row keys (defaults to `keys`).
 - **`delete`** / **`restore`** — called without a route, these come with a handler that deletes or restores the selection.
 
@@ -132,11 +133,15 @@ BulkAction::delete('posts.bulk-destroy'),           // sends keys[] via DELETE
 BulkAction::make(__('Archive'), 'fas fa-archive')
     ->route('posts.archive', method: 'post')
     ->keys('post_ids'),
+BulkAction::make(__('Export'), 'fas fa-file-export')
+    ->route('posts.bulk-export'),                   // GET, keys[] ride in the query string
 ```
+
+The selection is only known at click time, so it is attached then: as form fields for `post`, `put`, `patch` and `delete`, and as query string parameters for `get`.
 
 ### Selection safety
 
-The selection lives in the component state, so it is treated as untrusted input: rows are always re-fetched through the datatable's own `query()` before a callback sees them, and keys that fall outside it are silently dropped. Authorize bulk actions with `visible()` exactly as you would a row action — a hidden bulk action cannot be invoked.
+The selection lives entirely in the browser: ticking a checkbox costs nothing, and the keys are only sent when an action actually runs. That also makes them untrusted input, so rows are always re-fetched through the datatable's own `query()` before a callback sees them, and keys that fall outside it are silently dropped. Authorize bulk actions with `visible()` exactly as you would a row action — a hidden bulk action cannot be invoked.
 
 Selection survives paging, and the header checkbox toggles the current page only.
 

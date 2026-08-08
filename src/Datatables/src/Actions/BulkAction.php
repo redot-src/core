@@ -13,19 +13,14 @@ class BulkAction extends Action
     public bool $bounded = false;
 
     /**
-     * Determine if the action is expanded.
+     * Determine if the action is grouped, bulk actions always render in a dropdown.
      */
-    public bool $expanded = true;
+    public bool $grouped = true;
 
     /**
      * The request key holding the selected row keys.
      */
     public string $keys = 'keys';
-
-    /**
-     * The currently selected row keys, filled by the datatable before rendering.
-     */
-    public array $selected = [];
 
     /**
      * Create a new delete bulk action instance.
@@ -62,32 +57,22 @@ class BulkAction extends Action
     }
 
     /**
-     * Set the currently selected row keys.
-     */
-    public function selected(array $selected): static
-    {
-        $this->selected = $selected;
-
-        return $this;
-    }
-
-    /**
      * Prepare the attributes before building.
      */
     protected function prepareAttributes(?Model $row = null): void
     {
-        // Route driven bulk actions have no row to bind to, they carry the
-        // current selection in the request payload instead.
-        if ($this->route) {
-            $this->body[$this->keys] = $this->selected;
-        }
-
         parent::prepareAttributes($row);
 
         if ($this->callback) {
             unset($this->attributes['action-key']);
-
-            $this->attribute('action-scope', 'bulk');
         }
+
+        // The selection is browser state, so it is not known when the action is
+        // rendered. Name the request key here and let the click handler fill it
+        // in with whatever is ticked at that moment.
+        $this->attributes([
+            'action-scope' => 'bulk',
+            'bulk-keys' => $this->keys,
+        ]);
     }
 }

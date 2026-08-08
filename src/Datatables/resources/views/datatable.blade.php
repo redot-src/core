@@ -3,11 +3,17 @@
     <script src="{{ hashed_asset(config('datatables.assets.js')) }}" defer></script>
 @endassets
 
-<div class="card datatable" @style(['max-height: ' . $height]) id="{{ $id }}" wire:ignore.self x-data="{ filtersOpen: {{ $filtersOpen ? 'true' : 'false' }} }">
+<div class="card datatable" @style(['max-height: ' . $height]) id="{{ $id }}" wire:ignore.self x-data="{ filtersOpen: {{ $filtersOpen ? 'true' : 'false' }}, selected: [] }">
     <div class="card-body d-flex align-items-center gap-1">
         <div class="w-auto me-auto" wire:ignore>
             @include('datatables::partials.per-page')
         </div>
+
+        @if ($selectable)
+            <div wire:ignore>
+                @include('datatables::partials.bulk-actions')
+            </div>
+        @endif
 
         @if ($searchable)
             <div wire:ignore>
@@ -35,12 +41,6 @@
     @if ($filterable)
         <div class="card-body" wire:ignore x-show="filtersOpen" x-cloak>
             @include('datatables::partials.filters')
-        </div>
-    @endif
-
-    @if ($selectable && count($selected) > 0)
-        <div class="card-body border-top d-flex align-items-center gap-1 datatable-bulk-actions">
-            @include('datatables::partials.bulk-actions')
         </div>
     @endif
 
