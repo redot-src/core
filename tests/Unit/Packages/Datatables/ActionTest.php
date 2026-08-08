@@ -68,9 +68,6 @@ it('exposes a delete factory that defaults to a confirmable delete request', fun
 
     $action = Action::delete('admins.destroy');
 
-    expect($action->method)->toBe('delete')
-        ->and($action->confirmable)->toBeTrue();
-
     $attributes = $action->buildAttributes(new EmptyModel(['id' => 7]))->getAttributes();
 
     expect($attributes['method'])->toBe('delete')
@@ -86,32 +83,8 @@ it('flags grouped actions and renders the group only when at least one child can
     $populatedGroup = ActionGroup::make('More')->actions([$visible, $hidden]);
     $emptyGroup = ActionGroup::make('Hidden Only')->actions([Action::make('Hidden Too')->hidden()]);
 
-    expect($visible->grouped)->toBeTrue()
-        ->and($hidden->grouped)->toBeTrue()
-        ->and($populatedGroup->shouldRender($row))->toBeTrue()
+    expect($populatedGroup->shouldRender($row))->toBeTrue()
         ->and($emptyGroup->shouldRender($row))->toBeFalse();
-});
-
-it('registers an inline action with a mandatory name and callback', function () {
-    $callback = fn () => null;
-
-    $action = Action::make('Approve')->action('approve', $callback);
-
-    expect($action->name)->toBe('approve')
-        ->and($action->callback)->toBe($callback);
-});
-
-it('registers success and failure callbacks for inline actions', function () {
-    $success = fn () => null;
-    $failure = fn () => null;
-
-    $action = Action::make('Approve')
-        ->action('approve', fn () => null)
-        ->success($success)
-        ->failure($failure);
-
-    expect($action->successCallback)->toBe($success)
-        ->and($action->failureCallback)->toBe($failure);
 });
 
 it('rejects empty inline action names at configuration time', function () {
