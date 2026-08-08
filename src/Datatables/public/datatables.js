@@ -69,6 +69,9 @@ window.Datatables = (() => {
         selectedLabel(template) {
             return template.replace(':count', this.selected.length);
         },
+        clearSelection() {
+            this.selected = [];
+        },
     });
 
     // Alpine component for the header checkbox toggling the current page

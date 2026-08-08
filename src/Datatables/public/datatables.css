@@ -62,7 +62,7 @@
     cursor: pointer;
 }
 
-.datatable .datatable-bulk-actions > .btn {
+.datatable .datatable-bulk-actions .btn {
     white-space: nowrap;
 }
 

@@ -44,6 +44,7 @@ return [
 
     'bulk' => [
         'actions' => 'إجراءات جماعية',
+        'cancel' => 'إلغاء',
         'selected' => 'تم تحديد :count',
         'select_row' => 'تحديد السجل',
         'select_page' => 'تحديد كل السجلات في هذه الصفحة',

@@ -9,12 +9,6 @@
             @include('datatables::partials.per-page')
         </div>
 
-        @if ($selectable)
-            <div wire:ignore>
-                @include('datatables::partials.bulk-actions')
-            </div>
-        @endif
-
         @if ($searchable)
             <div wire:ignore>
                 @include('datatables::partials.search')
@@ -41,6 +35,12 @@
     @if ($filterable)
         <div class="card-body" wire:ignore x-show="filtersOpen" x-cloak>
             @include('datatables::partials.filters')
+        </div>
+    @endif
+
+    @if ($selectable)
+        <div class="card-body" wire:ignore x-show="selected.length > 0" x-cloak>
+            @include('datatables::partials.bulk-actions')
         </div>
     @endif
 

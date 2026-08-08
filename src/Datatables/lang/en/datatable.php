@@ -44,6 +44,7 @@ return [
 
     'bulk' => [
         'actions' => 'Bulk actions',
+        'cancel' => 'Cancel',
         'selected' => ':count selected',
         'select_row' => 'Select entry',
         'select_page' => 'Select every entry on this page',
