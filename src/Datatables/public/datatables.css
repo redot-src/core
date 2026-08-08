@@ -62,6 +62,10 @@
     cursor: pointer;
 }
 
+.datatable .datatable-bulk-actions > .btn {
+    white-space: nowrap;
+}
+
 /* ---------------------------------
  * Overrides
  * --------------------------------- */

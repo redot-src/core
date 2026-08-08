@@ -89,7 +89,7 @@ A group hides itself when none of its actions would show for the row.
 
 ## Bulk actions
 
-Bulk actions operate on the rows the user ticked instead of a single row. Return them from `bulkActions()` and the table grows a selection column plus an icon-only dropdown in the header that appears as soon as something is selected — no extra wiring, no extra flags:
+Bulk actions operate on the rows the user ticked instead of a single row. Return them from `bulkActions()` and the table grows a selection column plus a selected-count dropdown in the header that appears as soon as something is selected — no extra wiring, no extra flags:
 
 ```php
 use Redot\Datatables\Actions\BulkAction;

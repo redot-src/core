@@ -33,6 +33,7 @@ it('renders a selection column and a bulk action dropdown driven by the browser'
     Livewire::test(BulkActionDatatable::class)
         ->assertSeeHtml('x-model="selected"')
         ->assertSeeHtml('<div class="dropdown datatable-bulk-actions" x-show="selected.length > 0"')
+        ->assertSeeHtml('x-text="selectedLabel(')
         ->assertSeeHtml('class="datatable-action dropdown-item"');
 });
 
