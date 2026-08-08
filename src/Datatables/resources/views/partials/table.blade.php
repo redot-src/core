@@ -6,6 +6,17 @@
         @if ($rows->isEmpty() === false)
             <thead @class(['sticky-top' => $stickyHeader])>
                 <tr>
+                    @if ($selectable)
+                        <th class="w-1 datatable-select"
+                            x-data="{ page: @js($rows->map(fn($row) => (string) $row->getKey())->values()) }">
+                            <input type="checkbox" class="form-check-input m-0 align-middle"
+                                aria-label="@lang('datatables::datatable.bulk.select_page')" wire:click="toggleSelection"
+                                x-bind:checked="page.every((key) => $wire.selected.includes(key))"
+                                x-bind:indeterminate="page.some((key) => $wire.selected.includes(key)) &&
+                                    !page.every((key) => $wire.selected.includes(key))" />
+                        </th>
+                    @endif
+
                     @foreach ($columns as $column)
                         <th @class(['fixed-' . $column->fixedDirection => $column->fixed])>
                             @if ($column->sortable && $column->name)
@@ -41,6 +52,14 @@
         <tbody wire:loading.class="opacity-50">
             @forelse($rows as $row)
                 <tr wire:key="{{ $id }}-row-{{ $row->getKey() }}">
+                    @if ($selectable)
+                        <td class="datatable-select">
+                            <input type="checkbox" class="form-check-input m-0 align-middle"
+                                aria-label="@lang('datatables::datatable.bulk.select_row')" value="{{ $row->getKey() }}"
+                                wire:model.live="selected" />
+                        </td>
+                    @endif
+
                     @foreach ($columns as $column)
                         <td {{ $column->buildAttributes($row) }}>
                             {!! $column->get($row) !!}

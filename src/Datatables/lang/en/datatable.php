@@ -42,6 +42,14 @@ return [
         'confirm' => 'Are you sure you want to perform this action?',
     ],
 
+    'bulk' => [
+        'selected' => '{1} :count entry selected|[2,*] :count entries selected',
+        'select_row' => 'Select entry',
+        'select_page' => 'Select every entry on this page',
+        'clear' => 'Clear selection',
+        'confirm' => 'Are you sure you want to perform this action on the selected entries?',
+    ],
+
     'filters' => [
         'select' => [
             'placeholder' => 'Select an option',

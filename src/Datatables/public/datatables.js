@@ -74,7 +74,8 @@ $(document).on('click', '.datatable-action[action-name]', (event) => {
 
     const wire = window.Livewire.find(wireId);
 
-    const run = () => wire.call('runAction', name, key);
+    const run = () =>
+        $action.attr('action-scope') === 'bulk' ? wire.call('runBulkAction', name) : wire.call('runAction', name, key);
 
     if ($action.is('[confirm]') === false) {
         return run();

@@ -1,6 +1,6 @@
 # Datatable Actions
 
-Actions are the per-row buttons in a table's trailing column — view, edit, delete, restore, and any custom button you need. You return them from your datatable's `actions()` method. See the [Datatables overview](/packages/datatables/overview) for the surrounding setup.
+Actions are the per-row buttons in a table's trailing column — view, edit, delete, restore, and any custom button you need. You return them from your datatable's `actions()` method. Actions that operate on several rows at once live in [`bulkActions()`](#bulk-actions) instead. See the [Datatables overview](/packages/datatables/overview) for the surrounding setup.
 
 ## Usage
 
@@ -86,6 +86,59 @@ ActionGroup::make(__('More'))->actions([
 ```
 
 A group hides itself when none of its actions would show for the row.
+
+## Bulk actions
+
+Bulk actions operate on the rows the user ticked instead of a single row. Return them from `bulkActions()` and the table grows a selection column plus a bar that appears as soon as something is selected — no extra wiring, no extra flags:
+
+```php
+use Redot\Datatables\Actions\BulkAction;
+
+public function bulkActions(): array
+{
+    return [
+        BulkAction::delete()->visible(route_allowed('posts.destroy')),
+    ];
+}
+```
+
+Return an empty array (the default) and nothing changes: no checkboxes, no bar.
+
+`BulkAction` extends `Action`, so labels, icons, `visible`/`hidden`, `confirmable`, `success`, `failure`, and custom attributes all behave the same. The differences are the ones that have to differ:
+
+- **`action`** — the callback receives an Eloquent **collection** of the selected rows instead of a single model.
+- **`condition`** — also receives the collection, and is checked when the action runs rather than per row.
+- **`keys`** — for route-driven bulk actions, the request key carrying the selected row keys (defaults to `keys`).
+- **`delete`** / **`restore`** — called without a route, these come with a handler that deletes or restores the selection.
+
+### A custom bulk action
+
+```php
+BulkAction::make(__('Publish'), 'fas fa-paper-plane')
+    ->visible(route_allowed('posts.publish'))
+    ->action('publish', fn (Collection $posts) => $posts->each->update(['status' => 'published']))
+    ->success(fn () => $this->toastify()->success(__('Posts published.')))
+    ->confirmable(),
+```
+
+The callback also receives the datatable itself as a second argument, so you can raise a toast, reset filters, or dispatch an event from inside it. A successful run clears the selection; a failed one keeps it so the user can retry.
+
+### Posting the selection to a controller
+
+Point a bulk action at a route instead of a callback and the selected keys ride along in the request body, so an existing controller endpoint can handle it:
+
+```php
+BulkAction::delete('posts.bulk-destroy'),           // sends keys[] via DELETE
+BulkAction::make(__('Archive'), 'fas fa-archive')
+    ->route('posts.archive', method: 'post')
+    ->keys('post_ids'),
+```
+
+### Selection safety
+
+The selection lives in the component state, so it is treated as untrusted input: rows are always re-fetched through the datatable's own `query()` before a callback sees them, and keys that fall outside it are silently dropped. Authorize bulk actions with `visible()` exactly as you would a row action — a hidden bulk action cannot be invoked.
+
+Selection survives paging, and the header checkbox toggles the current page only.
 
 ## Related
 

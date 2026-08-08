@@ -36,6 +36,14 @@ class {{ class }} extends Datatable
     }
 
     /**
+     * Get the bulk actions for the datatable.
+     */
+    public function bulkActions(): array
+    {
+        return [];
+    }
+
+    /**
      * Get the filters for the datatable.
      */
     public function filters(): array

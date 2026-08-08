@@ -3,6 +3,7 @@
 namespace Redot\Datatables;
 
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -17,6 +18,7 @@ use Livewire\Component;
 use Livewire\WithPagination;
 use Redot\Datatables\Actions\Action;
 use Redot\Datatables\Actions\ActionGroup;
+use Redot\Datatables\Actions\BulkAction;
 use Redot\Datatables\Adapters\PDF\Adapter;
 use Redot\Datatables\Columns\Column;
 use Redot\Datatables\Filters\Filter;
@@ -86,6 +88,11 @@ abstract class Datatable extends Component
      */
     #[Url(as: 'filter')]
     public array $filtered = [];
+
+    /**
+     * The keys of the rows selected for bulk actions.
+     */
+    public array $selected = [];
 
     /**
      * Set the datatable maximum height.
@@ -209,6 +216,14 @@ abstract class Datatable extends Component
             $mainActions,
             [ActionGroup::make($label, $icon ?? 'fas fa-ellipsis-v')->actions($remainingActions)]
         );
+    }
+
+    /**
+     * Get the bulk actions for the datatable.
+     */
+    public function bulkActions(): array
+    {
+        return [];
     }
 
     /**
@@ -428,6 +443,105 @@ abstract class Datatable extends Component
     }
 
     /**
+     * Toggle the selection of every row on the current page.
+     */
+    public function toggleSelection(): void
+    {
+        $keys = $this->getQueryBuilder($this->filters())
+            ->paginate($this->perPage)
+            ->getCollection()
+            ->map(fn (Model $row) => (string) $row->getKey())
+            ->all();
+
+        $selected = array_map('strval', $this->selected);
+
+        // Deselect the page when it is already fully selected, select it otherwise.
+        $this->selected = array_diff($keys, $selected) === []
+            ? array_values(array_diff($selected, $keys))
+            : array_values(array_unique(array_merge($selected, $keys)));
+    }
+
+    /**
+     * Clear the current row selection.
+     */
+    public function clearSelection(): void
+    {
+        $this->selected = [];
+    }
+
+    /**
+     * Run a bulk action against the selected rows.
+     */
+    public function runBulkAction(string $name): mixed
+    {
+        $action = $this->findBulkActionByName($name);
+
+        if (! $action || ! $action->callback) {
+            throw new Exceptions\InvalidActionException("Bulk action [$name] not found.");
+        }
+
+        $records = $this->getSelectedRecords();
+
+        if ($records->isEmpty() || ! $action->shouldRender($records)) {
+            throw new Exceptions\InvalidActionException("Bulk action [$name] is not available for the selected rows.");
+        }
+
+        try {
+            $result = call_user_func($action->callback, $records, $this);
+
+            if ($action->successCallback) {
+                call_user_func($action->successCallback, $records, $result, $this);
+            }
+
+            $this->clearSelection();
+
+            return $result;
+        } catch (Throwable $exception) {
+            if ($action->failureCallback) {
+                call_user_func($action->failureCallback, $records, $exception, $this);
+
+                return null;
+            }
+
+            throw $exception;
+        }
+    }
+
+    /**
+     * Find a bulk action by its unique name.
+     */
+    protected function findBulkActionByName(string $name): ?BulkAction
+    {
+        foreach ($this->bulkActions() as $action) {
+            if ($action->name === $name) {
+                return $action;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Get the selected rows, scoped to the datatable query.
+     */
+    protected function getSelectedRecords(): Collection
+    {
+        $keys = array_values(array_unique(array_map('strval', $this->selected)));
+
+        if ($keys === []) {
+            return new Collection;
+        }
+
+        $query = $this->query();
+
+        if (in_array(SoftDeletes::class, class_uses_recursive($query->getModel()), true)) {
+            $query->withTrashed();
+        }
+
+        return $query->whereKey($keys)->get();
+    }
+
+    /**
      * Render the component.
      */
     public function render(): View
@@ -446,6 +560,7 @@ abstract class Datatable extends Component
 
         $columns = $this->getVisibleColumns();
         $actions = $this->getVisibleActions();
+        $bulkActions = $this->getVisibleBulkActions();
         $filters = $this->filters();
 
         // Build the query and get the rows
@@ -456,11 +571,13 @@ abstract class Datatable extends Component
             'columns' => $columns,
             'filters' => $filters,
             'actions' => $actions,
+            'bulkActions' => $bulkActions,
 
-            'colspan' => $this->getColspanForColumns($columns, $actions),
+            'colspan' => $this->getColspanForColumns($columns, $actions, count($bulkActions) > 0),
             'filtersOpen' => count($this->filtered) > 0,
 
             'filterable' => count($filters) > 0,
+            'selectable' => count($bulkActions) > 0,
             'searchable' => count(array_filter($columns, fn (Column $column) => $column->searchable)) > 0,
             'exportable' => $this->exportable && count($this->allowedExports) > 0 && count(array_filter($columns, fn (Column $column) => $column->exportable)) > 0,
 
@@ -493,11 +610,30 @@ abstract class Datatable extends Component
     }
 
     /**
+     * Get the visible bulk actions.
+     */
+    protected function getVisibleBulkActions(): array
+    {
+        $actions = array_filter($this->bulkActions(), fn (BulkAction $action) => $action->visible);
+
+        foreach ($actions as $action) {
+            $action->selected($this->selected);
+        }
+
+        return $actions;
+    }
+
+    /**
      * Get the colspan for the columns.
      */
-    protected function getColspanForColumns(array $columns, array $actions): int
+    protected function getColspanForColumns(array $columns, array $actions, bool $selectable = false): int
     {
         $colspan = count(array_filter($columns, fn (Column $column) => $column->shouldRender()));
+
+        // Add one for the selection column
+        if ($selectable) {
+            $colspan++;
+        }
 
         // Add one for the actions column
         if (count($actions) > 0) {

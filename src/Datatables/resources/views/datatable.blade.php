@@ -38,6 +38,12 @@
         </div>
     @endif
 
+    @if ($selectable && count($selected) > 0)
+        <div class="card-body border-top d-flex align-items-center gap-1 datatable-bulk-actions">
+            @include('datatables::partials.bulk-actions')
+        </div>
+    @endif
+
     @include('datatables::partials.table')
 
     <div class="card-footer">
