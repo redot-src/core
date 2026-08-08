@@ -1,90 +1,130 @@
-// Deattach dropdown menu from datatable-actions dropdown
+/**
+ * Datatables frontend helpers, exposed as `window.Datatables` so the package
+ * views consume them instead of inlining Alpine expressions and click logic.
+ */
+window.Datatables = (() => {
+    // Resolve the wire id for an element, honoring dropdown menus detached to <body>
+    const wireId = ($el) => $el.closest('[parent-wire-id]').attr('parent-wire-id') || $el.closest('[wire\\:id]').attr('wire:id');
+
+    // Livewire component the element belongs to
+    const wire = ($el) => window.Livewire.find(wireId($el));
+
+    // Read the row selection, it lives in Alpine so ticking a checkbox never hits the server
+    const selection = ($el) => window.Alpine.$data(wire($el).el).selected;
+
+    // Run a callback behind the action's confirm message, if it carries one
+    const confirmed = ($action, callback) => {
+        if ($action.is('[confirm]') === false) {
+            return callback();
+        }
+
+        warnBeforeAction(callback, { message: $action.attr('confirm') });
+    };
+
+    // Build the action URL, bulk actions carry the selection in the query string
+    const url = ($action) => {
+        const target = new URL($action.attr('href'), window.location.origin);
+
+        if ($action.is('[bulk-keys]')) {
+            selection($action).forEach((key) => target.searchParams.append(`${$action.attr('bulk-keys')}[]`, key));
+        }
+
+        return target;
+    };
+
+    // Submit the action as a spoofed form, bulk actions carry the selection as it stands at click time
+    const submit = ($action) => {
+        let body = $action.is('[request-body]') ? JSON.parse(atob($action.attr('request-body'))) : {};
+
+        if ($action.is('[bulk-keys]')) {
+            body = { ...body, [$action.attr('bulk-keys')]: selection($action) };
+        }
+
+        // formRequest renders one input per key, so arrays flatten into key[index] entries
+        const data = {};
+        Object.entries(body).forEach(([key, value]) => {
+            if (Array.isArray(value)) {
+                value.forEach((item, index) => (data[`${key}[${index}]`] = item));
+            } else {
+                data[key] = value;
+            }
+        });
+
+        formRequest($action.attr('href'), data, $action.attr('method'));
+    };
+
+    // Invoke an inline action through Livewire
+    const invoke = ($action) =>
+        $action.attr('action-scope') === 'bulk'
+            ? wire($action).call('runBulkAction', $action.attr('action-name'), selection($action))
+            : wire($action).call('runAction', $action.attr('action-name'), $action.attr('action-key'));
+
+    // Alpine component for the datatable root
+    const table = ({ filtersOpen = false } = {}) => ({
+        filtersOpen,
+        selected: [],
+        toggleFilters() {
+            this.filtersOpen = !this.filtersOpen;
+        },
+        selectedLabel(template) {
+            return template.replace(':count', this.selected.length);
+        },
+    });
+
+    // Alpine component for the header checkbox toggling the current page
+    const pageSelection = (page) => ({
+        page,
+        get allSelected() {
+            return this.page.every((key) => this.selected.includes(key));
+        },
+        get indeterminate() {
+            return !this.allSelected && this.page.some((key) => this.selected.includes(key));
+        },
+        toggle() {
+            this.selected = this.allSelected
+                ? this.selected.filter((key) => !this.page.includes(key))
+                : [...new Set([...this.selected, ...this.page])];
+        },
+    });
+
+    return { wire, selection, confirmed, url, submit, invoke, table, pageSelection };
+})();
+
+// Detach row-action dropdown menus to <body> so they escape the scrollable
+// table, tagging the menu with its wire id to keep the Livewire context.
 $(document).on('show.bs.dropdown', '.datatable-actions .dropdown', (event) => {
     const $dropdown = $(event.target).closest('.dropdown');
     const $menu = $dropdown.find('.dropdown-menu');
 
-    // Append the wire:id to the dropdown menu to keep the context as wire-context
     const $root = $dropdown.closest('[wire\\:id]');
     $menu.attr('parent-wire-id', $root.attr('wire:id'));
 
-    // Append the dropdown menu to the body
     $menu.appendTo('body');
 });
 
-// Handle datatable action click
-$(document).on('click', '.datatable-action[method]:not([method="get"])', (event) => {
-    event.preventDefault();
-
-    // Get the action element
+// Handle datatable action clicks, everything funnels through the same confirm gate
+$(document).on('click', '.datatable-action', (event) => {
     const $action = $(event.target).closest('.datatable-action');
 
-    // Define the callback function
-    const callback = function () {
-        const $form = $(`<form action="${$action.attr('href')}" method="POST" disable-validation></form>`);
+    // Inline actions run through Livewire
+    if ($action.is('[action-name]')) {
+        event.preventDefault();
 
-        // Spoof the form method
-        $form.append(`<input type="hidden" name="_method" value="${$action.attr('method')}">`);
-        $form.append(`<input type="hidden" name="_token" value="${$action.attr('token')}">`);
-
-        // Get request body
-        let body = JSON.parse(atob($action.attr('request-body')));
-
-        // Append request body to the form
-        if (body && typeof body === 'object') {
-            Object.entries(body).forEach(([key, value]) => {
-                if (Array.isArray(value)) {
-                    value.forEach((item) => {
-                        $form.append(`<input type="hidden" name="${key}[]" value="${item}">`);
-                    });
-                } else {
-                    $form.append(`<input type="hidden" name="${key}" value="${value}">`);
-                }
-            });
-        }
-
-        $form.appendTo('body').submit();
-    };
-
-    // Early return if no confirmation is required
-    if ($action.is('[confirm]') === false) {
-        return callback();
+        return Datatables.confirmed($action, () => Datatables.invoke($action));
     }
 
-    // Use warnBeforeAction if available
-    if (typeof warnBeforeAction !== 'undefined') {
-        return warnBeforeAction(callback, { message: $action.attr('confirm') });
+    // Non-GET actions submit a spoofed form
+    if ($action.is('[method]') && $action.attr('method') !== 'get') {
+        event.preventDefault();
+
+        return Datatables.confirmed($action, () => Datatables.submit($action));
     }
 
-    // Fallback to native confirm
-    if (confirm($action.attr('confirm'))) {
-        callback();
-    }
-});
+    // GET actions only need intercepting when they carry a selection or a
+    // confirm message, otherwise the browser (or fancybox) owns the click.
+    if ($action.is('[bulk-keys]') || $action.is('[confirm]')) {
+        event.preventDefault();
 
-// Handle inline datatable action click
-$(document).on('click', '.datatable-action[action-name]', (event) => {
-    event.preventDefault();
-
-    const $action = $(event.target).closest('.datatable-action');
-    const name = $action.attr('action-name');
-    const key = $action.attr('action-key');
-
-    let wireId = $action.closest('[parent-wire-id]').attr('parent-wire-id');
-    if (!wireId) wireId = $action.closest('[wire\\:id]').attr('wire:id');
-
-    const wire = window.Livewire.find(wireId);
-
-    const run = () => wire.call('runAction', name, key);
-
-    if ($action.is('[confirm]') === false) {
-        return run();
-    }
-
-    if (typeof warnBeforeAction !== 'undefined') {
-        return warnBeforeAction(run, { message: $action.attr('confirm') });
-    }
-
-    if (confirm($action.attr('confirm'))) {
-        run();
+        return Datatables.confirmed($action, () => window.open(Datatables.url($action), $action.attr('target') || '_self'));
     }
 });

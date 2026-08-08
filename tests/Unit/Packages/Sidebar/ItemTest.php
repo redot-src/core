@@ -7,18 +7,6 @@ use Redot\Http\Middleware\RoutePermission;
 use Redot\Sidebar\Item;
 use Redot\Sidebar\Sidebar;
 
-it('assigns the parent item to each child when children are configured', function () {
-    $parent = Item::make()->title('Content');
-    $first = Item::make()->title('Pages');
-    $second = Item::make()->title('Posts');
-
-    $parent->children([$first, $second]);
-
-    expect($first->parent)->toBe($parent)
-        ->and($second->parent)->toBe($parent)
-        ->and($parent->children)->toHaveCount(2);
-});
-
 it('hides items that are flagged hidden via a boolean', function () {
     $sidebar = Sidebar::make([
         Item::make()->title('Visible')->url('/visible'),

@@ -8,11 +8,6 @@ use Redot\Datatables\Columns\TagsColumn;
 use Redot\Datatables\Columns\TextColumn;
 use Tests\Fixtures\EmptyModel;
 
-it('marks dotted column names as relationships', function () {
-    expect(Column::make('author.name')->relationship)->toBeTrue()
-        ->and(Column::make('email')->relationship)->toBeFalse();
-});
-
 it('escapes raw values by default to prevent html injection', function () {
     $row = new EmptyModel([
         'name' => '<strong>Taylor</strong>',

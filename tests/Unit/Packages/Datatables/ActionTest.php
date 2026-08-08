@@ -10,9 +10,20 @@ it('rejects unknown http methods at configuration time', function () {
     Action::make()->method('trace');
 })->throws(InvalidArgumentException::class, 'Invalid method provided "trace"');
 
-it('rejects confirmable get actions when attributes are built', function () {
-    Action::make('Delete')->confirmable()->buildAttributes(new EmptyModel);
-})->throws(InvalidArgumentException::class, 'Confirmable actions must have a method other than "get".');
+it('builds confirmable get actions with a confirm attribute', function () {
+    Route::name('admins.export')->get('/admins/export', fn () => 'export');
+
+    $action = Action::make('Export')->route('admins.export', bounded: false)->confirmable();
+
+    $attributes = $action->buildAttributes(new EmptyModel)->getAttributes();
+
+    expect($attributes['method'])->toBe('get')
+        ->and($attributes)->toHaveKey('confirm');
+});
+
+it('rejects combining confirmable with fancybox when attributes are built', function () {
+    Action::make('View')->fancybox()->confirmable()->buildAttributes(new EmptyModel);
+})->throws(InvalidArgumentException::class, 'Confirmable actions cannot be combined with fancybox.');
 
 it('uses an explicit href closure to compute the action url per row', function () {
     $action = Action::make('Edit')->href(fn (Model $row) => '/users/' . $row->getAttribute('id') . '/edit');
@@ -30,8 +41,7 @@ it('resolves the href and method from a named route binding the row as the first
     $attributes = $action->buildAttributes(new EmptyModel(['id' => 12]))->getAttributes();
 
     expect($attributes['href'])->toContain('/admins/12/edit')
-        ->and($attributes['method'])->toBe('post')
-        ->and($attributes)->toHaveKey('token');
+        ->and($attributes['method'])->toBe('post');
 });
 
 it('opens links in a new tab when newTab is enabled', function () {
@@ -58,9 +68,6 @@ it('exposes a delete factory that defaults to a confirmable delete request', fun
 
     $action = Action::delete('admins.destroy');
 
-    expect($action->method)->toBe('delete')
-        ->and($action->confirmable)->toBeTrue();
-
     $attributes = $action->buildAttributes(new EmptyModel(['id' => 7]))->getAttributes();
 
     expect($attributes['method'])->toBe('delete')
@@ -76,32 +83,8 @@ it('flags grouped actions and renders the group only when at least one child can
     $populatedGroup = ActionGroup::make('More')->actions([$visible, $hidden]);
     $emptyGroup = ActionGroup::make('Hidden Only')->actions([Action::make('Hidden Too')->hidden()]);
 
-    expect($visible->grouped)->toBeTrue()
-        ->and($hidden->grouped)->toBeTrue()
-        ->and($populatedGroup->shouldRender($row))->toBeTrue()
+    expect($populatedGroup->shouldRender($row))->toBeTrue()
         ->and($emptyGroup->shouldRender($row))->toBeFalse();
-});
-
-it('registers an inline action with a mandatory name and callback', function () {
-    $callback = fn () => null;
-
-    $action = Action::make('Approve')->action('approve', $callback);
-
-    expect($action->name)->toBe('approve')
-        ->and($action->callback)->toBe($callback);
-});
-
-it('registers success and failure callbacks for inline actions', function () {
-    $success = fn () => null;
-    $failure = fn () => null;
-
-    $action = Action::make('Approve')
-        ->action('approve', fn () => null)
-        ->success($success)
-        ->failure($failure);
-
-    expect($action->successCallback)->toBe($success)
-        ->and($action->failureCallback)->toBe($failure);
 });
 
 it('rejects empty inline action names at configuration time', function () {

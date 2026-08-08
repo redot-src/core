@@ -3,6 +3,7 @@
 namespace Redot\Datatables;
 
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -17,6 +18,7 @@ use Livewire\Component;
 use Livewire\WithPagination;
 use Redot\Datatables\Actions\Action;
 use Redot\Datatables\Actions\ActionGroup;
+use Redot\Datatables\Actions\BulkAction;
 use Redot\Datatables\Adapters\PDF\Adapter;
 use Redot\Datatables\Columns\Column;
 use Redot\Datatables\Filters\Filter;
@@ -209,6 +211,14 @@ abstract class Datatable extends Component
             $mainActions,
             [ActionGroup::make($label, $icon ?? 'fas fa-ellipsis-v')->actions($remainingActions)]
         );
+    }
+
+    /**
+     * Get the bulk actions for the datatable.
+     */
+    public function bulkActions(): array
+    {
+        return [];
     }
 
     /**
@@ -428,6 +438,89 @@ abstract class Datatable extends Component
     }
 
     /**
+     * Run a bulk action against the selected rows.
+     *
+     * The selection lives in the browser so ticking a checkbox never hits the
+     * server, which means the keys arrive here as untrusted client input.
+     */
+    public function runBulkAction(string $name, array $keys = []): mixed
+    {
+        $action = $this->findBulkActionByName($name);
+
+        if (! $action || ! $action->callback) {
+            throw new Exceptions\InvalidActionException("Bulk action [$name] not found.");
+        }
+
+        $records = $this->getSelectedRecords($keys);
+
+        if ($records->isEmpty() || ! $action->shouldRender($records)) {
+            throw new Exceptions\InvalidActionException("Bulk action [$name] is not available for the selected rows.");
+        }
+
+        try {
+            $result = call_user_func($action->callback, $records, $this);
+
+            if ($action->successCallback) {
+                call_user_func($action->successCallback, $records, $result, $this);
+            }
+
+            $this->clearSelection();
+
+            return $result;
+        } catch (Throwable $exception) {
+            if ($action->failureCallback) {
+                call_user_func($action->failureCallback, $records, $exception, $this);
+
+                return null;
+            }
+
+            throw $exception;
+        }
+    }
+
+    /**
+     * Find a bulk action by its unique name.
+     */
+    protected function findBulkActionByName(string $name): ?BulkAction
+    {
+        foreach ($this->bulkActions() as $action) {
+            if ($action->name === $name) {
+                return $action;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Clear the row selection held by the browser.
+     */
+    protected function clearSelection(): void
+    {
+        $this->js('selected = []');
+    }
+
+    /**
+     * Get the selected rows, scoped to the datatable query.
+     */
+    protected function getSelectedRecords(array $keys): Collection
+    {
+        $keys = array_values(array_unique(array_map('strval', array_filter($keys, 'is_scalar'))));
+
+        if ($keys === []) {
+            return new Collection;
+        }
+
+        $query = $this->query();
+
+        if (in_array(SoftDeletes::class, class_uses_recursive($query->getModel()), true)) {
+            $query->withTrashed();
+        }
+
+        return $query->whereKey($keys)->get();
+    }
+
+    /**
      * Render the component.
      */
     public function render(): View
@@ -446,6 +539,7 @@ abstract class Datatable extends Component
 
         $columns = $this->getVisibleColumns();
         $actions = $this->getVisibleActions();
+        $bulkActions = $this->getVisibleBulkActions();
         $filters = $this->filters();
 
         // Build the query and get the rows
@@ -456,11 +550,13 @@ abstract class Datatable extends Component
             'columns' => $columns,
             'filters' => $filters,
             'actions' => $actions,
+            'bulkActions' => $bulkActions,
 
-            'colspan' => $this->getColspanForColumns($columns, $actions),
+            'colspan' => $this->getColspanForColumns($columns, $actions, count($bulkActions) > 0),
             'filtersOpen' => count($this->filtered) > 0,
 
             'filterable' => count($filters) > 0,
+            'selectable' => count($bulkActions) > 0,
             'searchable' => count(array_filter($columns, fn (Column $column) => $column->searchable)) > 0,
             'exportable' => $this->exportable && count($this->allowedExports) > 0 && count(array_filter($columns, fn (Column $column) => $column->exportable)) > 0,
 
@@ -493,11 +589,31 @@ abstract class Datatable extends Component
     }
 
     /**
+     * Get the visible bulk actions.
+     */
+    protected function getVisibleBulkActions(): array
+    {
+        $actions = array_filter($this->bulkActions(), fn (BulkAction $action) => $action->visible);
+
+        // Bulk actions always live in the header dropdown, never inline.
+        foreach ($actions as $action) {
+            $action->grouped(true);
+        }
+
+        return $actions;
+    }
+
+    /**
      * Get the colspan for the columns.
      */
-    protected function getColspanForColumns(array $columns, array $actions): int
+    protected function getColspanForColumns(array $columns, array $actions, bool $selectable = false): int
     {
         $colspan = count(array_filter($columns, fn (Column $column) => $column->shouldRender()));
+
+        // Add one for the selection column
+        if ($selectable) {
+            $colspan++;
+        }
 
         // Add one for the actions column
         if (count($actions) > 0) {

@@ -6,6 +6,19 @@
         @if ($rows->isEmpty() === false)
             <thead @class(['sticky-top' => $stickyHeader])>
                 <tr>
+                    @if ($selectable)
+                        @php($pageKeys = $rows->map(fn ($row) => (string) $row->getKey())->values())
+
+                        {{-- Keyed on the page contents so Alpine re-reads $pageKeys whenever the rows change. --}}
+                        <th class="w-1 datatable-select" wire:key="{{ $id }}-select-page-{{ md5($pageKeys->implode(',')) }}"
+                            x-data="Datatables.pageSelection(@js($pageKeys))">
+                            <input type="checkbox" class="form-check-input m-0 align-middle"
+                                aria-label="@lang('datatables::datatable.bulk.select_page')"
+                                x-bind:checked="allSelected" x-bind:indeterminate="indeterminate"
+                                x-on:click="toggle()" />
+                        </th>
+                    @endif
+
                     @foreach ($columns as $column)
                         <th @class(['fixed-' . $column->fixedDirection => $column->fixed])>
                             @if ($column->sortable && $column->name)
@@ -41,6 +54,14 @@
         <tbody wire:loading.class="opacity-50">
             @forelse($rows as $row)
                 <tr wire:key="{{ $id }}-row-{{ $row->getKey() }}">
+                    @if ($selectable)
+                        <td class="datatable-select">
+                            <input type="checkbox" class="form-check-input m-0 align-middle"
+                                aria-label="@lang('datatables::datatable.bulk.select_row')" value="{{ $row->getKey() }}"
+                                x-model="selected" />
+                        </td>
+                    @endif
+
                     @foreach ($columns as $column)
                         <td {{ $column->buildAttributes($row) }}>
                             {!! $column->get($row) !!}

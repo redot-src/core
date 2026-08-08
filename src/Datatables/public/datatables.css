@@ -51,6 +51,18 @@
 }
 
 /* ---------------------------------
+ * Datatable Selection
+ * --------------------------------- */
+
+.datatable .datatable-select {
+    padding-inline: 12px !important;
+}
+
+.datatable .datatable-select .form-check-input {
+    cursor: pointer;
+}
+
+/* ---------------------------------
  * Overrides
  * --------------------------------- */
 
