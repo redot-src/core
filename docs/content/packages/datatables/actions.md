@@ -35,7 +35,7 @@ For anything else, start from `Action::make(label, icon)` and point it at a dest
 - **`method`** — the HTTP verb for the request (`get`, `post`, `put`, `patch`, `delete`).
 - **`visible`** / **`hidden`** — a static flag, typically tied to authorization.
 - **`condition`** — a per-row callback deciding whether the action shows for that row.
-- **`confirmable`** — require a confirmation prompt before the action runs (with an optional custom message). A confirmable navigation must use a non-GET method.
+- **`confirmable`** — require a confirmation prompt before the action runs (with an optional custom message). Works with any method, including plain GET navigations; it only cannot be combined with `fancybox`, which owns the click.
 - **`fancybox`** — open the link in a Fancybox iframe (on by default for `view`).
 - **`newTab`** — open in a new tab.
 - **`expanded`** — show the label inline next to the icon instead of as a tooltip.

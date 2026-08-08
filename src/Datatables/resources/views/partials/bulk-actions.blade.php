@@ -5,8 +5,7 @@
     </a>
 
     <div class="dropdown-menu dropdown-menu-end">
-        <span class="dropdown-header"
-            x-text="@js(__('datatables::datatable.bulk.selected')).replace(':count', selected.length)"></span>
+        <span class="dropdown-header" x-text="selectedLabel(@js(__('datatables::datatable.bulk.selected')))"></span>
 
         @foreach ($bulkActions as $bulkAction)
             @include('datatables::partials.action', [

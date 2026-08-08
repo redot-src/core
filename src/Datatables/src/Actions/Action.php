@@ -434,8 +434,8 @@ class Action
             throw new InvalidArgumentException('Inline actions cannot be combined with route or href.');
         }
 
-        if ($this->confirmable && $this->method === 'get' && ! $this->callback) {
-            throw new InvalidArgumentException('Confirmable actions must have a method other than "get".');
+        if ($this->confirmable && $this->fancybox) {
+            throw new InvalidArgumentException('Confirmable actions cannot be combined with fancybox.');
         }
 
         if ($this->callback) {
@@ -471,7 +471,6 @@ class Action
             $this->attributes([
                 'href' => route($this->route, $parameters),
                 'method' => $this->method,
-                'token' => csrf_token(),
             ]);
         }
 
