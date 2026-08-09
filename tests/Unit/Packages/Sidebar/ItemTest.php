@@ -58,6 +58,27 @@ it('keeps a parent when at least one child remains visible and drops only the hi
     expect($childTitles)->toBe(['Visible Child']);
 });
 
+it('does not remove filtered children from subsequent renders', function () {
+    $hidden = true;
+    $parent = Item::make()->title('Group')->url('/group')->children([
+        Item::make()->title('Conditional Child')->url('/child')->hidden(function () use (&$hidden) {
+            return $hidden;
+        }),
+    ]);
+
+    $sidebar = Sidebar::make([$parent]);
+
+    expect($sidebar->getItems())->toBeEmpty();
+
+    $hidden = false;
+    $items = $sidebar->getItems();
+
+    expect($items)->toHaveCount(1)
+        ->and($items[0]->children)->toHaveCount(1)
+        ->and($items[0]->children[0]->title)->toBe('Conditional Child')
+        ->and($parent->children)->toHaveCount(1);
+});
+
 it('falls back to # as the url when neither url nor route is provided', function () {
     $sidebar = Sidebar::make([
         Item::make()->title('No href'),
