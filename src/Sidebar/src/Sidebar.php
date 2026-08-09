@@ -66,6 +66,7 @@ class Sidebar
     public function getItems(): array
     {
         $items = [];
+        $this->activeItems = [];
 
         foreach ($this->items as $item) {
             $item = $this->prepareItem($item);
@@ -117,6 +118,8 @@ class Sidebar
             return false;
         }
 
+        $item = clone $item;
+
         if (! $item->url) {
             $item->url = $item->route ? route($item->route, $item->parameters) : '#';
         }
@@ -129,16 +132,14 @@ class Sidebar
         }
 
         if (count($item->children) > 0) {
-            // Recursively prepare each child item.
-            $item->children = array_map(fn ($child) => $this->prepareItem($child), $item->children);
+            $children = array_map(fn ($child) => $this->prepareItem($child), $item->children);
+            $children = array_values(array_filter($children, fn ($child) => $child !== false));
 
-            // Filter out any false values from the children array.
-            $item->children = array_filter($item->children, fn ($child) => $child !== false);
-            $item->children = array_values($item->children);
-
-            if (count($item->children) === 0) {
+            if (count($children) === 0) {
                 return false;
             }
+
+            $item->children($children);
         }
 
         return $item;
