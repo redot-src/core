@@ -21,15 +21,21 @@ class Localization
         $scope = $request->routeIs('dashboard.*') || $request->is('dashboard') ? 'dashboard' : 'website';
 
         $key = $scope . '_locale';
-        $locales = setting($scope . '_locales');
+        $locales = setting($scope . '_locales', config('redot.locales'));
 
-        $fallback = Arr::first($locales);
         $originalRouteLocale = $request->route()->parameter('locale');
-        $locale = $request->query('locale') ?: $originalRouteLocale ?: session($key) ?: $request->getPreferredLanguage($locales);
 
-        if (! $locale || ! in_array($locale, $locales)) {
-            $locale = $fallback;
-        }
+        $locale = Arr::first(
+            [
+                $request->query('locale'),
+                $originalRouteLocale,
+                session($key),
+                $request->cookie($key),
+                $request->getPreferredLanguage($locales),
+            ],
+            fn ($locale) => is_string($locale) && in_array($locale, $locales),
+            Arr::first($locales),
+        );
 
         session()->put($key, $locale);
         app()->setLocale($locale);
@@ -46,9 +52,13 @@ class Localization
                 $url .= "?$qs";
             }
 
-            return redirect()->to($url, 301);
+            $response = redirect()->to($url, 301);
+        } else {
+            $response = $next($request);
         }
 
-        return $next($request);
+        $response->headers->setCookie(cookie()->forever($key, $locale));
+
+        return $response;
     }
 }

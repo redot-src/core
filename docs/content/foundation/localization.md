@@ -1,9 +1,9 @@
 # Localization
 
-Redot Core resolves the active locale on every request, persists it across the
-session, and keeps URLs in sync — so the right language is served and links carry
-the locale automatically. Translation strings are managed in the dashboard and
-published back to your Laravel language files.
+Redot Core resolves the active locale on every request, persists it in the
+session and a cookie, and keeps URLs in sync — so the right language is served
+and links carry the locale automatically. Translation strings are managed in the
+dashboard and published back to your Laravel language files.
 
 ## How locale resolution works
 
@@ -12,12 +12,14 @@ it up. For each request it:
 
 1. Decides the **scope** — `dashboard` for dashboard routes, `website` otherwise.
    Each scope has its own allowed-locale list (`dashboard_locales` /
-   `website_locales` settings) and its own session key.
-2. Picks the locale from the first available of: `?locale=` query string → the
-   locale URL segment → the session → the browser's `Accept-Language`.
-3. Falls back to the first allowed locale if the choice is empty or not allowed.
-4. Applies it, stores it in the session, and makes generated URLs carry it
-   automatically — so `route()` calls do not need a `locale` argument.
+   `website_locales` settings) and its own session and cookie keys.
+2. Picks the first allowed locale from: `?locale=` query string → the locale URL
+   segment → the session → the locale cookie → the browser's `Accept-Language`.
+3. Falls back to the first allowed locale if none of those are allowed — so an
+   unsupported URL segment still prefers the visitor's last language.
+4. Applies it, stores it in the session and a long-lived cookie, and makes
+   generated URLs carry it automatically — so `route()` calls do not need a
+   `locale` argument.
 5. If the URL carried a different locale than the one resolved, redirects to the
    corrected URL.
 
@@ -96,8 +98,8 @@ LanguageToken::unpublished()->modified()->count();
 - Editing a translation value un-publishes it — re-publish after edits.
 - `Language::current()` resolves the language matching the active locale, so make
   sure your locales are seeded.
-- With `append_locale_to_url` off, locale comes from query/session/browser only
-  and there is no URL prefix or redirect.
+- With `append_locale_to_url` off, locale comes from query/session/cookie/browser
+  only and there is no URL prefix or redirect.
 
 ## Related
 

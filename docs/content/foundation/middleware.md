@@ -9,12 +9,13 @@ work with it.
 ## Locale resolution
 
 Every web request resolves a locale (from `?locale=`, the URL segment, the
-session, or the browser), applies it, remembers it in the session, and makes
-generated URLs carry it automatically — so `route()` calls do not need a
-`locale` argument. If the URL carried a different locale than the one resolved,
-the request is redirected to the corrected URL. The allowed locales come from
-the `dashboard_locales` / `website_locales` settings, so changing them takes
-effect immediately. See [Localization](/foundation/localization).
+session, a locale cookie, or the browser), applies it, remembers it in the
+session and a long-lived cookie, and makes generated URLs carry it automatically
+— so `route()` calls do not need a `locale` argument. If the URL carried a
+different locale than the one resolved, the request is redirected to the
+corrected URL. The allowed locales come from the `dashboard_locales` /
+`website_locales` settings, so changing them takes effect immediately. See
+[Localization](/foundation/localization).
 
 ## Route permission gating
 

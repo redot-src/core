@@ -10,7 +10,8 @@ it('sets the application locale from the route parameter', function () {
 
     $this->get('/ar/localized-probe')
         ->assertOk()
-        ->assertSee('ar|missing');
+        ->assertSee('ar|missing')
+        ->assertPlainCookie('website_locale', 'ar');
 
     expect(session('website_locale'))->toBe('ar')
         ->and(app()->getLocale())->toBe('ar');
@@ -43,8 +44,45 @@ it('stores the active locale in the dashboard-scoped session key when the route 
 
     $this->get('/ar/dashboard/scope-probe')
         ->assertOk()
-        ->assertSee('ar');
+        ->assertSee('ar')
+        ->assertPlainCookie('dashboard_locale', 'ar')
+        ->assertCookieMissing('website_locale');
 
     expect(session('dashboard_locale'))->toBe('ar')
         ->and(session('website_locale'))->toBeNull();
+});
+
+it('falls back to the last language from the cookie when the route locale is not allowed', function () {
+    Route::middleware(Localization::class)
+        ->get('/{locale}/cookie-fallback-probe', fn () => response('ok'))
+        ->name('website.cookie-fallback-probe');
+
+    $this->withUnencryptedCookie('website_locale', 'ar')
+        ->get('/fr/cookie-fallback-probe?foo=bar')
+        ->assertRedirect('/ar/cookie-fallback-probe?foo=bar')
+        ->assertStatus(301)
+        ->assertPlainCookie('website_locale', 'ar');
+});
+
+it('falls back to the last language from the session when the route locale is not allowed', function () {
+    Route::middleware(Localization::class)
+        ->get('/{locale}/session-fallback-probe', fn () => response('ok'))
+        ->name('website.session-fallback-probe');
+
+    $this->withSession(['website_locale' => 'ar'])
+        ->get('/fr/session-fallback-probe')
+        ->assertRedirect('/ar/session-fallback-probe')
+        ->assertStatus(301);
+});
+
+it('lets a valid route locale override the stored cookie language', function () {
+    Route::middleware(Localization::class)
+        ->get('/{locale}/cookie-override-probe', fn () => response(app()->getLocale()))
+        ->name('website.cookie-override-probe');
+
+    $this->withUnencryptedCookie('website_locale', 'ar')
+        ->get('/en/cookie-override-probe')
+        ->assertOk()
+        ->assertSee('en')
+        ->assertPlainCookie('website_locale', 'en');
 });
