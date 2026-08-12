@@ -15,13 +15,10 @@ class Localization
      *
      * @param  Closure(Request): (Response)  $next
      */
-    public function handle(Request $request, Closure $next): Response
+    public function handle(Request $request, Closure $next, string $scope): Response
     {
-        // Determine the scope of the request (website or dashboard)
-        $scope = $request->routeIs('dashboard.*') || $request->is('dashboard') ? 'dashboard' : 'website';
-
         $key = $scope . '_locale';
-        $locales = setting($scope . '_locales', config('redot.locales'));
+        $locales = setting($scope . '_locales');
 
         $originalRouteLocale = $request->route()->parameter('locale');
 

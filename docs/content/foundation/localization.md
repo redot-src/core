@@ -7,11 +7,13 @@ dashboard and published back to your Laravel language files.
 
 ## How locale resolution works
 
-The localization layer runs automatically on every web request; you do not wire
-it up. For each request it:
+The localization layer runs automatically on website and dashboard routes; you
+do not wire it up. The `website` or `dashboard` scope is passed into the
+middleware when those groups are registered — it is not inferred from the URL.
+For each request it:
 
-1. Decides the **scope** — `dashboard` for dashboard routes, `website` otherwise.
-   Each scope has its own allowed-locale list (`dashboard_locales` /
+1. Uses the **scope** passed to the middleware (`website` or `dashboard`). Each
+   scope has its own allowed-locale list (`dashboard_locales` /
    `website_locales` settings) and its own session and cookie keys.
 2. Picks the first allowed locale from: `?locale=` query string → the locale URL
    segment → the session → the locale cookie → the browser's `Accept-Language`.

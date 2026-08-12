@@ -45,7 +45,7 @@ class Application extends LaravelApplication
                 });
 
                 // Load the global routes
-                Route::as('global.')->middleware('web')->group(base_path('routes/global.php'));
+                Route::as('global.')->middleware(['web', Localization::class . ':website'])->group(base_path('routes/global.php'));
 
                 // Load the website and dashboard routes
                 $group = Route::middleware('web');
@@ -54,12 +54,12 @@ class Application extends LaravelApplication
                     $group->prefix('{locale}')->where(['locale' => '([a-zA-Z]{2})']);
 
                     // Redirect the root URL to the resolved locale
-                    Route::middleware('web')->get('/', fn () => redirect(app()->getLocale()));
+                    Route::middleware(['web', Localization::class . ':website'])->get('/', fn () => redirect(app()->getLocale()));
                 }
 
                 $group->group(function () {
                     if (config('redot.features.website.enabled')) {
-                        Route::as('website.')->group(base_path('routes/website.php'));
+                        Route::as('website.')->middleware(Localization::class . ':website')->group(base_path('routes/website.php'));
                     }
 
                     if (config('redot.features.dashboard.enabled')) {
@@ -68,7 +68,7 @@ class Application extends LaravelApplication
                 });
 
                 // Load the fallback route
-                Route::fallback(FallbackController::class)->middleware('web');
+                Route::fallback(FallbackController::class)->middleware(['web', Localization::class . ':website']);
             })
 
             ->withCommands([base_path('routes/console.php')])
@@ -79,12 +79,14 @@ class Application extends LaravelApplication
                 ]);
 
                 $middleware->web(append: [
-                    Localization::class,
                     SubstituteBindings::class,
                     EnsureDependenciesBuilt::class,
                 ]);
 
+                $middleware->prependToPriorityList(SubstituteBindings::class, Localization::class);
+
                 $middleware->group('dashboard', [
+                    Localization::class . ':dashboard',
                     RoutePermission::class,
                     Locked::class . ':admins,dashboard.unlock',
                 ]);
