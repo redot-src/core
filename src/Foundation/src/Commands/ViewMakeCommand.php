@@ -73,15 +73,16 @@ class ViewMakeCommand extends Command
     }
 
     /**
-     * Get the console command arguments.
+     * Configure the console command.
      *
-     * @return array
+     * Options are added here instead of getOptions() so they survive Laravel
+     * 13.24+, where make:view is defined via $signature and getOptions() is ignored.
      */
-    protected function getOptions()
+    protected function configure()
     {
-        return array_merge(parent::getOptions(), [
-            ['template', 't', InputOption::VALUE_OPTIONAL, 'The template to use, if none is provided the default template will be used'],
-            ['params', 'p', InputOption::VALUE_OPTIONAL, 'The params to replace in the template'],
-        ]);
+        parent::configure();
+
+        $this->addOption('template', 't', InputOption::VALUE_OPTIONAL, 'The template to use, if none is provided the default template will be used');
+        $this->addOption('params', 'p', InputOption::VALUE_OPTIONAL, 'The params to replace in the template');
     }
 }
