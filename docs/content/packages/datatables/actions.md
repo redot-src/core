@@ -58,7 +58,7 @@ Action::restore('posts.restore')
 ### A custom POST action with a payload and confirmation
 
 ```php
-Action::make(__('Publish'), 'fas fa-paper-plane')
+Action::make(__('Publish'), 'ti ti-send')
     ->visible(route_allowed('posts.publish'))
     ->condition(fn (Post $post) => $post->status === 'draft')
     ->route('posts.publish', method: 'post', bounded: false)
@@ -115,7 +115,7 @@ Return an empty array (the default) and nothing changes: no checkboxes, no dropd
 ### A custom bulk action
 
 ```php
-BulkAction::make(__('Publish'), 'fas fa-paper-plane')
+BulkAction::make(__('Publish'), 'ti ti-send')
     ->visible(route_allowed('posts.publish'))
     ->action('publish', fn (Collection $posts) => $posts->each->update(['status' => 'published']))
     ->success(fn () => $this->toastify()->success(__('Posts published.')))
@@ -130,10 +130,10 @@ Point a bulk action at a route instead of a callback and the selected keys ride 
 
 ```php
 BulkAction::delete('posts.bulk-destroy'),           // sends keys[] via DELETE
-BulkAction::make(__('Archive'), 'fas fa-archive')
+BulkAction::make(__('Archive'), 'ti ti-archive')
     ->route('posts.archive', method: 'post')
     ->keys('post_ids'),
-BulkAction::make(__('Export'), 'fas fa-file-export')
+BulkAction::make(__('Export'), 'ti ti-file-export')
     ->route('posts.bulk-export'),                   // GET, keys[] ride in the query string
 ```
 

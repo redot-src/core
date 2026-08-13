@@ -209,7 +209,7 @@ abstract class Datatable extends Component
         // Otherwise, show the first $offset actions and group the rest
         return array_merge(
             $mainActions,
-            [ActionGroup::make($label, $icon ?? 'fas fa-ellipsis-v')->actions($remainingActions)]
+            [ActionGroup::make($label, $icon ?? 'ti ti-dots-vertical')->actions($remainingActions)]
         );
     }
 

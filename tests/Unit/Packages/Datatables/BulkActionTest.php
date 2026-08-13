@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Route;
 use Redot\Datatables\Actions\BulkAction;
 
 it('builds attributes flagged for bulk livewire execution', function () {
-    $action = BulkAction::make('Approve', 'fas fa-check')
+    $action = BulkAction::make('Approve', 'ti ti-check')
         ->action('approve', fn () => null)
         ->confirmable(message: 'Are you sure?');
 
@@ -25,6 +25,7 @@ it('names the request key carrying the selection on route driven bulk actions', 
     $attributes = $action->buildAttributes()->getAttributes();
 
     expect($attributes['method'])->toBe('delete')
+        ->and($action->icon)->toBe('ti ti-trash')
         ->and($attributes['bulk-keys'])->toBe('keys')
         ->and(json_decode(base64_decode($attributes['request-body']), true))->toBe([]);
 });
@@ -32,7 +33,7 @@ it('names the request key carrying the selection on route driven bulk actions', 
 it('marks a get bulk action so the selection can be appended to the query string', function () {
     Route::name('posts.bulk-export')->get('/posts/export', fn () => 'export');
 
-    $attributes = BulkAction::make('Export', 'fas fa-file-export')
+    $attributes = BulkAction::make('Export', 'ti ti-file-export')
         ->route('posts.bulk-export')
         ->keys('ids')
         ->buildAttributes()

@@ -15,21 +15,21 @@ use Redot\Sidebar\Sidebar;
 return Sidebar::make([
     Item::make()
         ->title(__('Posts'))
-        ->icon('fa fa-newspaper')
+        ->icon('ti ti-news')
         ->route('posts.index'),
 
     Item::make()
         ->title(__('Content'))
-        ->icon('fa fa-folder')
+        ->icon('ti ti-folder')
         ->children([
             Item::make()
                 ->title(__('Categories'))
-                ->icon('fa fa-tags')
+                ->icon('ti ti-tags')
                 ->route('categories.index'),
 
             Item::make()
                 ->title(__('Users'))
-                ->icon('fa fa-users')
+                ->icon('ti ti-users')
                 ->route('users.index'),
         ]),
 ]);
@@ -42,7 +42,7 @@ The layout reads this file each request, so any item the current user is not aut
 Chain these onto `Item::make()`:
 
 - **`title`** — the label shown in the menu.
-- **`icon`** — an icon class string, e.g. `fa fa-home`.
+- **`icon`** — an icon class string, e.g. `ti ti-home`.
 - **`route`** — the named route to link to (with optional route parameters). Setting a route also enables permission filtering and active-state detection for the item.
 - **`url`** — an explicit URL, used as-is. Use this for links that aren't named routes; it wins over `route` for the link itself.
 - **`external`** — mark the link as external so it opens in a new tab.
@@ -55,7 +55,7 @@ Chain these onto `Item::make()`:
 ### A top-level link
 
 ```php
-Item::make()->title(__('Posts'))->icon('fa fa-newspaper')->route('posts.index');
+Item::make()->title(__('Posts'))->icon('ti ti-news')->route('posts.index');
 ```
 
 ### A dropdown group
@@ -65,11 +65,11 @@ Items with `children` render as a dropdown. A group disappears entirely if all o
 ```php
 Item::make()
     ->title(__('Content'))
-    ->icon('fa fa-folder')
+    ->icon('ti ti-folder')
     ->children([
         Item::make()
             ->title(__('Categories'))
-            ->icon('fa fa-tags')
+            ->icon('ti ti-tags')
             ->route('categories.index'),
     ]);
 ```
@@ -81,7 +81,7 @@ Use `badge` to show a numeric count inside a sidebar item, such as pending posts
 ```php
 Item::make()
     ->title(__('Posts'))
-    ->icon('fa fa-newspaper')
+    ->icon('ti ti-news')
     ->route('posts.index')
     ->badge(fn () => Post::query()->where('status', 'pending')->count());
 ```

@@ -14,7 +14,7 @@ for things like a list of links, phone numbers, or tags.
         <div class="col"><x-input name="url" :placeholder="__('URL')" /></div>
         <div class="col-auto">
             <button type="button" class="btn btn-icon" action="remove">
-                <i class="fas fa-trash"></i>
+                <i class="ti ti-trash"></i>
             </button>
         </div>
     </div>
@@ -68,7 +68,7 @@ a **`wrapper`** slot, or the empty state with an **`empty`** slot.
     <div class="d-flex gap-2" sortable-handle>
         <x-input name="name" :placeholder="__('Tag name')" />
         <button type="button" class="btn btn-icon" action="remove">
-            <i class="fas fa-trash"></i>
+            <i class="ti ti-trash"></i>
         </button>
     </div>
 </x-repeater>

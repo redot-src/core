@@ -27,7 +27,7 @@ class BulkAction extends Action
      */
     public static function delete(?string $route = null, array $parameters = []): static
     {
-        $action = static::preset(__('datatables::datatable.actions.delete'), 'fas fa-trash-alt', $route, $parameters)
+        $action = static::preset(__('datatables::datatable.actions.delete'), 'ti ti-trash', $route, $parameters)
             ->method('delete')
             ->confirmable(message: __('datatables::datatable.bulk.confirm'));
 
@@ -39,7 +39,7 @@ class BulkAction extends Action
      */
     public static function restore(?string $route = null, array $parameters = []): static
     {
-        $action = static::preset(__('datatables::datatable.actions.restore'), 'fas fa-trash-restore', $route, $parameters)
+        $action = static::preset(__('datatables::datatable.actions.restore'), 'ti ti-restore', $route, $parameters)
             ->method('post')
             ->confirmable(message: __('datatables::datatable.bulk.confirm'));
 

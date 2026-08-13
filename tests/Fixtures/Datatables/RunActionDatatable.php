@@ -31,28 +31,28 @@ class RunActionDatatable extends Datatable
     public function actions(): array
     {
         return [
-            Action::make('Approve', 'fas fa-check')
+            Action::make('Approve', 'ti ti-check')
                 ->action('approve', fn (RunActionPost $row) => $row->update(['approved' => true]))
                 ->condition(fn (RunActionPost $row) => ! $row->approved),
-            Action::make('Fail', 'fas fa-times')
+            Action::make('Fail', 'ti ti-x')
                 ->action('fail', fn () => throw new RuntimeException('Action failed'))
                 ->success(fn () => null)
                 ->failure(function ($row, $exception, RunActionDatatable $datatable) {
                     $datatable->failureCallbackFired = true;
                     $datatable->failureExceptionMessage = $exception->getMessage();
                 }),
-            Action::make('Succeed', 'fas fa-check-double')
+            Action::make('Succeed', 'ti ti-checks')
                 ->action('succeed', fn (RunActionPost $row) => 'done')
                 ->success(function ($row, $result, RunActionDatatable $datatable) {
                     $datatable->successCallbackFired = true;
                     $datatable->successResult = $result;
                 }),
-            Action::make('Explode', 'fas fa-bomb')
+            Action::make('Explode', 'ti ti-bomb')
                 ->action('explode', fn () => throw new RuntimeException('Unhandled failure')),
-            ActionGroup::make('More', 'fas fa-ellipsis-v')
+            ActionGroup::make('More', 'ti ti-dots-vertical')
                 ->condition(fn (RunActionPost $row) => $row->approved)
                 ->actions([
-                    Action::make('Archive', 'fas fa-archive')
+                    Action::make('Archive', 'ti ti-archive')
                         ->action('archive', fn (RunActionPost $row) => $row->update(['approved' => false])),
                 ]),
         ];

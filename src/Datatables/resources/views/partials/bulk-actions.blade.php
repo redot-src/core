@@ -21,7 +21,7 @@
 
             <a href="#" class="dropdown-item" x-on:click.prevent="clearSelection()">
                 <span class="dropdown-item-icon">
-                    <i class="fas fa-close"></i>
+                    <i class="ti ti-x"></i>
                 </span>
 
                 <span class="dropdown-item-title">

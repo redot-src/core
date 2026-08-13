@@ -30,12 +30,12 @@
 
                                     @if ($sortColumn === $column->name)
                                         @if ($sortDirection === 'asc')
-                                            <i class="fas fa-sort-up"></i>
+                                            <i class="ti ti-sort-ascending"></i>
                                         @else
-                                            <i class="fas fa-sort-down"></i>
+                                            <i class="ti ti-sort-descending"></i>
                                         @endif
                                     @else
-                                        <i class="fas fa-sort"></i>
+                                        <i class="ti ti-arrows-sort"></i>
                                     @endif
                                 </span>
                             @else

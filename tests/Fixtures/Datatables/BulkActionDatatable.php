@@ -31,27 +31,27 @@ class BulkActionDatatable extends Datatable
     public function bulkActions(): array
     {
         return [
-            BulkAction::make('Approve', 'fas fa-check')
+            BulkAction::make('Approve', 'ti ti-check')
                 ->action('approve', fn (Collection $records) => $records->each->update(['approved' => true])),
-            BulkAction::make('Limited', 'fas fa-lock')
+            BulkAction::make('Limited', 'ti ti-lock')
                 ->action('limited', fn (Collection $records) => $records->each->delete())
                 ->condition(fn (Collection $records) => $records->count() < 2),
-            BulkAction::make('Hidden', 'fas fa-eye-slash')
+            BulkAction::make('Hidden', 'ti ti-eye-off')
                 ->action('hidden', fn (Collection $records) => $records->each->delete())
                 ->hidden(),
-            BulkAction::make('Fail', 'fas fa-times')
+            BulkAction::make('Fail', 'ti ti-x')
                 ->action('fail', fn () => throw new RuntimeException('Bulk action failed'))
                 ->failure(function ($records, $exception, BulkActionDatatable $datatable) {
                     $datatable->failureCallbackFired = true;
                     $datatable->failureExceptionMessage = $exception->getMessage();
                 }),
-            BulkAction::make('Succeed', 'fas fa-check-double')
+            BulkAction::make('Succeed', 'ti ti-checks')
                 ->action('succeed', fn (Collection $records) => $records->count())
                 ->success(function ($records, $result, BulkActionDatatable $datatable) {
                     $datatable->successCallbackFired = true;
                     $datatable->successResult = $result;
                 }),
-            BulkAction::make('Explode', 'fas fa-bomb')
+            BulkAction::make('Explode', 'ti ti-bomb')
                 ->action('explode', fn () => throw new RuntimeException('Unhandled bulk failure')),
         ];
     }

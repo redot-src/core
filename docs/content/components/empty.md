@@ -26,7 +26,7 @@ Extra classes and attributes are merged onto the card.
 
 ```blade
 <x-empty
-    icon="fas fa-file-lines"
+    icon="ti ti-file-text"
     :title="__('No posts found')"
     :subtitle="__('Create your first post to get started.')"
 />
@@ -37,7 +37,7 @@ Extra classes and attributes are merged onto the card.
 ```blade
 <x-empty
     repeater-empty
-    icon="fas fa-list"
+    icon="ti ti-list"
     :title="__('Add items to the list')"
     :subtitle="__('Click the plus button to add a new item')"
 />

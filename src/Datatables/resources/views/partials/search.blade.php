@@ -3,6 +3,6 @@
         placeholder="@lang('datatables::datatable.search')" />
 
     <span class="input-icon-addon">
-        <i class="fas fa-search"></i>
+        <i class="ti ti-search"></i>
     </span>
 </div>

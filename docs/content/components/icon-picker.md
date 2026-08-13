@@ -1,8 +1,8 @@
 # Icon Picker
 
-`<x-icon-picker>` is a text field bound to a Font Awesome icon, with a live
-preview and a search button that opens a modal to browse and pick free Font
-Awesome icons. The selected icon class string (e.g. `far fa-note-sticky`) is
+`<x-icon-picker>` is a text field bound to a Tabler icon, with a live
+preview and a search button that opens a modal to browse and pick locally hosted
+Tabler icons. The selected icon class string (e.g. `ti ti-note`) is
 written back into the field.
 
 ## Usage
@@ -12,15 +12,15 @@ written back into the field.
 ```
 
 It shares the [common form-field attributes](/components/overview#shared-form-field-conventions)
-(`name`, `title`, `value`, `hint`, `validation`). The stored value is a full Font
-Awesome class string (style + name), so seed `value` with that full string. The
+(`name`, `title`, `value`, `hint`, `validation`). The stored value is a full Tabler
+icon class string, so seed `value` with that full string. The
 picker initializes itself through the [asset & init system](/frontend/asset-system).
 
 ## Options
 
 - **`title`** — label shown above the field.
 - **`hint`** — helper text shown below the field.
-- **`value`** — the current icon class string (e.g. `far fa-note-sticky`).
+- **`value`** — the current icon class string (e.g. `ti ti-note`).
 - **`id`** — element id; auto-generated when omitted.
 
 ## Examples
@@ -28,7 +28,7 @@ picker initializes itself through the [asset & init system](/frontend/asset-syst
 ### Icon field with a default
 
 ```blade
-<x-icon-picker name="icon" :title="__('Icon')" :value="old('icon', $category?->icon ?? 'far fa-note-sticky')" />
+<x-icon-picker name="icon" :title="__('Icon')" :value="old('icon', $category?->icon ?? 'ti ti-note')" />
 ```
 
 ### With a hint and required marker
@@ -37,14 +37,14 @@ picker initializes itself through the [asset & init system](/frontend/asset-syst
 <x-icon-picker
     name="icon"
     :title="__('Icon')"
-    :hint="__('Pick a FontAwesome icon')"
+    :hint="__('Pick a Tabler icon')"
     validation="required"
     :value="old('icon')"
 />
 ```
 
-The icon search needs network access to the Font Awesome API; only free icons
-are returned.
+The icon search reads the locally hosted Tabler Icons stylesheet and needs no
+external API access.
 
 ## Related
 
