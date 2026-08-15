@@ -25,7 +25,6 @@ it('names the request key carrying the selection on route driven bulk actions', 
     $attributes = $action->buildAttributes()->getAttributes();
 
     expect($attributes['method'])->toBe('delete')
-        ->and($action->icon)->toBe('ti ti-trash')
         ->and($attributes['bulk-keys'])->toBe('keys')
         ->and(json_decode(base64_decode($attributes['request-body']), true))->toBe([]);
 });

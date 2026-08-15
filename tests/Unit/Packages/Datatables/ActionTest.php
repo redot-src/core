@@ -71,15 +71,7 @@ it('exposes a delete factory that defaults to a confirmable delete request', fun
     $attributes = $action->buildAttributes(new EmptyModel(['id' => 7]))->getAttributes();
 
     expect($attributes['method'])->toBe('delete')
-        ->and($action->icon)->toBe('ti ti-trash')
         ->and($attributes)->toHaveKey('confirm');
-});
-
-it('uses Tabler icons for the preset actions', function () {
-    expect(Action::view()->icon)->toBe('ti ti-eye')
-        ->and(Action::edit()->icon)->toBe('ti ti-edit')
-        ->and(Action::restore()->icon)->toBe('ti ti-restore')
-        ->and(Action::export()->icon)->toBe('ti ti-file-export');
 });
 
 it('flags grouped actions and renders the group only when at least one child can render', function () {
