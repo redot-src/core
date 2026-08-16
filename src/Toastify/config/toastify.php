@@ -12,23 +12,23 @@ return [
 
     'toastifiers' => [
         'toast' => [
-            'icon' => 'fas fa-bell',
+            'icon' => 'ti ti-bell',
             'color' => 'var(--tblr-secondary)',
         ],
         'error' => [
-            'icon' => 'fas fa-circle-xmark',
+            'icon' => 'ti ti-circle-x',
             'color' => 'var(--tblr-danger)',
         ],
         'success' => [
-            'icon' => 'fas fa-circle-check',
+            'icon' => 'ti ti-circle-check',
             'color' => 'var(--tblr-success)',
         ],
         'info' => [
-            'icon' => 'fas fa-circle-info',
+            'icon' => 'ti ti-info-circle',
             'color' => 'var(--tblr-info)',
         ],
         'warning' => [
-            'icon' => 'fas fa-triangle-exclamation',
+            'icon' => 'ti ti-alert-triangle',
             'color' => 'var(--tblr-warning)',
         ],
     ],

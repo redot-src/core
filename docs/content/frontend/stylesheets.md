@@ -1,6 +1,6 @@
 # Stylesheets
 
-The dashboard ships its CSS for you — Tabler, Font Awesome, the theme tokens, and
+The dashboard ships its CSS for you — Tabler, Tabler Icons, the theme tokens, and
 the component styles are all loaded by the layout. You only touch this page when
 you want to add your own styles on top, and the main thing to get right is *which
 stack to push to* so your CSS lands in the right place in the cascade.

@@ -1,3 +1,3 @@
 <button type="button" class="btn btn-icon" wire:click="refresh">
-    <i class="fas fa-sync"></i>
+    <i class="ti ti-refresh"></i>
 </button>

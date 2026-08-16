@@ -99,7 +99,7 @@ it('rejects combining inline actions with route or href when attributes are buil
 })->throws(InvalidArgumentException::class, 'Inline actions cannot be combined with route or href.');
 
 it('builds inline action attributes for livewire execution', function () {
-    $action = Action::make('Approve', 'fas fa-check')
+    $action = Action::make('Approve', 'ti ti-check')
         ->action('approve', fn () => null)
         ->confirmable(message: 'Are you sure?');
 

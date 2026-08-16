@@ -14,9 +14,9 @@ The component's default slot is the template that gets cloned per row. Mark acti
             <x-input name="email" :title="__('Email')" />
 
             <div class="btn-list mt-2">
-                <button type="button" class="btn btn-icon" action="insert"><i class="fas fa-plus"></i></button>
-                <button type="button" class="btn btn-icon text-danger" action="remove"><i class="fas fa-trash"></i></button>
-                <span sortable-handle class="btn btn-icon cursor-move"><i class="fas fa-grip-vertical"></i></span>
+                <button type="button" class="btn btn-icon" action="insert"><i class="ti ti-plus"></i></button>
+                <button type="button" class="btn btn-icon text-danger" action="remove"><i class="ti ti-trash"></i></button>
+                <span sortable-handle class="btn btn-icon cursor-move"><i class="ti ti-grip-vertical"></i></span>
             </div>
         </div>
     </div>
@@ -46,7 +46,7 @@ Set these as `repeater-` attributes on the component tag:
 ```blade
 <x-repeater id="links" name="links" repeater-sortable="false" repeater-confirmable="false" repeater-initial-items="1">
     <x-input name="url" :title="__('URL')" />
-    <button type="button" action="remove" class="btn btn-icon"><i class="fas fa-trash"></i></button>
+    <button type="button" action="remove" class="btn btn-icon"><i class="ti ti-trash"></i></button>
 </x-repeater>
 ```
 

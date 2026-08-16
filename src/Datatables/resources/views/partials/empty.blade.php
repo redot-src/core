@@ -1,6 +1,6 @@
 <div class="empty">
     <div class="empty-icon">
-        <i class="fas fa-circle-xmark fa-3x"></i>
+        <i class="ti ti-circle-x" style="font-size: 3rem"></i>
     </div>
 
     <p class="empty-title">

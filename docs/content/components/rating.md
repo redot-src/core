@@ -36,7 +36,7 @@ count (a number from 1 to `stars`).
     :hint="__('Pick from 1 to 10')"
     :stars="10"
     :size="32"
-    icon="fas fa-circle"
+    icon="ti ti-circle"
     validation="required"
 />
 ```
@@ -44,7 +44,7 @@ count (a number from 1 to `stars`).
 ### Heart rating
 
 ```blade
-<x-rating name="satisfaction" :title="__('Satisfaction')" icon="fas fa-heart" />
+<x-rating name="satisfaction" :title="__('Satisfaction')" icon="ti ti-heart" />
 ```
 
 ## Related

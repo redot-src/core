@@ -159,7 +159,7 @@ class Action
      */
     public static function view(?string $route = null, array $parameters = []): static
     {
-        return static::preset(__('datatables::datatable.actions.view'), 'fas fa-eye', $route, $parameters)->fancybox();
+        return static::preset(__('datatables::datatable.actions.view'), 'ti ti-eye', $route, $parameters)->fancybox();
     }
 
     /**
@@ -167,7 +167,7 @@ class Action
      */
     public static function edit(?string $route = null, array $parameters = []): static
     {
-        return static::preset(__('datatables::datatable.actions.edit'), 'fas fa-edit', $route, $parameters);
+        return static::preset(__('datatables::datatable.actions.edit'), 'ti ti-edit', $route, $parameters);
     }
 
     /**
@@ -175,7 +175,7 @@ class Action
      */
     public static function delete(?string $route = null, array $parameters = []): static
     {
-        return static::preset(__('datatables::datatable.actions.delete'), 'fas fa-trash-alt', $route, $parameters)->method('delete')->confirmable();
+        return static::preset(__('datatables::datatable.actions.delete'), 'ti ti-trash', $route, $parameters)->method('delete')->confirmable();
     }
 
     /**
@@ -183,7 +183,7 @@ class Action
      */
     public static function restore(?string $route = null, array $parameters = []): static
     {
-        return static::preset(__('datatables::datatable.actions.restore'), 'fas fa-trash-restore', $route, $parameters)->method('post')->confirmable();
+        return static::preset(__('datatables::datatable.actions.restore'), 'ti ti-restore', $route, $parameters)->method('post')->confirmable();
     }
 
     /**
@@ -191,7 +191,7 @@ class Action
      */
     public static function export(?string $route = null, array $parameters = []): static
     {
-        return static::preset(__('datatables::datatable.actions.export'), 'fas fa-file-export', $route, $parameters);
+        return static::preset(__('datatables::datatable.actions.export'), 'ti ti-file-export', $route, $parameters);
     }
 
     /**

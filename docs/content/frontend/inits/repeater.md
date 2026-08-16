@@ -10,7 +10,7 @@ You don't enable this by hand — render the [`<x-repeater>` component](/compone
 <x-repeater id="links" :title="__('Links')" name="links">
     <x-input name="label" :title="__('Label')" />
     <x-input name="url" :title="__('URL')" />
-    <button type="button" action="remove" class="btn btn-icon"><i class="fas fa-trash"></i></button>
+    <button type="button" action="remove" class="btn btn-icon"><i class="ti ti-trash"></i></button>
 </x-repeater>
 ```
 

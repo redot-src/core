@@ -32,14 +32,14 @@ right-aligned action area:
 <x-page-header :title="__('Posts')" :pretitle="$category->title" class="mb-3">
     <div class="dropdown">
         <a href="#" class="btn dropdown-toggle" data-bs-toggle="dropdown">
-            <i class="fas fa-cog me-2"></i>
+            <i class="ti ti-settings me-2"></i>
             {{ __('Actions') }}
         </a>
 
         <div class="dropdown-menu">
             <a class="dropdown-item" action-confirm
                href="{{ route('posts.publish', ['category' => $category]) }}">
-                <span class="dropdown-item-icon"><i class="fas fa-upload me-2"></i></span>
+                <span class="dropdown-item-icon"><i class="ti ti-upload me-2"></i></span>
                 <span class="dropdown-item-title">{{ __('Publish Posts') }}</span>
             </a>
         </div>
