@@ -116,18 +116,38 @@ return [
     'settings' => [
         'app_logo_dark' => [
             'default' => 'assets/images/logo-dark.svg',
+            'rules' => ['nullable', 'image', 'max:1024'],
         ],
         'app_logo_light' => [
             'default' => 'assets/images/logo-light.svg',
+            'rules' => ['nullable', 'image', 'max:1024'],
+        ],
+        'app_icon_dark' => [
+            'default' => 'favicon-dark.png',
+            'rules' => ['nullable', 'image', 'max:1024'],
+        ],
+        'app_icon_light' => [
+            'default' => 'favicon-light.png',
+            'rules' => ['nullable', 'image', 'max:1024'],
         ],
         'app_name' => [
             'default' => [
-                'en' => 'Dashboard',
-                'ar' => 'لوحة التحكم',
+                'en' => 'Nexus',
+                'ar' => 'نيكسس',
             ],
             'rules' => [
                 'app_name' => ['required', 'array'],
                 'app_name.*' => ['required', 'string'],
+            ],
+        ],
+        'app_description' => [
+            'default' => [
+                'en' => '',
+                'ar' => '',
+            ],
+            'rules' => [
+                'app_description' => ['nullable', 'array'],
+                'app_description.*' => ['nullable', 'string'],
             ],
         ],
         'website_locales' => [
@@ -161,9 +181,6 @@ return [
         ],
         'body_code' => [
             'default' => '',
-        ],
-        'dashboard_sidebar_theme' => [
-            'default' => 'inherit',
         ],
         'theme' => [
             'default' => [
