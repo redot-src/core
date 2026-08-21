@@ -7,7 +7,6 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Support\Arr;
 use Illuminate\Support\Js;
 use Illuminate\Support\Str;
 use Illuminate\Support\Traits\Macroable;
@@ -72,16 +71,10 @@ abstract class Datatable extends Component
     public string $search = '';
 
     /**
-     * Sort column for the datatable.
+     * Sort state for the datatable (`column:direction`, comma-separated).
      */
     #[Url(as: 'sort')]
     public string $sortColumn = '';
-
-    /**
-     * Sort direction for the datatable.
-     */
-    #[Url(as: 'direction')]
-    public string $sortDirection = 'desc';
 
     /**
      * Filters values for the datatable.
@@ -232,33 +225,44 @@ abstract class Datatable extends Component
     /**
      * Sort the datatable by the given column.
      *
-     * Clicking a column cycles unsorted → asc → desc → unsorted.
-     * Clicking a different column replaces the current sort.
+     * Clicking a column cycles unsorted → asc → desc → unsorted and
+     * replaces any existing sort. Shift-click appends a column and
+     * cycles that key in place.
      */
-    public function sort(?string $column = null): void
+    public function sort(?string $column = null, bool $append = false): void
     {
+        $sorts = $this->sorts();
+
         if ($column === null) {
-            $this->sortColumn = '';
-            $this->sortDirection = 'desc';
-
-            return;
+            $sorts = collect();
+        } elseif ($append) {
+            $sorts = match ($sorts->get($column)) {
+                null => $sorts->put($column, 'asc'),
+                'asc' => $sorts->put($column, 'desc'),
+                default => $sorts->except($column),
+            };
+        } elseif ($sorts->count() === 1 && $sorts->has($column)) {
+            $sorts = $sorts[$column] === 'asc' ? collect([$column => 'desc']) : collect();
+        } else {
+            $sorts = collect([$column => 'asc']);
         }
 
-        if ($this->sortColumn === $column && $this->sortDirection === 'asc') {
-            $this->sortDirection = 'desc';
+        $this->sortColumn = $sorts->map(fn ($direction, $column) => "$column:$direction")->implode(',');
+    }
 
-            return;
-        }
+    /**
+     * Get the active sorts keyed by column name.
+     */
+    protected function sorts(): \Illuminate\Support\Collection
+    {
+        return collect(explode(',', $this->sortColumn))
+            ->map(fn ($segment) => trim($segment))
+            ->filter()
+            ->mapWithKeys(function (string $segment) {
+                [$column, $direction] = array_pad(explode(':', $segment, 2), 2, 'asc');
 
-        if ($this->sortColumn === $column) {
-            $this->sortColumn = '';
-            $this->sortDirection = 'desc';
-
-            return;
-        }
-
-        $this->sortColumn = $column;
-        $this->sortDirection = 'asc';
+                return [$column => in_array($direction, ['asc', 'desc'], true) ? $direction : 'asc'];
+            });
     }
 
     /**
@@ -572,6 +576,7 @@ abstract class Datatable extends Component
             'searchable' => count(array_filter($columns, fn (Column $column) => $column->searchable)) > 0,
             'exportable' => $this->exportable && count($this->allowedExports) > 0 && count(array_filter($columns, fn (Column $column) => $column->exportable)) > 0,
 
+            'sorts' => $this->sorts(),
             'rows' => $rows,
         ];
     }
@@ -739,48 +744,51 @@ abstract class Datatable extends Component
      */
     protected function applySorting(Builder $query): void
     {
-        if (! in_array($this->sortDirection, ['asc', 'desc'], true)) {
-            $this->sortDirection = 'desc';
+        $applied = false;
+
+        foreach ($this->sorts() as $column => $direction) {
+            $applied = $this->applySort($query, $column, $direction) || $applied;
         }
 
-        if (! $this->sortColumn) {
-            $primaryKey = $this->query()->getModel()->getKeyName();
-            $query->orderBy($primaryKey, $this->sortDirection);
-
+        if ($applied) {
             return;
         }
 
-        // Find the column to sort by
-        $column = Arr::first($this->columns(), function ($column) {
-            return $column->sortable && $column->name === $this->sortColumn;
-        });
+        $query->orderBy($this->query()->getModel()->getKeyName(), 'desc');
+    }
+
+    /**
+     * Apply a single column sort to the query.
+     */
+    protected function applySort(Builder $query, string $name, string $direction): bool
+    {
+        $column = collect($this->columns())->first(
+            fn ($column) => $column->sortable && $column->name === $name,
+        );
 
         if (! $column) {
-            $this->sortColumn = '';
-
-            $primaryKey = $this->query()->getModel()->getKeyName();
-            $query->orderBy($primaryKey, $this->sortDirection);
-
-            return;
+            return false;
         }
 
         if ($column->sorter) {
-            call_user_func($column->sorter, $query, $this->sortDirection);
+            call_user_func($column->sorter, $query, $direction);
 
-            return;
+            return true;
         }
 
         if ($column->relationship) {
-            $this->sortWithinRelation($query, $column->name);
+            $this->sortWithinRelation($query, $column->name, $direction);
         } else {
-            $query->orderBy($column->name, $this->sortDirection);
+            $query->orderBy($column->name, $direction);
         }
+
+        return true;
     }
 
     /**
      * Sort within relation.
      */
-    protected function sortWithinRelation(Builder $query, string $column): void
+    protected function sortWithinRelation(Builder $query, string $column, string $direction): void
     {
         $relations = explode('.', $column);
         $field = array_pop($relations);
@@ -798,7 +806,7 @@ abstract class Datatable extends Component
             $query->selectSub($this->nestedRelationSubquery($query, $relations, $field)->limit(1), $name);
         }
 
-        $query->orderBy($name, $this->sortDirection);
+        $query->orderBy($name, $direction);
     }
 
     /**

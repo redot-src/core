@@ -22,16 +22,19 @@
                     @foreach ($columns as $column)
                         <th @class(['fixed-' . $column->fixedDirection => $column->fixed])>
                             @if ($column->sortable && $column->name)
-                                <span class="text-decoration-none cursor-pointer" wire:click="sort('{{ $column->name }}')">
+                                @php($direction = $sorts->get($column->name))
+
+                                <span class="text-decoration-none cursor-pointer"
+                                    wire:click="sort('{{ $column->name }}', $event.shiftKey)">
                                     <span class="me-1">
                                         {{ $column->label }}
                                     </span>
 
-                                    @if ($sortColumn === $column->name)
-                                        @if ($sortDirection === 'asc')
-                                            <i class="ti ti-sort-ascending"></i>
-                                        @else
-                                            <i class="ti ti-sort-descending"></i>
+                                    @if ($direction)
+                                        <i class="ti {{ $direction === 'asc' ? 'ti-sort-ascending' : 'ti-sort-descending' }}"></i>
+
+                                        @if ($sorts->count() > 1)
+                                            <small class="text-muted">{{ $sorts->keys()->search($column->name) + 1 }}</small>
                                         @endif
                                     @else
                                         <i class="ti ti-arrows-sort"></i>
