@@ -3,6 +3,7 @@
 namespace {{ namespace }};
 
 use Illuminate\Database\Eloquent\Builder;
+use Redot\Datatables\Actions\ActionGroup;
 use Redot\Datatables\Datatable;
 
 class {{ class }} extends Datatable
@@ -30,7 +31,7 @@ class {{ class }} extends Datatable
      */
     public function actions(): array
     {
-        return Datatable::defaultActionGroup([
+        return ActionGroup::auto([
             // ...
         ]);
     }

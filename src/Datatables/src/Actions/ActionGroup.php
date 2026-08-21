@@ -65,6 +65,31 @@ class ActionGroup
     }
 
     /**
+     * Show the first couple of actions inline and fold the rest into a group.
+     */
+    public static function auto(array $actions, ?string $label = null, ?string $icon = null): array
+    {
+        $offset = is_mobile() ? 0 : 2;
+        $count = count(array_filter($actions, fn (Action $action) => $action->visible));
+
+        // If we have $offset + 1 actions total, just show all of them directly
+        if ($count <= $offset + 1) return $actions;
+
+        // Display the first $offset actions directly, group the rest if there are more than $offset + 1 total
+        $mainActions = array_slice($actions, 0, $offset);
+        $remainingActions = array_slice($actions, $offset);
+
+        // If the remaining actions are equal to or less than 1, just show them directly
+        if (count($remainingActions) <= 1) return array_merge($mainActions, $remainingActions);
+
+        // Otherwise, show the first $offset actions and group the rest
+        return array_merge(
+            $mainActions,
+            [static::make($label, $icon ?? 'ti ti-dots-vertical')->actions($remainingActions)]
+        );
+    }
+
+    /**
      * Set the label of the action group.
      */
     public function label(string $label): static
@@ -106,6 +131,31 @@ class ActionGroup
         $this->actions[] = $action->grouped(true);
 
         return $this;
+    }
+
+    /**
+     * Get a copy of the group holding only the given actions.
+     */
+    public function withActions(array $actions): static
+    {
+        $clone = clone $this;
+        $clone->actions = $actions;
+
+        return $clone;
+    }
+
+    /**
+     * Find an action in the group by its unique name.
+     */
+    public function find(string $name): ?Action
+    {
+        foreach ($this->actions as $action) {
+            if ($action->name === $name) {
+                return $action;
+            }
+        }
+
+        return null;
     }
 
     /**

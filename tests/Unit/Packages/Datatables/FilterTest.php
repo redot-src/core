@@ -133,3 +133,32 @@ it('ignores non-scalar filter values from crafted requests', function () {
         ->and($number->count())->toBe(4)
         ->and($date->count())->toBe(4);
 });
+
+it('skips applyTo for null and empty string values', function () {
+    $null = datatableFilterModel()->newQuery();
+    StringFilter::make('name')->applyTo($null, null);
+
+    $empty = datatableFilterModel()->newQuery();
+    StringFilter::make('name')->applyTo($empty, '');
+
+    expect($null->toSql())->not->toContain('where')
+        ->and($empty->toSql())->not->toContain('where');
+});
+
+it('still applies applyTo for zero values', function () {
+    $query = datatableFilterModel()->newQuery();
+
+    SelectFilter::make('name')->applyTo($query, '0');
+
+    expect($query->pluck('name')->all())->toBe(['0']);
+});
+
+it('prefers the query override over the default apply in applyTo', function () {
+    $query = datatableFilterModel()->newQuery();
+
+    StringFilter::make('name')
+        ->query(fn ($query, $value) => $query->where('score', '>=', $value))
+        ->applyTo($query, 20);
+
+    expect($query->pluck('name')->all())->toBe(['Beta', 'Gamma']);
+});

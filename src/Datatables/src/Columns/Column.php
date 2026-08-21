@@ -3,13 +3,17 @@
 namespace Redot\Datatables\Columns;
 
 use Closure;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Traits\Macroable;
+use Redot\Datatables\Query\RelationSorter;
 use Redot\Datatables\Traits\BuildAttributes;
+use Redot\Traits\InteractsWithRelations;
 
 class Column
 {
     use BuildAttributes;
+    use InteractsWithRelations;
     use Macroable;
 
     /**
@@ -350,6 +354,46 @@ class Column
         $this->getter = $getter;
 
         return $this;
+    }
+
+    /**
+     * Add the column's constraint to a global search query using OR logic.
+     */
+    public function applySearch(Builder $query, string $term): void
+    {
+        if ($this->searcher) {
+            call_user_func($this->searcher, $query, $term);
+
+            return;
+        }
+
+        if ($this->relationship) {
+            $this->orWithRelation($this->name, $query, fn (Builder $query, string $field) => $query->where($field, 'like', "%{$term}%"));
+
+            return;
+        }
+
+        $query->orWhere($this->name, 'like', "%{$term}%");
+    }
+
+    /**
+     * Sort the query by the column in the given direction.
+     */
+    public function applySort(Builder $query, string $direction): void
+    {
+        if ($this->sorter) {
+            call_user_func($this->sorter, $query, $direction);
+
+            return;
+        }
+
+        if ($this->relationship) {
+            RelationSorter::apply($query, $this->name, $direction);
+
+            return;
+        }
+
+        $query->orderBy($this->name, $direction);
     }
 
     /**

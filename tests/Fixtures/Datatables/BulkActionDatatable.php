@@ -20,6 +20,15 @@ class BulkActionDatatable extends Datatable
 
     public ?string $failureExceptionMessage = null;
 
+    public bool $selectionCleared = false;
+
+    protected function clearSelection(): void
+    {
+        $this->selectionCleared = true;
+
+        parent::clearSelection();
+    }
+
     public function columns(): array
     {
         return [

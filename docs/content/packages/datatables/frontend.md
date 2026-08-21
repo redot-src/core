@@ -28,6 +28,7 @@ The generated class lives under `App\Livewire\Datatables` with empty `query()`, 
 namespace App\Livewire\Datatables;
 
 use Illuminate\Database\Eloquent\Builder;
+use Redot\Datatables\Actions\ActionGroup;
 use Redot\Datatables\Datatable;
 
 class Users extends Datatable
@@ -46,7 +47,7 @@ class Users extends Datatable
 
     public function actions(): array
     {
-        return Datatable::defaultActionGroup([
+        return ActionGroup::auto([
             // ...
         ]);
     }

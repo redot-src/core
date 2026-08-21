@@ -193,3 +193,35 @@ it('escapes tag values to prevent stored xss', function () {
     expect($value)->not->toContain('<script>alert')
         ->and($value)->toContain('<span class="tag">safe</span>');
 });
+
+it('uses the custom searcher instead of the default like constraint', function () {
+    $query = EmptyModel::query();
+
+    Column::make('name')
+        ->searcher(fn ($query, $term) => $query->orWhere('name', $term))
+        ->applySearch($query, 'Taylor');
+
+    expect($query->toSql())->toContain('"name" = ?')
+        ->and($query->toSql())->not->toContain('like')
+        ->and($query->getBindings())->toBe(['Taylor']);
+});
+
+it('uses the custom sorter instead of the default order by', function () {
+    $query = EmptyModel::query();
+
+    Column::make('name')
+        ->sorter(fn ($query, $direction) => $query->orderBy('score', $direction))
+        ->applySort($query, 'desc');
+
+    expect($query->toSql())->toContain('order by "score" desc')
+        ->and($query->toSql())->not->toContain('"name"');
+});
+
+it('falls back to the last column segment when the relation cannot be resolved', function () {
+    $query = EmptyModel::query();
+
+    Column::make('missing.name')->searchable()->applySearch($query, 'Taylor');
+
+    expect($query->toSql())->toContain('"name" like ?')
+        ->and($query->toSql())->not->toContain('exists');
+});

@@ -1,6 +1,10 @@
 <?php
 
 use Redot\Datatables\Adapters\PDF\LaravelMpdf;
+use Redot\Datatables\Exporters\CsvExporter;
+use Redot\Datatables\Exporters\JsonExporter;
+use Redot\Datatables\Exporters\PdfExporter;
+use Redot\Datatables\Exporters\XlsxExporter;
 
 return [
 
@@ -21,18 +25,22 @@ return [
     'export' => [
         'xlsx' => [
             'enabled' => true,
+            'exporter' => XlsxExporter::class,
         ],
 
         'csv' => [
             'enabled' => true,
+            'exporter' => CsvExporter::class,
         ],
 
         'json' => [
             'enabled' => true,
+            'exporter' => JsonExporter::class,
         ],
 
         'pdf' => [
             'enabled' => true,
+            'exporter' => PdfExporter::class,
             'template' => 'datatables::pdf.default',
             'adapter' => LaravelMpdf::class,
             'options' => [

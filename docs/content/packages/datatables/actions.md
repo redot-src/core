@@ -4,15 +4,15 @@ Actions are the per-row buttons in a table's trailing column — view, edit, del
 
 ## Usage
 
-The common CRUD actions have ready-made builders. Wrap your list in `defaultActionGroup()` to keep the first couple inline and fold the rest into a dropdown:
+The common CRUD actions have ready-made builders. Wrap your list in `ActionGroup::auto()` to keep the first couple inline and fold the rest into a dropdown:
 
 ```php
 use Redot\Datatables\Actions\Action;
-use Redot\Datatables\Datatable;
+use Redot\Datatables\Actions\ActionGroup;
 
 public function actions(): array
 {
-    return Datatable::defaultActionGroup([
+    return ActionGroup::auto([
         Action::view('posts.show'),
         Action::edit('posts.edit'),
         Action::delete('posts.destroy'),
@@ -74,7 +74,7 @@ Action::view('categories.show')->fancybox(false)->newTab();
 
 ### Grouping actions into a dropdown explicitly
 
-When you want full control instead of `defaultActionGroup`, build a group yourself:
+When you want full control instead of `ActionGroup::auto`, build a group yourself:
 
 ```php
 use Redot\Datatables\Actions\ActionGroup;

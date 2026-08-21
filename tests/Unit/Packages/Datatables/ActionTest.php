@@ -111,3 +111,38 @@ it('builds inline action attributes for livewire execution', function () {
         ->and($attributes)->not->toHaveKey('method')
         ->and($attributes['confirm'])->toBe('Are you sure?');
 });
+
+it('finds grouped actions by their unique name', function () {
+    $group = ActionGroup::make('More')->actions([
+        Action::make('Approve')->action('approve', fn () => null),
+        Action::make('Archive')->action('archive', fn () => null),
+    ]);
+
+    expect($group->find('archive')?->label)->toBe('Archive')
+        ->and($group->find('missing'))->toBeNull();
+});
+
+it('copies the group with the given actions without touching the original', function () {
+    $approve = Action::make('Approve');
+    $hidden = Action::make('Hidden')->hidden();
+    $group = ActionGroup::make('More')->actions([$approve, $hidden]);
+
+    $copy = $group->withActions([$approve]);
+
+    expect($copy)->not->toBe($group)
+        ->and($copy->actions)->toBe([$approve])
+        ->and($group->actions)->toBe([$approve, $hidden]);
+});
+
+it('keeps short action lists inline and folds longer lists into a dropdown group', function () {
+    $short = [Action::make('One'), Action::make('Two'), Action::make('Three')];
+    $long = [...$short, Action::make('Four')];
+
+    $inline = ActionGroup::auto($short);
+    $folded = ActionGroup::auto($long, 'More');
+
+    expect($inline)->toBe($short)
+        ->and($folded)->toHaveCount(3)
+        ->and($folded[2])->toBeInstanceOf(ActionGroup::class)
+        ->and($folded[2]->actions)->toHaveCount(2);
+});

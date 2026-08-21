@@ -157,6 +157,16 @@ abstract class Filter
     }
 
     /**
+     * Set the filter to be applied globally, outside the nested filter group.
+     */
+    public function global(bool $global = true): static
+    {
+        $this->global = $global;
+
+        return $this;
+    }
+
+    /**
      * Render the filter view.
      */
     public function render(): View
@@ -197,6 +207,23 @@ abstract class Filter
                 }
             }
         });
+    }
+
+    /**
+     * Apply the filter to the given query, skipping empty values and
+     * honouring the query override when one is set.
+     */
+    public function applyTo(Builder $query, mixed $value): void
+    {
+        if (is_null($value) || $value === '') {
+            return;
+        }
+
+        if ($this->query) {
+            call_user_func($this->query, $query, $value);
+        } else {
+            $this->apply($query, $value);
+        }
     }
 
     /**
