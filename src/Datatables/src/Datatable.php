@@ -178,16 +178,6 @@ abstract class Datatable extends Component
     }
 
     /**
-     * Get the default action group for the datatable.
-     *
-     * @deprecated Use ActionGroup::auto() instead.
-     */
-    public static function defaultActionGroup(array $actions, ?string $label = null, ?string $icon = null): array
-    {
-        return ActionGroup::auto($actions, $label, $icon);
-    }
-
-    /**
      * Get the bulk actions for the datatable.
      */
     public function bulkActions(): array
