@@ -27,7 +27,7 @@ it('continues to cache persisted setting values', function () {
 
 it('returns the configured default for a key including nested dot paths', function () {
     expect(Setting::default('theme.primary'))->toBe('blue')
-        ->and(Setting::default('app_name.en'))->toBe('Dashboard')
+        ->and(Setting::default('app_name.en'))->toBe('Nexus')
         ->and(Setting::default('missing'))->toBeNull();
 });
 
