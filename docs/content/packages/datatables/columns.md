@@ -29,7 +29,7 @@ Use a dotted name (e.g. `author.name`) to pull a value from a relationship.
 These apply to every column type:
 
 - **`searchable`** — include the column in the global search box.
-- **`sortable`** — let users sort by clicking the header.
+- **`sortable`** — let users sort by clicking the header (unsorted → ascending → descending).
 - **`sorter`** / **`searcher`** — supply a callback for custom sort/search logic (each also turns the feature on).
 - **`width`** — set a column width; accepts optional `min` and `max` as named arguments. `minWidth` / `maxWidth` set those individually.
 - **`fixed`** — pin the column to the `start` or `end` while the table scrolls horizontally.

@@ -231,22 +231,34 @@ abstract class Datatable extends Component
 
     /**
      * Sort the datatable by the given column.
+     *
+     * Clicking a column cycles unsorted → asc → desc → unsorted.
+     * Clicking a different column replaces the current sort.
      */
     public function sort(?string $column = null): void
     {
         if ($column === null) {
             $this->sortColumn = '';
-            $this->sortDirection = 'asc';
+            $this->sortDirection = 'desc';
+
+            return;
+        }
+
+        if ($this->sortColumn === $column && $this->sortDirection === 'asc') {
+            $this->sortDirection = 'desc';
 
             return;
         }
 
         if ($this->sortColumn === $column) {
-            $this->sortDirection = $this->sortDirection === 'asc' ? 'desc' : 'asc';
-        } else {
-            $this->sortColumn = $column;
-            $this->sortDirection = 'asc';
+            $this->sortColumn = '';
+            $this->sortDirection = 'desc';
+
+            return;
         }
+
+        $this->sortColumn = $column;
+        $this->sortDirection = 'asc';
     }
 
     /**

@@ -22,8 +22,7 @@
                     @foreach ($columns as $column)
                         <th @class(['fixed-' . $column->fixedDirection => $column->fixed])>
                             @if ($column->sortable && $column->name)
-                                <span class="text-decoration-none cursor-pointer" wire:click="sort('{{ $column->name }}')"
-                                    wire:click.shift="sort(null)">
+                                <span class="text-decoration-none cursor-pointer" wire:click="sort('{{ $column->name }}')">
                                     <span class="me-1">
                                         {{ $column->label }}
                                     </span>
