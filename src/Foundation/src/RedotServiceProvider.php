@@ -17,6 +17,7 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Js;
@@ -38,6 +39,7 @@ use Redot\Datatables\DatatablesServiceProvider;
 use Redot\Models\Language;
 use Redot\Rules\Captcha;
 use Redot\Rules\Phone;
+use Redot\Session\DatabaseSessionHandler;
 use Redot\Sidebar\Sidebar;
 use Redot\Support\PermissionNameResolver;
 use Redot\Toastify\LaravelToastifyServiceProvider;
@@ -127,6 +129,7 @@ class RedotServiceProvider extends ServiceProvider
 
         $this->configureValidationRules();
         $this->configureJsonCast();
+        $this->configureSessionHandler();
     }
 
     /**
@@ -296,5 +299,21 @@ class RedotServiceProvider extends ServiceProvider
 
             return $value;
         });
+    }
+
+    /**
+     * Configure the database session handler.
+     *
+     * Records the authenticated owner (admins, users, ...) polymorphically so
+     * each guard's sessions can be queried and revoked independently.
+     */
+    protected function configureSessionHandler(): void
+    {
+        Session::extend('database', fn ($app) => new DatabaseSessionHandler(
+            $app['db']->connection(config('session.connection')),
+            config('session.table', 'sessions'),
+            config('session.lifetime'),
+            $app,
+        ));
     }
 }
