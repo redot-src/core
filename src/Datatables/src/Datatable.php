@@ -67,7 +67,7 @@ abstract class Datatable extends Component
     public string $search = '';
 
     /**
-     * Sort state for the datatable (`column:direction`, comma-separated).
+     * Sort state for the datatable (`title,-age`; a leading `-` is descending).
      */
     #[Url(as: 'sort')]
     public string $sortColumn = '';

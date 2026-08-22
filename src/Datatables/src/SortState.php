@@ -14,7 +14,9 @@ final class SortState
     private function __construct(private readonly array $sorts = []) {}
 
     /**
-     * Parse a sort state from its string form (`column:direction`, comma-separated).
+     * Parse a sort state from its string form (`title,-age`).
+     *
+     * A leading `-` marks descending; a bare column name is ascending.
      */
     public static function fromString(string $raw): self
     {
@@ -22,9 +24,10 @@ final class SortState
             ->map(fn (string $segment) => trim($segment))
             ->filter()
             ->mapWithKeys(function (string $segment) {
-                [$column, $direction] = array_pad(explode(':', $segment, 2), 2, 'asc');
+                $descending = str_starts_with($segment, '-');
+                $column = $descending ? substr($segment, 1) : $segment;
 
-                return [$column => in_array($direction, ['asc', 'desc'], true) ? $direction : 'asc'];
+                return $column === '' ? [] : [$column => $descending ? 'desc' : 'asc'];
             })
             ->all();
 
@@ -40,11 +43,13 @@ final class SortState
     }
 
     /**
-     * Format the sort state back to its string form.
+     * Format the sort state back to its string form (`title,-age`).
      */
     public function toString(): string
     {
-        return collect($this->sorts)->map(fn ($direction, $column) => "$column:$direction")->implode(',');
+        return collect($this->sorts)
+            ->map(fn (string $direction, string $column) => $direction === 'desc' ? "-{$column}" : $column)
+            ->implode(',');
     }
 
     /**

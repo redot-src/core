@@ -67,7 +67,7 @@ Set these on your datatable class to tune behavior and appearance:
 - **`allowedExports`** — which export formats to offer.
 - **`emptyMessage`** — the text shown when there are no rows.
 
-Search, sort, page size, and applied filters are reflected in the URL, so links and refreshes preserve table state.
+Search, sort, page size, and applied filters are reflected in the URL, so links and refreshes preserve table state. Sort uses `?sort=title,-age` — a bare column is ascending, a leading `-` is descending.
 
 ## Related
 

@@ -55,14 +55,14 @@ it('searches direct and relation columns globally', function () {
 
 it('sorts by a single-level relation column', function () {
     $datatable = new BlogCommentsDatatable;
-    $datatable->sortColumn = 'post.title:desc';
+    $datatable->sortColumn = '-post.title';
 
     expect($datatable->compiledQuery()->pluck('id')->all())->toBe([3, 1, 2]);
 });
 
 it('sorts by a nested relation column', function () {
     $datatable = new BlogCommentsDatatable;
-    $datatable->sortColumn = 'post.author.name:desc,body:asc';
+    $datatable->sortColumn = '-post.author.name,body';
 
     expect($datatable->compiledQuery()->pluck('id')->all())->toBe([3, 1, 2]);
 });
@@ -84,7 +84,7 @@ it('produces the same SQL as before the refactor for a fully loaded query', func
     [$body, $title] = $datatable->filters();
 
     $datatable->search = 'Great';
-    $datatable->sortColumn = 'post.author.name:desc,body:asc';
+    $datatable->sortColumn = '-post.author.name,body';
     $datatable->filtered = [
         $body->index => ['operator' => 'contains', 'value' => 'Great'],
         $title->index => 'Laravel Tips',
@@ -100,22 +100,22 @@ it('produces the same SQL as before the refactor for a fully loaded query', func
 it('ignores client-supplied sorts for unknown or non-sortable columns', function () {
     $datatable = new BlogCommentsDatatable;
 
-    $datatable->sortColumn = 'password:asc';
+    $datatable->sortColumn = 'password';
     expect($datatable->compiledQuery()->pluck('id')->all())->toBe([3, 2, 1]);
 
     // The id column exists but is not sortable.
-    $datatable->sortColumn = 'id:asc';
+    $datatable->sortColumn = 'id';
     expect($datatable->compiledQuery()->pluck('id')->all())->toBe([3, 2, 1]);
 });
 
 it('cycles sorts through the livewire sort endpoint', function () {
     Livewire\Livewire::test(BlogCommentsDatatable::class)
-        ->call('sort', 'body')->assertSet('sortColumn', 'body:asc')
-        ->call('sort', 'body')->assertSet('sortColumn', 'body:desc')
+        ->call('sort', 'body')->assertSet('sortColumn', 'body')
+        ->call('sort', 'body')->assertSet('sortColumn', '-body')
         ->call('sort', 'body')->assertSet('sortColumn', '')
-        ->call('sort', 'body')->assertSet('sortColumn', 'body:asc')
-        ->call('sort', 'post.title', true)->assertSet('sortColumn', 'body:asc,post.title:asc')
-        ->call('sort', 'post.title', true)->assertSet('sortColumn', 'body:asc,post.title:desc')
-        ->call('sort', 'post.title', true)->assertSet('sortColumn', 'body:asc')
+        ->call('sort', 'body')->assertSet('sortColumn', 'body')
+        ->call('sort', 'post.title', true)->assertSet('sortColumn', 'body,post.title')
+        ->call('sort', 'post.title', true)->assertSet('sortColumn', 'body,-post.title')
+        ->call('sort', 'post.title', true)->assertSet('sortColumn', 'body')
         ->call('sort')->assertSet('sortColumn', '');
 });
