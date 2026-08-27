@@ -29,8 +29,8 @@ function route_from_url(string $url): ?string
 function route_guard(RoutingRoute $route, string $default = 'admins'): string
 {
     foreach (Route::gatherRouteMiddleware($route) as $middleware) {
-        if (is_string($middleware) && str_starts_with($middleware, Authenticate::class . ':')) {
-            return explode(',', substr($middleware, strlen(Authenticate::class) + 1))[0];
+        if (is_string($middleware) && str($middleware)->startsWith(Authenticate::class . ':')) {
+            return str($middleware)->after(':')->before(',')->value();
         }
     }
 
