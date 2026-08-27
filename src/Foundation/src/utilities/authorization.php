@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Auth\Middleware\Authenticate;
 use Illuminate\Routing\Route as RoutingRoute;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Request;
@@ -23,16 +24,34 @@ function route_from_url(string $url): ?string
 }
 
 /**
+ * Resolve the guard a route authenticates against.
+ */
+function route_guard(RoutingRoute $route, string $default = 'admins'): string
+{
+    foreach (Route::gatherRouteMiddleware($route) as $middleware) {
+        if (is_string($middleware) && str_starts_with($middleware, Authenticate::class . ':')) {
+            return explode(',', substr($middleware, strlen(Authenticate::class) + 1))[0];
+        }
+    }
+
+    return $default;
+}
+
+/**
  * Check if the gate allows the given permission.
  */
-function route_allowed(RoutingRoute|string $route, string $guard = 'admins'): bool
+function route_allowed(RoutingRoute|string $route, ?string $guard = null): bool
 {
+    $registeredRoute = PermissionNameResolver::route($route);
+
+    // Guess the guard from the route's auth middleware when none is given
+    $guard ??= $registeredRoute ? route_guard($registeredRoute) : 'admins';
+
     if (! auth($guard)->check()) {
         return false;
     }
 
     // Check if the route has the RoutePermission middleware, if not, allow access
-    $registeredRoute = PermissionNameResolver::route($route);
     if ($registeredRoute && ! collect(Route::gatherRouteMiddleware($registeredRoute))->contains(RoutePermission::class)) return true;
 
     // Resolve the permission name for the route, reusing the already-resolved route instance
@@ -47,7 +66,7 @@ function route_allowed(RoutingRoute|string $route, string $guard = 'admins'): bo
 /**
  * Check if the url is allowed.
  */
-function url_allowed(string $url, string $guard = 'admins'): bool
+function url_allowed(string $url, ?string $guard = null): bool
 {
     $urlHost = parse_url($url, PHP_URL_HOST);
     $appHost = parse_url(app_url(), PHP_URL_HOST);

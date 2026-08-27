@@ -15,9 +15,9 @@ class RoutePermission
      */
     public function handle(Request $request, Closure $next): Response
     {
-        $name = $request->route()->getName();
+        $route = $request->route();
 
-        if (! $name || route_allowed($request->route())) {
+        if (! $route->getName() || route_allowed($route)) {
             return $next($request);
         }
 

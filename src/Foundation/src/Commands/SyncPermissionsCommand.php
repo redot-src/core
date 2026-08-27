@@ -2,7 +2,6 @@
 
 namespace Redot\Commands;
 
-use Illuminate\Auth\Middleware\Authenticate;
 use Illuminate\Console\Command;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
@@ -208,16 +207,23 @@ class SyncPermissionsCommand extends Command
     }
 
     /**
-     * Resolve the guard a route authenticates against.
+     * Resolve the guard a route's permission is stored under.
+     *
+     * Guards sharing a provider (e.g. session + API guards over the same
+     * model) are stamped with the provider's first configured guard, so a
+     * permission shared across guards is stored once.
      */
     protected function guardForRoute($route): string
     {
-        foreach (Route::gatherRouteMiddleware($route) as $middleware) {
-            if (is_string($middleware) && str_starts_with($middleware, Authenticate::class . ':')) {
-                return explode(',', substr($middleware, strlen(Authenticate::class) + 1))[0];
+        $guard = route_guard($route);
+        $provider = config("auth.guards.{$guard}.provider");
+
+        foreach (config('auth.guards', []) as $name => $config) {
+            if ($provider !== null && ($config['provider'] ?? null) === $provider) {
+                return $name;
             }
         }
 
-        return 'admins';
+        return $guard;
     }
 }
