@@ -77,6 +77,43 @@ it('honours an explicit permission alias', function () {
     $this->post('/permission-test/users/1/suspend')->assertOk();
 });
 
+it('authorizes against the guard of the route auth middleware', function () {
+    config(['auth.guards.admins-api' => ['driver' => 'session', 'provider' => 'admins']]);
+
+    Gate::define('permission-test.api.show', fn (User $user) => $user->id === 2);
+
+    Route::get('/permission-test/api', fn () => 'api')
+        ->middleware(['auth:admins-api', RoutePermission::class])
+        ->name('permission-test.api.show');
+
+    $apiUser = new User;
+    $apiUser->setAttribute('id', 2);
+
+    $this->actingAs($apiUser, 'admins-api');
+
+    $this->get('/permission-test/api')->assertOk();
+
+    // UI checks guess the same guard when none is given
+    Route::getRoutes()->refreshNameLookups();
+
+    expect(route_allowed('permission-test.api.show'))->toBeTrue();
+});
+
+it('denies api-guard routes when no gate grants their permission', function () {
+    config(['auth.guards.admins-api' => ['driver' => 'session', 'provider' => 'admins']]);
+
+    Route::get('/permission-test/api-denied', fn () => 'denied')
+        ->middleware(['auth:admins-api', RoutePermission::class])
+        ->name('permission-test.api-denied');
+
+    $apiUser = new User;
+    $apiUser->setAttribute('id', 2);
+
+    $this->actingAs($apiUser, 'admins-api');
+
+    $this->get('/permission-test/api-denied')->assertForbidden();
+});
+
 it('preserves the existing unnamed route bypass', function () {
     Route::get('/permission-test/unnamed', fn () => 'unnamed')
         ->middleware(RoutePermission::class);

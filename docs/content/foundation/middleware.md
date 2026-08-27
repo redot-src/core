@@ -20,10 +20,20 @@ settings, so changing them takes effect immediately. See
 
 ## Route permission gating
 
-Dashboard routes are gated by their **route name**, treated as a permission
-name. A request is allowed when the current admin passes the gate for that route
-name; otherwise it is aborted with `403`. Named routes are denied when no gate
-grants the resolved permission, while unnamed routes always pass.
+Dashboard routes — web and API alike — are gated by their **route name**,
+treated as a permission name. A request is allowed when the current admin
+passes the gate for that route name; otherwise it is aborted with `403`. Named
+routes are denied when no gate grants the resolved permission, while unnamed
+routes always pass. The gate authenticates against the guard of the route's
+`auth` middleware (falling back to `admins`), so dashboard API routes are
+checked against the admin resolved by their API guard.
+
+Dashboard API routes should alias their permission to the matching web route
+with `usePermission()` (e.g. `usePermission('dashboard.admins.create')`), so
+one permission covers both surfaces instead of a duplicated `api.dashboard.*`
+name. Synced permissions are stored under the guard's provider's first
+configured guard, so guards sharing a provider (session + API) share one
+permission row.
 
 Conventional form and mutation routes share a permission automatically:
 

@@ -46,6 +46,31 @@ it('syncs every protected verb under its resolved permission', function () {
         ]);
 });
 
+it('stores one permission for guards sharing a provider', function () {
+    config(['auth.guards.admins-api' => ['driver' => 'session', 'provider' => 'admins']]);
+
+    Route::middleware(RoutePermission::class)->group(function () {
+        Route::post('/permission-test/admins', fn () => 'store')
+            ->middleware('auth:admins')
+            ->name('permission-test.admins.store');
+
+        Route::post('/permission-test/api/admins', fn () => 'store')
+            ->middleware('auth:admins-api')
+            ->name('permission-test.api.admins.store')
+            ->usePermission('permission-test.admins.create');
+    });
+
+    $this->artisan('permissions:sync')->assertSuccessful();
+
+    expect(Permission::query()
+        ->where('name', 'like', 'permission-test.%')
+        ->get(['name', 'guard_name'])
+        ->map(fn (Permission $permission) => [$permission->name, $permission->guard_name])
+        ->all())->toBe([
+            ['permission-test.admins.create', 'admins'],
+        ]);
+});
+
 it('stamps discovered permissions without touching manually created ones', function () {
     Route::middleware(RoutePermission::class)->group(function () {
         Route::get('/permission-test/users', fn () => 'index')->name('permission-test.users.index');

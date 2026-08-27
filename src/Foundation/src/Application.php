@@ -40,7 +40,7 @@ class Application extends LaravelApplication
                     }
 
                     if (config('redot.features.dashboard-api.enabled')) {
-                        Route::as('dashboard.')->prefix(config('redot.features.dashboard-api.prefix'))->group(base_path('routes/api/dashboard.php'));
+                        Route::as('dashboard.')->prefix(config('redot.features.dashboard-api.prefix'))->middleware(RoutePermission::class)->group(base_path('routes/api/dashboard.php'));
                     }
                 });
 
