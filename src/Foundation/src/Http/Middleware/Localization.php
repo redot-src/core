@@ -5,8 +5,10 @@ namespace Redot\Http\Middleware;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\URL;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 
 class Localization
 {
@@ -42,7 +44,17 @@ class Localization
 
         // Redirect to the correct locale if the current locale is not the original route locale
         if ($originalRouteLocale !== null && $locale !== $originalRouteLocale) {
+            $localizedPath = "/$locale" . $request->getPathInfo();
             $url = str($request->getPathInfo())->replaceFirst($originalRouteLocale, $locale);
+
+            try {
+                $localizedRoute = Route::getRoutes()->match(Request::create($localizedPath, $request->method()));
+
+                if (! $localizedRoute->isFallback) $url = $localizedPath;
+            } catch (HttpExceptionInterface) {
+                // The path does not exist with the locale prepended.
+            }
+
             $qs = $request->getQueryString();
 
             if ($qs) {

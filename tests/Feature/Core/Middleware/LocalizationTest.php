@@ -33,6 +33,22 @@ it('redirects unsupported route locales to the fallback locale and preserves the
         ->assertStatus(301);
 });
 
+it('preserves a two-character path when adding the fallback locale', function () {
+    Route::middleware(Localization::class . ':website')
+        ->get('/{locale}', fn () => response('home'))
+        ->where('locale', '[a-zA-Z]{2}')
+        ->name('website.home');
+
+    Route::middleware(Localization::class . ':website')
+        ->get('/{locale}/up', fn () => response('up'))
+        ->where('locale', '[a-zA-Z]{2}')
+        ->name('website.up');
+
+    $this->get('/up?foo=bar')
+        ->assertRedirect('/en/up?foo=bar')
+        ->assertStatus(301);
+});
+
 it('lets the locale query string override the route locale', function () {
     Route::middleware(Localization::class . ':website')
         ->get('/{locale}/query-locale-probe', fn () => response('ok'))
