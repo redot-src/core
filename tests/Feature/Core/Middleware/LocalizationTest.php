@@ -2,6 +2,12 @@
 
 use Illuminate\Support\Facades\Route;
 use Redot\Http\Middleware\Localization;
+use Redot\Models\Setting;
+
+beforeEach(function () {
+    Setting::define('website_locales')->array()->default(['en', 'ar']);
+    Setting::define('dashboard_locales')->array()->default(['en', 'ar']);
+});
 
 it('sets the application locale from the route parameter', function () {
     Route::middleware(Localization::class . ':website')

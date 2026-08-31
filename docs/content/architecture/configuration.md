@@ -2,8 +2,9 @@
 
 `config/redot.php` is the single configuration file for `redot/core`. It
 controls which application surfaces are mounted, the locales the app supports,
-locale-aware routing, and the schema for persisted application settings. Its
-values are available as `config('redot.*')` out of the box.
+and locale-aware routing. Its values are available as `config('redot.*')` out
+of the box. Runtime-editable settings are defined separately in
+`app/settings.php`.
 
 ## Publishing the config
 
@@ -76,13 +77,16 @@ and [Commands](/commands/overview) for `permissions:sync --grant`.
 
 ## Settings
 
-`redot.settings` is the schema for **persisted** application settings — values
-stored in the database, edited through the dashboard settings form, and read via
-the [`setting()` helper](/foundation/settings). This is distinct from plain
-config: config is static and file/env-driven, while settings are runtime-editable
-and cached.
+`app/settings.php` defines **persisted** application settings — values stored in
+the database, edited through the dashboard settings form, and read via the
+[`setting()` helper](/foundation/settings). This is distinct from plain config:
+config is static and file/env-driven, while settings are runtime-editable and
+cached.
 
-Each entry is keyed by setting name and may declare:
+Each `Setting::define()` call is keyed by setting name and may declare:
+
+- **`type`** — input metadata declared with `type()` or a shorthand such as
+  `file()`, `boolean()`, or `array()`.
 
 - **`default`** — the value returned when no stored row exists. Can be a scalar,
   an array (e.g. translatable values keyed by locale), or a nested structure
@@ -91,7 +95,7 @@ Each entry is keyed by setting name and may declare:
   rules validates the setting key itself; an associative array lets one setting
   validate several fields (e.g. `app_name` and `app_name.*`).
 
-The shipped schema covers the things you'd expect to edit from the dashboard:
+The dashboard's registry covers the things you'd expect to edit:
 the app logos and name, the website and dashboard locale lists, page-loader and
 service-worker toggles, analytics and captcha keys, custom head/body code
 injection, the sidebar theme, and the overall theme (primary colour, base, font,

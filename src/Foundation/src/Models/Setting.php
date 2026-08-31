@@ -4,10 +4,19 @@ namespace Redot\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Str;
 use Redot\Casts\Union;
+use Redot\Support\SettingDefinition;
 
 class Setting extends Model
 {
+    /**
+     * The registered setting definitions.
+     *
+     * @var array<string, SettingDefinition>
+     */
+    protected static array $definitions = [];
+
     /**
      * The attributes that are mass assignable.
      *
@@ -46,11 +55,22 @@ class Setting extends Model
     }
 
     /**
+     * Define an application setting.
+     */
+    public static function define(string $key): SettingDefinition
+    {
+        return static::$definitions[$key] = new SettingDefinition;
+    }
+
+    /**
      * Get the settings schema.
      */
     public static function schema(): array
     {
-        return config('redot.settings', []);
+        return array_map(
+            fn (SettingDefinition $definition): array => $definition->toArray(),
+            static::$definitions,
+        );
     }
 
     /**
@@ -58,9 +78,9 @@ class Setting extends Model
      */
     public static function defaults(): array
     {
-        return collect(static::schema())
-            ->filter(fn (array $definition): bool => array_key_exists('default', $definition))
-            ->map(fn (array $definition): mixed => $definition['default'])
+        return collect(static::$definitions)
+            ->filter(fn (SettingDefinition $definition): bool => $definition->hasDefault())
+            ->map(fn (SettingDefinition $definition): mixed => $definition->getDefault())
             ->all();
     }
 
@@ -71,18 +91,20 @@ class Setting extends Model
     {
         $rules = [];
 
-        foreach (static::schema() as $key => $definition) {
-            if (! array_key_exists('rules', $definition)) {
+        foreach (static::$definitions as $key => $definition) {
+            $validationRules = $definition->getRules();
+
+            if ($validationRules === null) {
                 continue;
             }
 
-            if (array_is_list($definition['rules'])) {
-                $rules[$key] = $definition['rules'];
+            if (is_string($validationRules) || array_is_list($validationRules)) {
+                $rules[$key] = $validationRules;
 
                 continue;
             }
 
-            $rules = array_merge($rules, $definition['rules']);
+            $rules = array_merge($rules, $validationRules);
         }
 
         return $rules;
@@ -93,8 +115,8 @@ class Setting extends Model
      */
     public static function default(string $key): mixed
     {
-        if (config()->has("redot.settings.$key.default")) {
-            return config("redot.settings.$key.default");
+        if (isset(static::$definitions[$key]) && static::$definitions[$key]->hasDefault()) {
+            return static::$definitions[$key]->getDefault();
         }
 
         if (! str_contains($key, '.')) {
@@ -103,7 +125,29 @@ class Setting extends Model
 
         [$settingKey, $jsonKey] = explode('.', $key, 2);
 
-        return data_get(config("redot.settings.$settingKey.default"), $jsonKey);
+        if (! isset(static::$definitions[$settingKey]) || ! static::$definitions[$settingKey]->hasDefault()) {
+            return null;
+        }
+
+        return data_get(static::$definitions[$settingKey]->getDefault(), $jsonKey);
+    }
+
+    /**
+     * Get the declared type for the specified setting key.
+     */
+    public static function type(string $key): ?string
+    {
+        if (isset(static::$definitions[$key])) {
+            return static::$definitions[$key]->getType();
+        }
+
+        $settingKey = Str::before($key, '.');
+
+        if (! isset(static::$definitions[$settingKey])) {
+            return null;
+        }
+
+        return static::$definitions[$settingKey]->getType();
     }
 
     /**

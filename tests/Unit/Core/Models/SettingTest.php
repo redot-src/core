@@ -2,7 +2,30 @@
 
 use Redot\Models\Setting;
 
-it('falls back to the configured schema default when the setting is not persisted', function () {
+beforeEach(function () {
+    Setting::define('app_name')
+        ->array()
+        ->rules([
+            'app_name' => ['required', 'array'],
+            'app_name.*' => ['required', 'string'],
+        ])
+        ->default(['en' => 'Nexus', 'ar' => 'نيكسس']);
+
+    Setting::define('website_locales')
+        ->array()
+        ->rules(['required', 'array', 'min:1'])
+        ->default(['en', 'ar']);
+
+    Setting::define('page_loader_enabled')
+        ->boolean()
+        ->default(false);
+
+    Setting::define('theme')
+        ->array()
+        ->default(['primary' => 'blue', 'radius' => 1]);
+});
+
+it('falls back to the defined schema default when the setting is not persisted', function () {
     expect(Setting::get('page_loader_enabled'))->toBeFalse()
         ->and(Setting::get('items_per_page', 25))->toBe(25)
         ->and(Setting::get('theme.primary'))->toBe('blue');
@@ -25,7 +48,7 @@ it('continues to cache persisted setting values', function () {
         ->and(Setting::get('items_per_page', fresh: true))->toBe(50);
 });
 
-it('returns the configured default for a key including nested dot paths', function () {
+it('returns the defined default for a key including nested dot paths', function () {
     expect(Setting::default('theme.primary'))->toBe('blue')
         ->and(Setting::default('app_name.en'))->toBe('Nexus')
         ->and(Setting::default('missing'))->toBeNull();
@@ -69,6 +92,34 @@ it('exposes the validation rules declared per setting and per nested path', func
         ->and($rules)->toHaveKey('app_name.*')
         ->and($rules)->toHaveKey('website_locales')
         ->and($rules['website_locales'])->toContain('required');
+});
+
+it('registers fluent setting types and exposes their schema metadata', function () {
+    $logo = Setting::define('logo')->file()->rules(['nullable'])->default('logo.svg');
+    Setting::define('enabled')->boolean();
+    Setting::define('title')->string();
+    Setting::define('limit')->integer();
+    Setting::define('ratio')->float();
+    Setting::define('options')->array();
+    Setting::define('custom')->type('color');
+
+    expect(Setting::type('logo'))->toBe('file')
+        ->and(Setting::type('enabled'))->toBe('boolean')
+        ->and(Setting::type('title'))->toBe('string')
+        ->and(Setting::type('limit'))->toBe('integer')
+        ->and(Setting::type('ratio'))->toBe('float')
+        ->and(Setting::type('options'))->toBe('array')
+        ->and(Setting::type('custom'))->toBe('color')
+        ->and(Setting::type('theme.primary'))->toBe('array')
+        ->and(Setting::type('missing'))->toBeNull()
+        ->and($logo->getType())->toBe('file')
+        ->and($logo->getRules())->toBe(['nullable'])
+        ->and($logo->getDefault())->toBe('logo.svg')
+        ->and(Setting::schema()['logo'])->toBe([
+            'type' => 'file',
+            'rules' => ['nullable'],
+            'default' => 'logo.svg',
+        ]);
 });
 
 it('returns the full settings collection as a key-value map when no key is provided', function () {

@@ -1,7 +1,7 @@
 # Settings
 
 Application settings are persisted key/value pairs you read and write at runtime,
-with defaults and validation declared once in config. This is the canonical
+with types, defaults, and validation declared once by the application. This is the canonical
 reference for the `setting()` helper and the settings store.
 
 ## Usage
@@ -37,8 +37,22 @@ round-trip through the single stored value, so you read back the type you stored
 
 ## The settings schema
 
-Every setting is declared once in `config/redot.php` under `settings`. The schema
-is the source of truth for which settings exist; each entry may declare:
+Every setting is declared once in `app/settings.php`. Register that file from an
+application service provider's `register()` method so definitions are available
+before providers boot:
+
+```php
+public function register(): void
+{
+    require base_path('app/settings.php');
+}
+```
+
+The registry is the source of truth for which settings exist; each definition may declare:
+
+- **`type`** — metadata consumers use to process the submitted value. Use
+  `type('custom')` or one of the `file()`, `boolean()`, `string()`, `integer()`,
+  `float()`, and `array()` shorthands.
 
 - **`default`** — the value returned when nothing has been stored yet. A setting
   that has never been saved still resolves to its default.
@@ -47,32 +61,32 @@ is the source of truth for which settings exist; each entry may declare:
   nested array members, e.g. `app_name.*`).
 
 ```php
-'settings' => [
-    'app_logo_light' => ['default' => 'assets/images/logo-light.svg'],
+use Redot\Models\Setting;
 
-    // Translatable: an array keyed by locale, with per-member rules.
-    'app_name' => [
-        'default' => ['en' => 'Dashboard', 'ar' => 'لوحة التحكم'],
-        'rules'   => [
-            'app_name'   => ['required', 'array'],
-            'app_name.*' => ['required', 'string'],
-        ],
-    ],
+Setting::define('app_logo_light')
+    ->file()
+    ->default('assets/images/logo-light.svg');
 
-    // Array setting with list-style rules.
-    'website_locales' => [
-        'default' => ['en', 'ar'],
-        'rules'   => ['required', 'array', 'min:1'],
-    ],
+Setting::define('app_name')
+    ->array()
+    ->rules([
+        'app_name'   => ['required', 'array'],
+        'app_name.*' => ['required', 'string'],
+    ])
+    ->default(['en' => 'Dashboard', 'ar' => 'لوحة التحكم']);
 
-    // Boolean settings.
-    'service_worker_enabled' => ['default' => true],
+Setting::define('website_locales')
+    ->array()
+    ->rules(['required', 'array', 'min:1'])
+    ->default(['en', 'ar']);
 
-    // Grouped setting read via dot notation.
-    'theme' => [
-        'default' => ['primary' => 'blue', 'radius' => 1],
-    ],
-],
+Setting::define('service_worker_enabled')
+    ->boolean()
+    ->default(true);
+
+Setting::define('theme')
+    ->array()
+    ->default(['primary' => 'blue', 'radius' => 1]);
 ```
 
 ## Translatable & grouped settings
@@ -124,16 +138,21 @@ read whole or by dot notation:
 
 ### Saving a settings form
 
-The dashboard settings form is driven entirely by the schema — the writable keys
-come from the defaults, and validation comes straight from the declared rules:
+The dashboard settings form is driven entirely by the schema — writable keys,
+types, and validation come straight from the registered definitions:
 
 ```php
 use Redot\Models\Setting;
 
 $request->validate(Setting::rules());
 
-foreach (array_keys(Setting::defaults()) as $key) {
-    if (($value = $request->input($key)) !== null) {
+foreach (array_keys(Setting::schema()) as $key) {
+    $value = match (Setting::type($key)) {
+        'boolean' => $request->boolean($key),
+        default => $request->input($key),
+    };
+
+    if ($value !== null) {
         Setting::set($key, $value);
     }
 }
@@ -143,8 +162,8 @@ foreach (array_keys(Setting::defaults()) as $key) {
 
 - **Caching.** Reads are cached and stay warm until the value is written. Pass
   `true` as the third argument to `setting()` to refresh a single key.
-- **Defaults live in config, not the database.** "Empty" states rely on schema
-  defaults — many string settings default to `''`.
+- **Defaults live in `app/settings.php`, not the database.** "Empty" states rely
+  on schema defaults — many string settings default to `''`.
 - **Numeric coercion.** Numeric values come back as integers, so keep that in mind
   in strict comparisons (e.g. `setting('theme.radius')` is an `int`).
 
