@@ -36,5 +36,4 @@ class Session extends Model
     {
         return config('session.connection') ?? parent::getConnectionName();
     }
-
 }
