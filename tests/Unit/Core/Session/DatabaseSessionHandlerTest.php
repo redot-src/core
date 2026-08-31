@@ -14,6 +14,7 @@ beforeEach(function () {
         Schema::create($table, function (Blueprint $table) {
             $table->id();
             $table->string('name')->nullable();
+            $table->rememberToken();
             $table->timestamps();
         });
     }
@@ -124,6 +125,26 @@ it('revokes only the owning entity sessions when logging out everywhere', functi
         ->and($member->sessions()->count())->toBe(1)
         ->and(DB::table('sessions')->where('id', 'guest')->exists())->toBeTrue()
         ->and(DB::table('session_authentications')->where('session_id', 'guest')->exists())->toBeFalse();
+});
+
+it('cycles the remember token so remember-me cookies cannot restore revoked sessions', function () {
+    $admin = SessionAdmin::create(['name' => 'admin', 'remember_token' => 'original-token']);
+
+    writeSession('admin-1', 'session_admins', $admin);
+
+    $admin->logoutAllSessions();
+
+    expect($admin->fresh()->remember_token)->not->toBe('original-token');
+});
+
+it('leaves the remember token untouched when none was issued', function () {
+    $admin = SessionAdmin::create(['name' => 'admin']);
+
+    writeSession('admin-1', 'session_admins', $admin);
+
+    $admin->logoutAllSessions();
+
+    expect($admin->fresh()->remember_token)->toBeNull();
 });
 
 it('revokes a shared browser session for every associated guard', function () {
