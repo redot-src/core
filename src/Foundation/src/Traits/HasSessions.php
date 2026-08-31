@@ -2,7 +2,7 @@
 
 namespace Redot\Traits;
 
-use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Redot\Models\Session;
 
 trait HasSessions
@@ -10,9 +10,15 @@ trait HasSessions
     /**
      * The database sessions that belong to this entity.
      */
-    public function sessions(): MorphMany
+    public function sessions(): MorphToMany
     {
-        return $this->morphMany(Session::class, 'user');
+        return $this->morphToMany(
+            Session::class,
+            'user',
+            'session_authentications',
+            'user_id',
+            'session_id',
+        )->withPivot('guard');
     }
 
     /**
@@ -20,9 +26,11 @@ trait HasSessions
      */
     public function logoutOtherSessions(): int
     {
-        return $this->sessions()
+        $sessions = $this->sessions()
             ->whereKeyNot(session()->getId())
-            ->delete();
+            ->pluck('sessions.id');
+
+        return Session::query()->whereKey($sessions)->delete();
     }
 
     /**
@@ -30,6 +38,8 @@ trait HasSessions
      */
     public function logoutAllSessions(): int
     {
-        return $this->sessions()->delete();
+        $sessions = $this->sessions()->pluck('sessions.id');
+
+        return Session::query()->whereKey($sessions)->delete();
     }
 }

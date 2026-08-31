@@ -3,7 +3,6 @@
 namespace Redot\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\MorphTo;
 
 class Session extends Model
 {
@@ -38,11 +37,4 @@ class Session extends Model
         return config('session.connection') ?? parent::getConnectionName();
     }
 
-    /**
-     * The owner of the session (admin, user, ...).
-     */
-    public function user(): MorphTo
-    {
-        return $this->morphTo();
-    }
 }

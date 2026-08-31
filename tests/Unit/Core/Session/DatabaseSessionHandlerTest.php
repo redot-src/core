@@ -4,6 +4,7 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\Session;
 use Redot\Session\DatabaseSessionHandler;
 use Tests\Fixtures\Auth\SessionAdmin;
 use Tests\Fixtures\Auth\SessionMember;
@@ -42,6 +43,11 @@ function writeSession(string $id, ?string $guard = null, $user = null): void
     }
 }
 
+it('registers the polymorphic handler as the database session driver', function () {
+    expect(Session::driver('database')->getHandler())
+        ->toBeInstanceOf(DatabaseSessionHandler::class);
+});
+
 it('records the authenticated owner polymorphically per session guard', function () {
     $admin = SessionAdmin::create(['name' => 'admin']);
     $member = SessionMember::create(['name' => 'member']);
@@ -50,17 +56,44 @@ it('records the authenticated owner polymorphically per session guard', function
     writeSession('member-session', 'session_members', $member);
     writeSession('guest-session');
 
-    expect(DB::table('sessions')->where('id', 'admin-session')->first())
+    expect(DB::table('session_authentications')->where('session_id', 'admin-session')->first())
+        ->guard->toBe('session_admins')
         ->user_type->toBe(SessionAdmin::class)
         ->user_id->toBe($admin->id);
 
-    expect(DB::table('sessions')->where('id', 'member-session')->first())
+    expect(DB::table('session_authentications')->where('session_id', 'member-session')->first())
+        ->guard->toBe('session_members')
         ->user_type->toBe(SessionMember::class)
         ->user_id->toBe($member->id);
 
-    $guest = DB::table('sessions')->where('id', 'guest-session')->first();
-    expect($guest->user_type)->toBeNull()
-        ->and($guest->user_id)->toBeNull();
+    expect(DB::table('sessions')->where('id', 'guest-session')->exists())->toBeTrue()
+        ->and(DB::table('session_authentications')->where('session_id', 'guest-session')->exists())->toBeFalse();
+});
+
+it('associates one browser session with every authenticated session guard', function () {
+    $admin = SessionAdmin::create(['name' => 'admin']);
+    $member = SessionMember::create(['name' => 'member']);
+
+    Auth::guard('session_admins')->setUser($admin);
+    Auth::guard('session_members')->setUser($member);
+
+    handler()->write('shared-session', serialize(['_token' => 'shared-session']));
+
+    expect(DB::table('session_authentications')->where('session_id', 'shared-session')->count())->toBe(2)
+        ->and(DB::table('session_authentications')
+            ->where('session_id', 'shared-session')
+            ->where('guard', 'session_admins')
+            ->where('user_type', SessionAdmin::class)
+            ->where('user_id', $admin->id)
+            ->exists())->toBeTrue()
+        ->and(DB::table('session_authentications')
+            ->where('session_id', 'shared-session')
+            ->where('guard', 'session_members')
+            ->where('user_type', SessionMember::class)
+            ->where('user_id', $member->id)
+            ->exists())->toBeTrue()
+        ->and($admin->sessions()->sole()->getKey())->toBe('shared-session')
+        ->and($member->sessions()->sole()->getKey())->toBe('shared-session');
 });
 
 it('exposes sessions per entity through the HasSessions trait', function () {
@@ -89,5 +122,27 @@ it('revokes only the owning entity sessions when logging out everywhere', functi
     expect($deleted)->toBe(2)
         ->and($admin->sessions()->count())->toBe(0)
         ->and($member->sessions()->count())->toBe(1)
-        ->and(DB::table('sessions')->whereNull('user_type')->count())->toBe(1);
+        ->and(DB::table('sessions')->where('id', 'guest')->exists())->toBeTrue()
+        ->and(DB::table('session_authentications')->where('session_id', 'guest')->exists())->toBeFalse();
+});
+
+it('revokes a shared browser session for every associated guard', function () {
+    $admin = SessionAdmin::create(['name' => 'admin']);
+    $member = SessionMember::create(['name' => 'member']);
+
+    Auth::guard('session_admins')->setUser($admin);
+    Auth::guard('session_members')->setUser($member);
+
+    handler()->write('shared-session', serialize(['_token' => 'shared-session']));
+
+    Auth::guard('session_admins')->forgetUser();
+    Auth::guard('session_members')->forgetUser();
+    writeSession('member-session', 'session_members', $member);
+
+    $deleted = $admin->logoutAllSessions();
+
+    expect($deleted)->toBe(1)
+        ->and(DB::table('sessions')->where('id', 'shared-session')->exists())->toBeFalse()
+        ->and(DB::table('session_authentications')->where('session_id', 'shared-session')->exists())->toBeFalse()
+        ->and($member->sessions()->pluck('sessions.id')->all())->toBe(['member-session']);
 });
