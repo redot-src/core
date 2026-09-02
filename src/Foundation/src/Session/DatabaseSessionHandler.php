@@ -39,10 +39,21 @@ class DatabaseSessionHandler extends BaseHandler
 
         $auth = $this->container->make('auth');
         $guards = $this->container->make('config')->get('auth.guards', []);
+        $session = $this->container->make('session.store');
 
         return collect($guards)
             ->filter(fn (array $guard) => ($guard['driver'] ?? null) === 'session')
-            ->map(fn (array $guard, string $name): ?Authenticatable => $auth->guard($name)->user())
+            ->map(function (array $configuration, string $name) use ($auth, $session): ?Authenticatable {
+                $guard = $auth->guard($name);
+
+                // Resolving an untouched guard may restore its remember cookie and
+                // regenerate the session while this handler is persisting it.
+                if (! $guard->hasUser() && ! $session->has($guard->getName())) {
+                    return null;
+                }
+
+                return $guard->user();
+            })
             ->filter();
     }
 

@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
@@ -95,6 +96,34 @@ it('associates one browser session with every authenticated session guard', func
             ->exists())->toBeTrue()
         ->and($admin->sessions()->sole()->getKey())->toBe('shared-session')
         ->and($member->sessions()->sole()->getKey())->toBe('shared-session');
+});
+
+it('does not restore a remembered guard while persisting an unauthenticated session', function () {
+    $admin = SessionAdmin::create(['name' => 'admin', 'remember_token' => 'remember-token']);
+    $sessionId = str_repeat('a', 40);
+
+    config()->set('session.driver', 'database');
+    Session::forgetDrivers();
+    app()->forgetInstance('session.store');
+    Auth::forgetGuards();
+
+    $session = app('session.store');
+    $session->setId($sessionId);
+    $session->start();
+
+    $guard = Auth::guard('session_admins');
+    $guard->setRequest(Request::create('/', 'GET', cookies: [
+        $guard->getRecallerName() => "{$admin->id}|remember-token|hash",
+    ]));
+
+    expect($guard->hasUser())->toBeFalse()
+        ->and($session->has($guard->getName()))->toBeFalse();
+
+    handler()->write($sessionId, serialize(['_token' => $sessionId]));
+
+    expect(DB::table('sessions')->where('id', $sessionId)->exists())->toBeTrue()
+        ->and(DB::table('session_authentications')->where('session_id', $sessionId)->exists())->toBeFalse()
+        ->and($guard->hasUser())->toBeFalse();
 });
 
 it('exposes sessions per entity through the HasSessions trait', function () {
