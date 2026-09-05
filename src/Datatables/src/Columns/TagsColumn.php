@@ -54,6 +54,6 @@ class TagsColumn extends Column
         $tags = $value->take($this->limit)->when($value->count() > $this->limit, fn ($collection) => $collection->push($this->ellipsis));
         $tags = $tags->map(fn ($tag) => sprintf('<span class="tag">%s</span>', e($tag)))->join('');
 
-        return sprintf('<div class="tags-list">%s</div>', $tags);
+        return sprintf('<div class="tag-list">%s</div>', $tags);
     }
 }

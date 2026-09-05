@@ -194,6 +194,15 @@ it('escapes tag values to prevent stored xss', function () {
         ->and($value)->toContain('<span class="tag">safe</span>');
 });
 
+it('renders tags inside a tabler tag-list container', function () {
+    $row = new EmptyModel(['tags' => ['php', 'laravel']]);
+
+    $value = TagsColumn::make('tags')->get($row);
+
+    expect($value)->toStartWith('<div class="tag-list">')
+        ->and($value)->not->toContain('tags-list');
+});
+
 it('uses the custom searcher instead of the default like constraint', function () {
     $query = EmptyModel::query();
 
