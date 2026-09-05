@@ -27,27 +27,27 @@
 
 ## Where Things Live
 
-| Layer                       | Path                                                                                 |
-| --------------------------- | ------------------------------------------------------------------------------------ |
-| Root package code           | `src`                                                                                |
-| Service provider            | `src/RedotServiceProvider.php`                                                       |
-| Package config              | `config/redot.php`                                                                   |
-| Console commands            | `src/Commands`                                                                       |
-| HTTP controllers/middleware | `src/Http/Controllers`, `src/Http/Middleware`                                        |
-| Models                      | `src/Models`                                                                         |
-| Casts, rules, traits        | `src/Casts`, `src/Rules`, `src/Traits`                                               |
-| Jobs and notifications      | `src/Jobs`, `src/Notifications`                                                      |
-| Shared support/helpers      | `src/Support`, `src/helpers.php`                                                     |
-| Package migrations          | `database/migrations`                                                                |
-| Generator/view stubs        | `stubs`                                                                              |
-| Auth package                | `src/packages/auth/src`                                                              |
-| Datatables package          | `src/packages/datatables/src`, plus `config`, `routes`, `resources`, `lang`          |
-| Lang extractor package      | `src/packages/lang-extractor/src`                                                    |
-| Sidebar package             | `src/packages/sidebar/src`                                                           |
-| Toastify package            | `src/packages/toastify/src`, plus `config` and `resources`                           |
-| Core tests                  | `tests/Feature/Core`, `tests/Unit/Core`                                              |
-| Package tests               | `tests/Feature/Packages`, `tests/Unit/Packages`                                      |
-| Test fixtures               | `tests/Fixtures`                                                                     |
+| Layer                       | Path                                                                                |
+| --------------------------- | ----------------------------------------------------------------------------------- |
+| Root package code           | `src/Foundation/src`                                                                |
+| Service provider            | `src/Foundation/src/RedotServiceProvider.php`                                       |
+| Package config              | `src/Foundation/config/redot.php`                                                   |
+| Console commands            | `src/Foundation/src/Commands`                                                       |
+| HTTP controllers/middleware | `src/Foundation/src/Http/Controllers`, `src/Foundation/src/Http/Middleware`         |
+| Models                      | `src/Foundation/src/Models`                                                         |
+| Casts, rules, traits        | `src/Foundation/src/Casts`, `src/Foundation/src/Rules`, `src/Foundation/src/Traits` |
+| Jobs and notifications      | `src/Foundation/src/Jobs`, `src/Foundation/src/Notifications`                       |
+| Shared support/helpers      | `src/Foundation/src/Support`, `src/Foundation/src/helpers.php`                      |
+| Package migrations          | `src/Foundation/database/migrations`                                                |
+| Generator/view stubs        | `src/Foundation/stubs`                                                              |
+| Auth package                | `src/Auth/src`                                                                      |
+| Datatables package          | `src/Datatables/src`, plus `config`, `routes`, `resources`, `lang`                  |
+| Lang extractor package      | `src/LangExtractor/src`                                                             |
+| Sidebar package             | `src/Sidebar/src`                                                                   |
+| Toastify package            | `src/Toastify/src`, plus `config` and `resources`                                   |
+| Core tests                  | `tests/Feature/Core`, `tests/Unit/Core`                                             |
+| Package tests               | `tests/Feature/Packages`, `tests/Unit/Packages`                                     |
+| Test fixtures               | `tests/Fixtures`                                                                    |
 
 - Don't touch the following unless explicitly asked:
     - `vendor`
@@ -66,7 +66,7 @@
     - Keep publish tags stable (`redot::config`, `redot::stubs`, `redot::migrations`, package-specific tags).
     - Be careful with boot-time behavior: Blade directives, paginator views, rate limiters, URL defaults, validation rules, JSON casts, and destructive command protection affect every consuming app.
 - **Config**
-    - Put Redot config surface in `config/redot.php`.
+    - Put Redot config surface in `src/Foundation/config/redot.php`.
     - Settings entries may include `default` and `rules`; keep the existing array shape.
     - Document meaningful new config behavior in README or related docs when adding it.
 - **Controllers and responses**
@@ -77,14 +77,14 @@
     - Keep validation rules compatible with Laravel validator extension usage in `RedotServiceProvider`.
     - Prefer existing traits (`CanUploadFile`, `Taggable`, `UserAuditable`) before adding model-level helpers.
 - **Migrations**
-    - Package-owned schema lives in `database/migrations` and is published into consuming apps.
+    - Package-owned schema lives in `src/Foundation/database/migrations` and is published into consuming apps.
     - Keep migration names/timestamps consistent with existing package migrations.
     - Schema changes must include focused tests and should preserve upgrade compatibility for consuming dashboards.
 - **Commands**
-    - Add commands under `src/Commands` and register them in `RedotServiceProvider` only when they are part of the package surface.
+    - Add commands under `src/Foundation/src/Commands` and register them in `RedotServiceProvider` only when they are part of the package surface.
     - Keep generated output compatible with existing stubs and dashboard conventions.
 - **Auth package**
-    - Follow the action/contract/route registrar structure in `src/packages/auth/src`.
+    - Follow the action/contract/route registrar structure in `src/Auth/src`.
     - Preserve `RedotAuth` facade behavior and guard/provider assumptions unless explicitly asked.
 - **Datatables package**
     - Use existing action, column, filter, exception, and trait classes before adding new primitives.
@@ -111,7 +111,7 @@
     - `INSERT`, `UPDATE`, `DELETE`
     - `DROP`, `ALTER`, `TRUNCATE`, `CREATE`
     - migrations, seeders, or destructive Artisan commands
-- Schema changes go through package migrations in `database/migrations`.
+- Schema changes go through package migrations in `src/Foundation/database/migrations`.
 - If a DB change is needed, show the migration/SQL and wait when the change affects a real consuming app.
 - Don't expose sensitive user data unless debugging requires it.
 

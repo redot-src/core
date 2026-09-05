@@ -4,6 +4,7 @@ namespace Redot\Datatables\Exporters;
 
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Redot\Datatables\Exceptions\MissingDependencyException;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
@@ -49,9 +50,11 @@ abstract class ExcelExporter implements Exporter
 
         $filename = sprintf('export-%s.%s', now()->format('Y-m-d_H-i-s'), $this->format);
 
-        // Store on the local disk explicitly, the default disk may not have a local root.
-        $rows->prepend($headings)->storeExcel($filename, 'local', ucfirst($this->format));
+        $path = sprintf('exports/%s.%s', Str::uuid(), $this->format);
 
-        return response()->download(Storage::disk('local')->path($filename))->deleteFileAfterSend(true);
+        // Store on the local disk explicitly, the default disk may not have a local root.
+        $rows->prepend($headings)->storeExcel($path, 'local', ucfirst($this->format));
+
+        return response()->download(Storage::disk('local')->path($path), $filename)->deleteFileAfterSend(true);
     }
 }

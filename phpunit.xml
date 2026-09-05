@@ -18,9 +18,9 @@
             <directory suffix=".php">src</directory>
         </include>
         <exclude>
-            <directory>src/packages/datatables/resources</directory>
-            <directory>src/packages/datatables/lang</directory>
-            <directory>src/packages/toastify/resources</directory>
+            <directory>src/Datatables/resources</directory>
+            <directory>src/Datatables/lang</directory>
+            <directory>src/Toastify/resources</directory>
         </exclude>
     </source>
 

@@ -30,6 +30,10 @@ composer test
 
 The testbench schema mirrors the package-owned tables used by Redot Dashboard, so package tests run against the same shape the dashboard app expects.
 
+When using `Redot\Application`, all four application features are enabled during tests by default, even if the consuming app disables them. This keeps the shared dashboard test suite usable.
+
+Tests that specifically check disabled features can opt out by setting `redot.testing.enable_all_features` to `false` **before routes are registered** (for example, in Testbench's `defineEnvironment`). Setting it after the application has booted does not remove registered routes. Outside testing, the application's feature flags are always respected.
+
 ## License
 
 This package is proprietary and intended for use only within the paid Redot Dashboard.

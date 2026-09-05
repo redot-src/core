@@ -11,6 +11,11 @@ return [
     |
     */
 
+    // Disable only for tests that exercise feature configuration, before routes load.
+    'testing' => [
+        'enable_all_features' => true,
+    ],
+
     'features' => [
         'website-api' => [
             'enabled' => true,

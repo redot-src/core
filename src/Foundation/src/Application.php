@@ -26,7 +26,8 @@ class Application extends LaravelApplication
     {
         return parent::configure($basePath)
             ->withRouting(function () {
-                if (app()->runningUnitTests()) {
+                // Keep the shared suite usable when a consuming app disables features.
+                if (app()->runningUnitTests() && config('redot.testing.enable_all_features', true)) {
                     config(['redot.features.website-api.enabled' => true]);
                     config(['redot.features.dashboard-api.enabled' => true]);
                     config(['redot.features.website.enabled' => true]);
