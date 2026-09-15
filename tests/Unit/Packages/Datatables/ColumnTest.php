@@ -143,6 +143,13 @@ it('still links plain http and https urls', function () {
         ->toBe('<a href="https://example.com" target="_self">https://example.com</a>');
 });
 
+it('adds a lightbox data attribute when the url is marked to open in a lightbox', function () {
+    $row = new EmptyModel(['website' => 'https://example.com']);
+
+    expect(TextColumn::make('website')->url(lightbox: true)->get($row))
+        ->toBe('<a href="https://example.com" target="_self" data-lightbox>https://example.com</a>');
+});
+
 it('escapes the value inside icon column classes to prevent stored xss', function () {
     $row = new EmptyModel(['icon' => '"><script>alert(1)</script>']);
 

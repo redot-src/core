@@ -124,7 +124,7 @@ $(document).on('click', '.datatable-action', (event) => {
     }
 
     // GET actions only need intercepting when they carry a selection or a
-    // confirm message, otherwise the browser (or fancybox) owns the click.
+    // confirm message, otherwise the browser (or lightbox) owns the click.
     if ($action.is('[bulk-keys]') || $action.is('[confirm]')) {
         event.preventDefault();
 

@@ -38,7 +38,7 @@ class TextColumn extends Column
      */
     public array $urlOptions = [
         'text' => null,
-        'fancybox' => false,
+        'lightbox' => false,
         'target' => '_self',
         'route' => null,
         'parameters' => [],
@@ -120,11 +120,11 @@ class TextColumn extends Column
     /**
      * Set the column's as a URL.
      */
-    public function url(bool $url = true, string|Closure|null $text = null, bool $fancybox = false, string $target = '_self'): static
+    public function url(bool $url = true, string|Closure|null $text = null, bool $lightbox = false, string $target = '_self'): static
     {
         $this->url = $url;
         $this->urlOptions['text'] = $text;
-        $this->urlOptions['fancybox'] = $fancybox;
+        $this->urlOptions['lightbox'] = $lightbox;
         $this->urlOptions['target'] = $target;
 
         if ($this->html === false && $url) {
@@ -137,12 +137,12 @@ class TextColumn extends Column
     /**
      * Set the column's URL route.
      */
-    public function route(string $route, array $parameters = [], string|Closure|null $text = null, bool $fancybox = false, string $target = '_self'): static
+    public function route(string $route, array $parameters = [], string|Closure|null $text = null, bool $lightbox = false, string $target = '_self'): static
     {
         $this->urlOptions['route'] = $route;
         $this->urlOptions['parameters'] = $parameters;
 
-        return $this->url(true, $text, $fancybox, $target);
+        return $this->url(true, $text, $lightbox, $target);
     }
 
     /**
@@ -225,7 +225,7 @@ class TextColumn extends Column
             return sprintf('<a href="%s" target="%s"%s>%s</a>',
                 e($url),
                 e($urlOptions['target']),
-                $urlOptions['fancybox'] ? ' data-fancybox' : '',
+                $urlOptions['lightbox'] ? ' data-lightbox' : '',
                 e($text),
             );
         }

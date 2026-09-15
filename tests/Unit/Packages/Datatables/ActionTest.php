@@ -21,9 +21,9 @@ it('builds confirmable get actions with a confirm attribute', function () {
         ->and($attributes)->toHaveKey('confirm');
 });
 
-it('rejects combining confirmable with fancybox when attributes are built', function () {
-    Action::make('View')->fancybox()->confirmable()->buildAttributes(new EmptyModel);
-})->throws(InvalidArgumentException::class, 'Confirmable actions cannot be combined with fancybox.');
+it('rejects combining confirmable with lightbox when attributes are built', function () {
+    Action::make('View')->lightbox()->confirmable()->buildAttributes(new EmptyModel);
+})->throws(InvalidArgumentException::class, 'Confirmable actions cannot be combined with lightbox.');
 
 it('uses an explicit href closure to compute the action url per row', function () {
     $action = Action::make('Edit')->href(fn (Model $row) => '/users/' . $row->getAttribute('id') . '/edit');
@@ -49,6 +49,13 @@ it('opens links in a new tab when newTab is enabled', function () {
 
     expect($action->buildAttributes(new EmptyModel)->getAttributes())
         ->toMatchArray(['target' => '_blank']);
+});
+
+it('opens links in a lightbox when lightbox is enabled', function () {
+    $action = Action::make('View')->href('/anywhere')->lightbox();
+
+    expect($action->buildAttributes(new EmptyModel)->getAttributes())
+        ->toMatchArray(['data-lightbox' => '', 'data-type' => 'iframe']);
 });
 
 it('renders only when the visible flag is set and the condition callback returns true', function () {

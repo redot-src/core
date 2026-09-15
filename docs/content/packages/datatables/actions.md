@@ -35,8 +35,8 @@ For anything else, start from `Action::make(label, icon)` and point it at a dest
 - **`method`** — the HTTP verb for the request (`get`, `post`, `put`, `patch`, `delete`).
 - **`visible`** / **`hidden`** — a static flag, typically tied to authorization.
 - **`condition`** — a per-row callback deciding whether the action shows for that row.
-- **`confirmable`** — require a confirmation prompt before the action runs (with an optional custom message). Works with any method, including plain GET navigations; it only cannot be combined with `fancybox`, which owns the click.
-- **`fancybox`** — open the link in a Fancybox iframe (on by default for `view`).
+- **`confirmable`** — require a confirmation prompt before the action runs (with an optional custom message). Works with any method, including plain GET navigations; it only cannot be combined with `lightbox`, which owns the click.
+- **`lightbox`** — open the link in a lightbox iframe (on by default for `view`).
 - **`newTab`** — open in a new tab.
 - **`expanded`** — show the label inline next to the icon instead of as a tooltip.
 
@@ -66,10 +66,10 @@ Action::make(__('Publish'), 'ti ti-send')
     ->confirmable(message: __('Are you sure you want to publish this post?')),
 ```
 
-### Open in a new tab instead of Fancybox
+### Open in a new tab instead of a lightbox
 
 ```php
-Action::view('categories.show')->fancybox(false)->newTab();
+Action::view('categories.show')->lightbox(false)->newTab();
 ```
 
 ### Grouping actions into a dropdown explicitly

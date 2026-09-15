@@ -99,9 +99,9 @@ class Action
     public bool $newTab = false;
 
     /**
-     * Determine if the action should be opened in fancybox.
+     * Determine if the action should be opened in a lightbox.
      */
-    public bool $fancybox = false;
+    public bool $lightbox = false;
 
     /**
      * Determine if the action is confirmable.
@@ -159,7 +159,7 @@ class Action
      */
     public static function view(?string $route = null, array $parameters = []): static
     {
-        return static::preset(__('datatables::datatable.actions.view'), 'ti ti-eye', $route, $parameters)->fancybox();
+        return static::preset(__('datatables::datatable.actions.view'), 'ti ti-eye', $route, $parameters)->lightbox();
     }
 
     /**
@@ -384,11 +384,11 @@ class Action
     }
 
     /**
-     * Set the action to be opened in fancybox.
+     * Set the action to be opened in a lightbox.
      */
-    public function fancybox(bool $fancybox = true): static
+    public function lightbox(bool $lightbox = true): static
     {
-        $this->fancybox = $fancybox;
+        $this->lightbox = $lightbox;
 
         return $this;
     }
@@ -434,8 +434,8 @@ class Action
             throw new InvalidArgumentException('Inline actions cannot be combined with route or href.');
         }
 
-        if ($this->confirmable && $this->fancybox) {
-            throw new InvalidArgumentException('Confirmable actions cannot be combined with fancybox.');
+        if ($this->confirmable && $this->lightbox) {
+            throw new InvalidArgumentException('Confirmable actions cannot be combined with lightbox.');
         }
 
         if ($this->callback) {
@@ -482,9 +482,9 @@ class Action
             $this->attribute('target', '_blank');
         }
 
-        if ($this->fancybox) {
+        if ($this->lightbox) {
             $this->attributes([
-                'data-fancybox' => '',
+                'data-lightbox' => '',
                 'data-type' => 'iframe',
             ]);
         }

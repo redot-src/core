@@ -11,13 +11,13 @@ without guarding it.
 <x-file-hint :file="$model->document_url" />
 ```
 
-By default the link opens the file in a Fancybox lightbox.
+By default the link opens the file in a lightbox.
 
 ## Options
 
 - **`file`** — URL of the current file. When empty, nothing is rendered.
-- **`fancybox`** — open the file in a lightbox (on by default). Pass
-  `:fancybox="false"` to make it a plain navigation link.
+- **`lightbox`** — open the file in a lightbox (on by default). Pass
+  `:lightbox="false"` to make it a plain navigation link.
 
 Any other attribute (`target`, `class`, `id`, …) is forwarded to the link.
 
@@ -32,7 +32,7 @@ Any other attribute (`target`, `class`, `id`, …) is forwarded to the link.
 ### Open in a new tab instead of a lightbox
 
 ```blade
-<x-file-hint :file="$model->attachment" :fancybox="false" target="_blank" />
+<x-file-hint :file="$model->attachment" :lightbox="false" target="_blank" />
 ```
 
 ## Related

@@ -51,7 +51,7 @@ Values are escaped by default; reach for `html` (or a type that emits markup) on
 The general-purpose text cell. Beyond the shared options it can decorate the value:
 
 - **`email`** / **`phone`** — turn the value into a clickable `mailto:` / `tel:` link.
-- **`url`** — link to the value (optionally a new tab or Fancybox).
+- **`url`** — link to the value (optionally a new tab or lightbox).
 - **`route`** — link to a named route, with the row available to the parameter callbacks.
 - **`prefix`** / **`suffix`** — prepend or append text.
 - **`truncate`** / **`wordCount`** — shorten by character or word count.
