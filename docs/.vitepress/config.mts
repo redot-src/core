@@ -9,6 +9,22 @@ export default defineConfig({
     cleanUrls: true,
     lastUpdated: true,
     head: [
+        [
+            'link',
+            {
+                rel: 'icon',
+                href: '/favicon-dark.png',
+                media: '(prefers-color-scheme: dark)',
+            },
+        ],
+        [
+            'link',
+            {
+                rel: 'icon',
+                href: '/favicon-light.png',
+                media: '(prefers-color-scheme: light)',
+            },
+        ],
         ['link', { rel: 'preconnect', href: 'https://fonts.googleapis.com' }],
         ['link', { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossorigin: '' }],
         [
