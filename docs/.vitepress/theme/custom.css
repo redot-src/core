@@ -1,163 +1,167 @@
-/**
- * Redot docs theme — aligned with https://redot.dev
- * (website.css: --tblr-primary #080808, body #121212, DM Sans; home hero gradient)
- */
-
+/** Redot: quiet surfaces, crisp typography, and a small signature red accent. */
 :root {
     --vp-font-family-base: 'DM Sans', ui-sans-serif, system-ui, sans-serif,
         'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol';
     --vp-font-family-mono: 'JetBrains Mono', ui-monospace, 'Menlo', 'Monaco', 'Consolas',
         'Liberation Mono', 'Courier New', monospace;
 
-    /* Brand (matches --tblr-primary / body on redot.dev) */
-    --vp-c-brand-1: #121212;
-    --vp-c-brand-2: #0a0a0a;
-    --vp-c-brand-3: #080808;
-    --vp-c-brand-soft: rgba(8, 8, 8, 0.08);
+    --vp-c-brand-1: #171717;
+    --vp-c-brand-2: #333333;
+    --vp-c-brand-3: #121212;
+    --vp-c-brand-soft: rgba(18, 18, 18, 0.05);
+    --vp-c-bg: #ffffff;
+    --vp-c-bg-alt: #fafafa;
+    --vp-c-bg-soft: #f6f6f6;
+    --vp-c-text-1: #181818;
+    --vp-c-text-2: #626262;
+    --vp-c-text-3: #737373;
+    --vp-c-divider: #e9e9e9;
+    --vp-c-gutter: #e9e9e9;
+    --redot-accent: #d94845;
 
-    --vp-button-brand-border: transparent;
-    --vp-button-brand-text: var(--vp-c-white);
+    --vp-button-brand-text: var(--vp-c-bg);
     --vp-button-brand-bg: var(--vp-c-brand-3);
-    --vp-button-brand-hover-border: transparent;
-    --vp-button-brand-hover-text: var(--vp-c-white);
+    --vp-button-brand-hover-text: var(--vp-c-bg);
     --vp-button-brand-hover-bg: var(--vp-c-brand-2);
-    --vp-button-brand-active-border: transparent;
-    --vp-button-brand-active-text: var(--vp-c-white);
+    --vp-button-brand-active-text: var(--vp-c-bg);
     --vp-button-brand-active-bg: var(--vp-c-brand-1);
-
-    /* Home hero: solid title (no gradient text cutout) */
+    --vp-button-alt-border: var(--vp-c-divider);
+    --vp-button-alt-bg: var(--vp-c-bg);
+    --vp-button-alt-hover-bg: var(--vp-c-bg-soft);
+    --vp-button-alt-hover-border: var(--vp-c-text-3);
     --vp-home-hero-name-color: var(--vp-c-text-1);
     --vp-home-hero-name-background: none;
-    --vp-home-hero-image-background-image: none;
-    --vp-home-hero-image-filter: none;
-
-    --vp-custom-block-tip-border: transparent;
+    --vp-code-block-bg: var(--vp-c-bg-alt);
+    --vp-custom-block-tip-border: var(--vp-c-divider);
     --vp-custom-block-tip-text: var(--vp-c-text-1);
-    --vp-custom-block-tip-bg: var(--vp-c-brand-soft);
+    --vp-custom-block-tip-bg: var(--vp-c-bg-alt);
     --vp-custom-block-tip-code-bg: var(--vp-c-brand-soft);
 }
 
 .dark {
-    --vp-c-brand-1: #d4d4d8;
-    --vp-c-brand-2: #e4e4e7;
-    --vp-c-brand-3: #f4f4f5;
-    --vp-c-brand-soft: rgba(244, 244, 245, 0.12);
-
-    --vp-button-brand-text: #080808;
-    --vp-button-brand-bg: var(--vp-c-brand-3);
-    --vp-button-brand-hover-text: #080808;
-    --vp-button-brand-hover-bg: var(--vp-c-brand-2);
-    --vp-button-brand-active-text: #080808;
-    --vp-button-brand-active-bg: var(--vp-c-brand-1);
-
-    --vp-home-hero-name-color: var(--vp-c-text-1);
-    --vp-home-hero-name-background: none;
-    --vp-home-hero-image-background-image: none;
-    --vp-home-hero-image-filter: none;
+    --vp-c-brand-1: #ededed;
+    --vp-c-brand-2: #d4d4d4;
+    --vp-c-brand-3: #f4f4f4;
+    --vp-c-brand-soft: rgba(244, 244, 244, 0.07);
+    --vp-c-bg: #171717;
+    --vp-c-bg-alt: #121212;
+    --vp-c-bg-soft: #202020;
+    --vp-c-bg-elv: #202020;
+    --vp-c-text-1: #ededed;
+    --vp-c-text-2: #ababab;
+    --vp-c-text-3: #919191;
+    --vp-c-divider: #2d2d2d;
+    --vp-c-gutter: #2d2d2d;
+    --redot-accent: #f0706c;
 }
 
-/*
- * Home: align with VPNavBar (.wrapper padding + .container max-width).
- * Navbar uses max-width calc(layout - 64px) and 24px/8px (32px from 768px) inset.
- */
+/* Keep the native layout; give the landing page a comfortable reading width. */
 .VPHome .VPHero .container,
 .VPHome .VPFeatures .container {
-    max-width: calc(var(--vp-layout-max-width) - 64px);
-}
-
-/* Hero: full horizontal width (navbar-aligned), default vertical spacing */
-.VPHome .VPHero {
-    width: 100%;
-    padding-left: 24px;
-    padding-right: 8px;
-}
-
-.VPHome .VPHero .container {
-    width: 100%;
+    max-width: 1120px;
 }
 
 .VPHome .VPHero .main {
-    width: 100%;
-    max-width: none;
+    max-width: 800px;
 }
 
-.VPHome .VPHero .name,
-.VPHome .VPHero .text,
+.VPHome .VPHero .text {
+    max-width: 800px;
+    font-size: clamp(36px, 5vw, 60px);
+    line-height: 1.12;
+    letter-spacing: -0.045em;
+}
+
+.VPHome .VPHero .text::after {
+    content: '.';
+    color: var(--redot-accent);
+}
+
 .VPHome .VPHero .tagline {
-    width: 100%;
-    max-width: none;
+    max-width: 680px;
+    padding-top: 24px;
+    font-size: 20px;
+    line-height: 1.6;
+    font-weight: 400;
 }
 
-.VPHome .VPFeatures {
-    padding-left: 24px;
-    padding-right: 8px;
+.VPHome .VPButton.medium {
+    border-radius: 7px;
 }
 
-@media (min-width: 640px) {
-    .VPHome .VPHero {
-        padding-left: 24px;
-        padding-right: 8px;
+.VPHome .VPFeature {
+    border: 1px solid var(--vp-c-divider);
+    border-radius: 10px;
+    background: var(--vp-c-bg);
+}
+
+.VPHome .VPFeature.link:hover {
+    border-color: var(--vp-c-text-3);
+    background: var(--vp-c-bg-alt);
+}
+
+.VPHome .VPFeature .title {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+}
+
+.VPHome .VPFeature.link .title::after {
+    content: '↗';
+    color: var(--vp-c-text-3);
+    font-weight: 400;
+}
+
+.VPHome .VPFeature .details {
+    font-weight: 400;
+}
+
+/* A visible current page without turning every link into an accent color. */
+.VPSidebarItem.is-link > .item > .link {
+    padding-inline: 10px;
+    margin-inline: -10px;
+    border-radius: 6px;
+}
+
+.VPSidebarItem.is-link > .item > .link:hover {
+    background: var(--vp-c-brand-soft);
+}
+
+.VPSidebarItem.is-active > .item > .link {
+    background: var(--vp-c-brand-soft);
+}
+
+.VPSidebarItem.is-active > .item > .link > .text {
+    font-weight: 600;
+}
+
+.vp-doc h1 {
+    letter-spacing: -0.035em;
+    line-height: 1.2;
+}
+
+.vp-doc h2 {
+    letter-spacing: -0.025em;
+}
+
+.vp-doc h1 + p {
+    color: var(--vp-c-text-2);
+    font-size: 18px;
+    line-height: 1.7;
+}
+
+.vp-doc a {
+    text-decoration-color: var(--vp-c-text-3);
+    text-underline-offset: 3px;
+}
+
+.vp-doc div[class*='language-'],
+.vp-doc .custom-block {
+    border: 1px solid var(--vp-c-divider);
+}
+
+@media (max-width: 639px) {
+    .VPHome .VPHero .tagline {
+        font-size: 18px;
     }
-
-    .VPHome .VPFeatures {
-        padding-left: 24px;
-        padding-right: 8px;
-    }
-}
-
-@media (min-width: 768px) {
-    .VPHome .VPHero {
-        padding-left: 32px;
-        padding-right: 32px;
-    }
-
-    .VPHome .VPFeatures {
-        padding-left: 32px;
-        padding-right: 32px;
-    }
-}
-
-@media (min-width: 960px) {
-    .VPHome .VPHero {
-        padding-left: 32px;
-        padding-right: 32px;
-    }
-
-    .VPHome .VPFeatures {
-        padding-left: 32px;
-        padding-right: 32px;
-    }
-}
-
-.VPHome .VPHero .name.clip {
-    color: var(--vp-c-text-1);
-    background: none;
-    -webkit-text-fill-color: var(--vp-c-text-1);
-    -webkit-background-clip: unset;
-    background-clip: unset;
-}
-
-/* No decorative hero orb / split layout */
-.VPHome .VPHero .image {
-    display: none;
-}
-
-.VPHome .VPHero.has-image .main {
-    width: 100%;
-    max-width: none;
-}
-
-@media (min-width: 960px) {
-    .VPHome .VPHero.has-image .container {
-        flex-direction: column;
-        text-align: left;
-    }
-
-    .VPHome .VPHero.has-image .actions {
-        justify-content: flex-start;
-    }
-}
-
-.DocSearch {
-    --docsearch-primary-color: var(--vp-c-brand-1) !important;
 }
