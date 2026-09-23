@@ -72,7 +72,7 @@ class Application extends LaravelApplication
                 Route::fallback(FallbackController::class)->middleware(['web', Localization::class . ':website']);
             })
 
-            ->withCommands([base_path('routes/console.php')])
+            ->withCommands([base_path('app/Console/Commands'), base_path('routes/console.php')])
 
             ->withMiddleware(function (Middleware $middleware) {
                 $middleware->web(remove: [
