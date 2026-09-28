@@ -17,14 +17,18 @@ class MagicLinkRoutes implements RouteRegistrar
      */
     public function register(AuthContext $context): void
     {
-        $action = app(MagicLink::class);
+        $options = $context->toArray();
 
-        Route::middleware($context->guest())->group(function () use ($context, $action) {
-            Route::get('magic-link', fn (): View => view($context->views['magic-link'], ['context' => $context]))->name('magic-link.create');
-            Route::post('magic-link', fn (Request $request): RedirectResponse => $action->send($request, $context))->name('magic-link.store');
-            Route::get('magic-link/verify/{token}', fn (string $token): RedirectResponse => $action->verify($token, $context))->name('magic-link-code.show');
-            Route::get('magic-link/code', fn (Request $request): View|RedirectResponse => $action->view($request, $context))->name('magic-link-code.create');
-            Route::post('magic-link/code', fn (Request $request): RedirectResponse => $action->confirm($request, $context))->middleware('throttle:6,1')->name('magic-link-code.store');
+        Route::middleware($context->guest())->group(function () use ($options) {
+            Route::get('magic-link', static function () use ($options): View {
+                $context = new AuthContext(...$options);
+
+                return view($context->views['magic-link'], ['context' => $context]);
+            })->name('magic-link.create');
+            Route::post('magic-link', static fn (Request $request): RedirectResponse => app(MagicLink::class)->send($request, new AuthContext(...$options)))->name('magic-link.store');
+            Route::get('magic-link/verify/{token}', static fn (string $token): RedirectResponse => app(MagicLink::class)->verify($token, new AuthContext(...$options)))->name('magic-link-code.show');
+            Route::get('magic-link/code', static fn (Request $request): View|RedirectResponse => app(MagicLink::class)->view($request, new AuthContext(...$options)))->name('magic-link-code.create');
+            Route::post('magic-link/code', static fn (Request $request): RedirectResponse => app(MagicLink::class)->confirm($request, new AuthContext(...$options)))->middleware('throttle:6,1')->name('magic-link-code.store');
         });
     }
 }

@@ -18,14 +18,18 @@ class LoginRoutes implements RouteRegistrar
      */
     public function register(AuthContext $context): void
     {
-        $action = app(Login::class);
+        $options = $context->toArray();
 
-        Route::middleware($context->guest())->group(function () use ($context, $action) {
+        Route::middleware($context->guest())->group(function () use ($context, $options) {
             if (! $context->api) {
-                Route::get('login', fn (): View => view($context->views['login'], ['context' => $context]))->name('login');
+                Route::get('login', static function () use ($options): View {
+                    $context = new AuthContext(...$options);
+
+                    return view($context->views['login'], ['context' => $context]);
+                })->name('login');
             }
 
-            Route::post('login', fn (Request $request): RedirectResponse|JsonResponse => $action->authenticate($request, $context))->name('login.store');
+            Route::post('login', static fn (Request $request): RedirectResponse|JsonResponse => app(Login::class)->authenticate($request, new AuthContext(...$options)))->name('login.store');
         });
     }
 }

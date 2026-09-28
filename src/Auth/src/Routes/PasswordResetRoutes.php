@@ -18,16 +18,24 @@ class PasswordResetRoutes implements RouteRegistrar
      */
     public function register(AuthContext $context): void
     {
-        $action = app(PasswordReset::class);
+        $options = $context->toArray();
 
-        Route::middleware($context->guest())->group(function () use ($context, $action) {
+        Route::middleware($context->guest())->group(function () use ($context, $options) {
             if (! $context->api) {
-                Route::get('forgot-password', fn (): View => view($context->views['forgot-password'], ['context' => $context]))->name('password.request');
-                Route::get('reset-password/{token}', fn (Request $request): View => view($context->views['reset-password'], ['request' => $request, 'context' => $context]))->name('password.reset');
+                Route::get('forgot-password', static function () use ($options): View {
+                    $context = new AuthContext(...$options);
+
+                    return view($context->views['forgot-password'], ['context' => $context]);
+                })->name('password.request');
+                Route::get('reset-password/{token}', static function (Request $request) use ($options): View {
+                    $context = new AuthContext(...$options);
+
+                    return view($context->views['reset-password'], ['request' => $request, 'context' => $context]);
+                })->name('password.reset');
             }
 
-            Route::post('forgot-password', fn (Request $request): RedirectResponse|JsonResponse => $action->send($request, $context))->name('password.email');
-            Route::post('reset-password', fn (Request $request): RedirectResponse|JsonResponse => $action->reset($request, $context))->name('password.store');
+            Route::post('forgot-password', static fn (Request $request): RedirectResponse|JsonResponse => app(PasswordReset::class)->send($request, new AuthContext(...$options)))->name('password.email');
+            Route::post('reset-password', static fn (Request $request): RedirectResponse|JsonResponse => app(PasswordReset::class)->reset($request, new AuthContext(...$options)))->name('password.store');
         });
     }
 }

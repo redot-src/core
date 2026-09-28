@@ -18,14 +18,18 @@ class RegistrationRoutes implements RouteRegistrar
      */
     public function register(AuthContext $context): void
     {
-        $action = app(Registration::class);
+        $options = $context->toArray();
 
-        Route::middleware($context->guest())->group(function () use ($context, $action) {
+        Route::middleware($context->guest())->group(function () use ($context, $options) {
             if (! $context->api) {
-                Route::get('register', fn (): View => view($context->views['register'], ['context' => $context]))->name('register');
+                Route::get('register', static function () use ($options): View {
+                    $context = new AuthContext(...$options);
+
+                    return view($context->views['register'], ['context' => $context]);
+                })->name('register');
             }
 
-            Route::post('register', fn (Request $request): RedirectResponse|JsonResponse => $action->register($request, $context))->name('register.store');
+            Route::post('register', static fn (Request $request): RedirectResponse|JsonResponse => app(Registration::class)->register($request, new AuthContext(...$options)))->name('register.store');
         });
     }
 }

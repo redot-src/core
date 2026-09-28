@@ -17,10 +17,10 @@ class LogoutRoutes implements RouteRegistrar
      */
     public function register(AuthContext $context): void
     {
-        $action = app(Logout::class);
+        $options = $context->toArray();
 
-        Route::middleware($context->auth())->group(function () use ($context, $action) {
-            $route = Route::match(['delete', 'post'], 'logout', fn (Request $request): RedirectResponse|JsonResponse => $action->logout($request, $context));
+        Route::middleware($context->auth())->group(function () use ($context, $options) {
+            $route = Route::match(['delete', 'post'], 'logout', static fn (Request $request): RedirectResponse|JsonResponse => app(Logout::class)->logout($request, new AuthContext(...$options)));
 
             if ($context->featureEnabled('lock-screen')) {
                 $route->withoutMiddleware($context->lockedMiddleware());

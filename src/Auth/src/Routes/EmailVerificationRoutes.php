@@ -19,15 +19,15 @@ class EmailVerificationRoutes implements RouteRegistrar
      */
     public function register(AuthContext $context): void
     {
-        $action = app(EmailVerification::class);
+        $options = $context->toArray();
 
-        Route::middleware($context->auth())->group(function () use ($context, $action) {
+        Route::middleware($context->auth())->group(function () use ($context, $options) {
             if (! $context->api) {
-                Route::get('verify-email', fn (Request $request): RedirectResponse|View => $action->prompt($request, $context))->name('verification.notice');
+                Route::get('verify-email', static fn (Request $request): RedirectResponse|View => app(EmailVerification::class)->prompt($request, new AuthContext(...$options)))->name('verification.notice');
             }
 
-            Route::get('verify-email/{id}/{hash}', fn (EmailVerificationRequest $request): RedirectResponse|JsonResponse => $action->verify($request, $context))->middleware(['signed', 'throttle:6,1'])->name('verification.verify');
-            Route::post('email/verification-notification', fn (Request $request): RedirectResponse|JsonResponse => $action->send($request, $context))->middleware('throttle:6,1')->name('verification.send');
+            Route::get('verify-email/{id}/{hash}', static fn (EmailVerificationRequest $request): RedirectResponse|JsonResponse => app(EmailVerification::class)->verify($request, new AuthContext(...$options)))->middleware(['signed', 'throttle:6,1'])->name('verification.verify');
+            Route::post('email/verification-notification', static fn (Request $request): RedirectResponse|JsonResponse => app(EmailVerification::class)->send($request, new AuthContext(...$options)))->middleware('throttle:6,1')->name('verification.send');
         });
     }
 }

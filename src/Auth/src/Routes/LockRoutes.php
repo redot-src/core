@@ -18,15 +18,15 @@ class LockRoutes implements RouteRegistrar
      */
     public function register(AuthContext $context): void
     {
-        $action = app(Lock::class);
+        $options = $context->toArray();
         $locked = $context->lockedMiddleware();
 
-        Route::middleware($context->auth())->group(function () use ($context, $action, $locked) {
-            Route::post('lock', fn (Request $request): RedirectResponse|JsonResponse => $action->lock($request, $context))->name('lock');
+        Route::middleware($context->auth())->group(function () use ($options, $locked) {
+            Route::post('lock', static fn (Request $request): RedirectResponse|JsonResponse => app(Lock::class)->lock($request, new AuthContext(...$options)))->name('lock');
 
-            Route::withoutMiddleware($locked)->group(function () use ($context, $action) {
-                Route::get('unlock', fn (Request $request): View|RedirectResponse => $action->view($request, $context))->name('unlock');
-                Route::post('unlock', fn (Request $request): RedirectResponse|JsonResponse => $action->unlock($request, $context))->name('unlock.store');
+            Route::withoutMiddleware($locked)->group(function () use ($options) {
+                Route::get('unlock', static fn (Request $request): View|RedirectResponse => app(Lock::class)->view($request, new AuthContext(...$options)))->name('unlock');
+                Route::post('unlock', static fn (Request $request): RedirectResponse|JsonResponse => app(Lock::class)->unlock($request, new AuthContext(...$options)))->name('unlock.store');
             });
         });
     }

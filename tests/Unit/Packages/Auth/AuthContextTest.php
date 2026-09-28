@@ -117,13 +117,13 @@ it('resolves the home url via the supplied closure when home is callable', funct
     expect($context->homeUrl())->toBe('https://example.test/welcome');
 });
 
-it('restores callback values after serialization', function () {
+it('preserves callback values when rebuilding from context options', function () {
     $context = make_auth_context([
         'scope' => fn (mixed $query): mixed => $query,
         'home' => fn (): string => 'https://example.test/welcome',
     ]);
 
-    $restored = unserialize(serialize($context));
+    $restored = new AuthContext(...$context->toArray());
 
     expect($restored->scope)->toBeInstanceOf(Closure::class)
         ->and(($restored->scope)('query'))->toBe('query')
