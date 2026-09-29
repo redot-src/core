@@ -80,8 +80,9 @@ LoginToken::findByToken($token->token, 'admins');
 LoginToken::findByCode($code, $user->email, 'admins');
 ```
 
-Issuing a token replaces any existing one for the same email and guard. The
-expiry window comes from `config('auth.magic_link.expire')` (default 15 minutes).
+Issuing a token replaces any existing one for the same email and guard. Pass the
+lifetime in minutes as a third argument (default 15); the magic-link feature
+passes its `expiresIn` option.
 See [Authentication](/packages/auth/overview) for the full flow.
 
 ## Related

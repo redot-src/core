@@ -1,95 +1,98 @@
-# Auth Routes
+# Auth Panels & Routes
 
-This page covers how to register a guard's authentication routes — see [Auth Overview](/packages/auth/overview) for the bigger picture. One `RedotAuth::routes()` call registers a full auth surface (login, logout, registration, password reset, magic links, email verification, lock screen) for the guard you name.
+A panel is one authentication surface — for example "dashboard", "website", or "dashboard API". This page covers defining panels and registering their routes. See [Auth Overview](/packages/auth/overview) for the bigger picture.
 
 ## Usage
 
-Call `RedotAuth::routes()` inside the route group whose **name prefix and middleware** you want the generated routes to inherit. The prefix is read from the surrounding group at call time, so `login`, `logout`, `password.request`, and friends pick it up automatically.
+Define panels from a service provider's `boot()` method. This runs on every request, so callbacks such as `scope` are fine even when routes are cached:
 
 ```php
 use Redot\Auth\Facades\RedotAuth;
+use Redot\Auth\Features\EmailVerification;
+use Redot\Auth\Features\LockScreen;
+use Redot\Auth\Features\Login;
+use Redot\Auth\Features\Logout;
+use Redot\Auth\Features\MagicLink;
+use Redot\Auth\Features\PasswordReset;
 
-Route::name('admin.')->group(function () {
-    RedotAuth::routes(
-        guard: 'admin',
-        scope: fn ($query) => $query->where('active', true),
-        views: [
-            'login' => 'admin.auth.login',
-            'forgot-password' => 'admin.auth.forgot-password',
-            'reset-password' => 'admin.auth.reset-password',
-            'magic-link' => 'admin.auth.magic-link',
-            'magic-link-code' => 'admin.auth.magic-link-code',
-            'unlock' => 'admin.auth.unlock',
-        ],
-        disable: ['register', 'email-verification'],
+RedotAuth::panel('dashboard')
+    ->guard('admins')
+    ->scope(fn ($query) => $query->where('active', true))
+    ->views('dashboard.auth')
+    ->features(
+        Login::make(),
+        PasswordReset::make(),
+        MagicLink::make(),
+        EmailVerification::make(),
+        Logout::make(),
+        LockScreen::make()->protect('dashboard'),
     );
+```
+
+Register the routes in a route file, inside the group whose **name prefix and middleware** they should inherit:
+
+```php
+Route::name('dashboard.')->prefix('dashboard')->group(function () {
+    RedotAuth::routes('dashboard');
 });
 ```
 
+Calling `RedotAuth::panel()` again with the same name returns the same panel, so you can add to it from another provider.
+
 ## Options
 
-- **`guard`** — the guard to authenticate against (a key under `config/auth.php`). The package reads its provider and model for you.
-- **`scope`** — an optional query callback that constrains which users can authenticate, e.g. only active admins.
-- **`views`** — maps each screen (`login`, `register`, `forgot-password`, `reset-password`, `magic-link`, `magic-link-code`, `verify-email`, `unlock`) to a Blade view. Each view receives the resolved auth context as `$context`. Omit a screen to skip rendering it.
-- **`disable`** — turn off optional features by name: `register`, `magic-link`, `email-verification`, `logout`, `lock-screen`. Login and password reset are always registered.
-- **`registrars`** — supply your own route definitions for a feature, keyed by feature name (see below).
-- **`home`** — where to send the user after login: a route name, a callback returning a URL, or omit it to use the section's `index` route.
+- **`guard`** — the guard to authenticate against (a key in `config/auth.php`). The user model and password broker are read from it.
+- **`scope`** — a query callback that limits who can sign in, e.g. only active admins.
+- **`views`** — a view prefix (`'dashboard.auth'` renders `dashboard.auth.login`, …), or an array that overrides single screens: `->views(['unlock' => 'shared.unlock'])`. The screens are `login`, `register`, `forgot-password`, `reset-password`, `magic-link`, `magic-link-code`, `verify-email`, and `unlock`. Each view receives the panel as `$panel`.
+- **`home`** — where users go after signing in: a route name, or a callback that receives the panel and returns a URL. Defaults to the group's `index` route.
+- **`identifiers`** — the columns users can sign in with. Defaults to `['email']`.
+- **`api`** — makes the panel token-based: sign-in returns a bearer token, and screen routes are skipped. Required for token guards such as Sanctum; registering the routes throws if a token guard's panel isn't marked `api()`.
+- **`features`** — the features to enable. Nothing is enabled unless you list it. See [Features reference](/packages/auth/actions).
+- **`using`** — replaces a piece of behavior for this panel only. See [Customize auth](/packages/auth/customization).
 
 ## Examples
 
-### A web guard with everything enabled
+### An API panel
 
-The public-facing `web` guard keeps registration, magic links, and email verification on — just map every screen and pass no `disable`:
-
-```php
-RedotAuth::routes(
-    guard: 'web',
-    views: [
-        'login' => 'auth.login',
-        'register' => 'auth.register',
-        'forgot-password' => 'auth.forgot-password',
-        'reset-password' => 'auth.reset-password',
-        'magic-link' => 'auth.magic-link',
-        'magic-link-code' => 'auth.magic-link-code',
-        'verify-email' => 'auth.verify-email',
-    ],
-);
-```
-
-### An API guard
-
-For a token-based guard (Sanctum, Passport, JWT) no views are needed — only the JSON endpoints are registered, and the login flow returns a bearer token instead of starting a session. The magic-link and lock-screen features are skipped automatically.
+API panels only get the JSON endpoints. Magic links and the lock screen rely on the session, so listing them on an API panel throws an error.
 
 ```php
-// routes/api/web.php
-RedotAuth::routes(guard: 'users-api');
+RedotAuth::panel('dashboard-api')
+    ->guard('admins-api')
+    ->api()
+    ->features(
+        Login::make(),
+        PasswordReset::make(),
+        Logout::make(),
+    );
 
-// routes/api/admin.php
-RedotAuth::routes(
-    guard: 'admins-api',
-    scope: fn ($query) => $query->where('active', true),
-    disable: ['register', 'email-verification'],
-);
+// routes/api/dashboard.php
+Route::prefix('auth')->group(function () {
+    RedotAuth::routes('dashboard-api');
+});
 ```
 
-### Enabling the lock screen
+### Signing in by email or username
 
-The lock screen turns on as soon as you provide an `unlock` view (and the guard is web-based). With it enabled, authenticated routes in the group require the user to re-enter their password after locking. To extend the same protection to routes outside the auth group, or to swap how unlocking works, see [Customize auth](/packages/auth/customization).
-
-### Replacing a feature's routes
-
-To define your own routes for one feature while keeping the rest, pass a replacement under `registrars`, keyed by the feature name:
+With more than one identifier, the login field is named `identifier` instead of the column name. Use `$panel->identifierInputName()` in your view so the form works either way.
 
 ```php
-RedotAuth::routes(
-    guard: 'admins',
-    registrars: ['login' => CustomLoginRoutes::class],
-);
+RedotAuth::panel('website')
+    ->guard('users')
+    ->identifiers(['email', 'username']);
 ```
 
-The replacement is used only for features that are enabled; disabled features stay skipped.
+### Protecting other routes with the lock screen
+
+With `LockScreen::make()` enabled, the panel's authenticated routes redirect to the unlock screen while the session is locked. To lock the rest of your pages too, name the middleware groups they use:
+
+```php
+LockScreen::make()->protect('dashboard')
+```
+
+Every route in the `dashboard` middleware group now sends a locked user to the panel's unlock screen, including routes defined outside the panel. It keeps working with cached routes. The group must exist once your service providers have booted. A lock is dropped automatically if the user is no longer signed in.
 
 ## Related
 
-- [Customize auth](/packages/auth/customization) — swap actions and change validation.
-- [Auth actions reference](/packages/auth/actions) — what each registered route does.
+- [Features reference](/packages/auth/actions)
+- [Customize auth](/packages/auth/customization)

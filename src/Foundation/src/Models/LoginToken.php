@@ -32,7 +32,7 @@ class LoginToken extends Model
     /**
      * Generate a new login token for the given email and guard.
      */
-    public static function generate(string $email, string $guard): static
+    public static function generate(string $email, string $guard, int $minutes = 15): static
     {
         // Delete any existing tokens for this email and guard
         static::where('email', $email)->where('guard', $guard)->delete();
@@ -45,7 +45,7 @@ class LoginToken extends Model
             'token' => hash('sha256', $token),
             'code' => hash('sha256', $code),
             'guard' => $guard,
-            'expires_at' => now()->addMinutes((int) config('auth.magic_link.expire', 15)),
+            'expires_at' => now()->addMinutes($minutes),
         ]);
 
         // Expose the plaintext values on the instance for delivery; only hashes are stored.

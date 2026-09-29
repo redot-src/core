@@ -16,7 +16,8 @@ class MagicLinkNotification extends Notification
      */
     public function __construct(
         public LoginToken $loginToken,
-        public string $verifyRoute,
+        public string $url,
+        public int $expiresIn,
     ) {}
 
     /**
@@ -34,13 +35,11 @@ class MagicLinkNotification extends Notification
      */
     public function toMail(object $notifiable): MailMessage
     {
-        $expireMinutes = config('auth.magic_link.expire', 15);
-
         return (new MailMessage)
             ->subject(__('Your Login Code for :app', ['app' => config('app.name')]))
             ->line(__('Click the button below to log in, or use the code: **:code**', ['code' => $this->loginToken->code]))
-            ->action(__('Login Now'), route($this->verifyRoute, ['token' => $this->loginToken->token]))
-            ->line(__('This link expires in :minutes minutes.', ['minutes' => $expireMinutes]))
+            ->action(__('Login Now'), $this->url)
+            ->line(__('This link expires in :minutes minutes.', ['minutes' => $this->expiresIn]))
             ->line(__('If you did not request this, you can safely ignore this email.'));
     }
 }

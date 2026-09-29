@@ -6,7 +6,12 @@ use Illuminate\Support\Facades\Facade;
 use Redot\Auth\RedotAuthManager;
 
 /**
- * @method static void routes(string $guard, ?\Closure $scope = null, array $views = [], array $disable = [], array $registrars = [], ?string $home = null)
+ * @method static \Redot\Auth\Panel panel(string $name)
+ * @method static \Redot\Auth\Panel get(string $name)
+ * @method static bool hasPanel(string $name)
+ * @method static void routes(string $name)
+ * @method static void protectLockedGroups()
+ * @method static \Redot\Auth\Panel current(\Illuminate\Http\Request $request)
  *
  * @see RedotAuthManager
  */
