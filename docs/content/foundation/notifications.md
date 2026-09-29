@@ -20,26 +20,23 @@ the published mail notification templates — the email text passes through `__(
 so it is fully translatable.
 
 To replace the email entirely (different layout, extra channels, branding),
-register your own notification class on the magic-link action, typically from a
-service provider's `boot()`:
+pass your own notification class to the panel's magic-link feature:
 
 ```php
-use Redot\Auth\Actions\MagicLink;
 use App\Notifications\CustomMagicLink;
+use Redot\Auth\Features\MagicLink;
 
-MagicLink::useNotificationClass(CustomMagicLink::class);
+MagicLink::make()->notification(CustomMagicLink::class)
 ```
 
-Your class is instantiated with the same two arguments the default receives — the
-login token and the name of the verify route — so accept those when you build a
-replacement.
+Your class receives the same three arguments as the default: the login token,
+the ready-to-use sign-in URL, and the number of minutes the link stays valid.
 
 ## Options
 
-Config keys that affect the email:
-
-- **`auth.magic_link.expire`** — minutes until the token expires (default `15`).
-  Drives both the token lifetime and the "expires in :minutes minutes" line.
+- **`expiresIn`** on the magic-link feature, falling back to
+  **`auth.magic_link.expire`** — minutes until the link expires (default `15`). Controls both the token's lifetime and the "expires in
+  :minutes minutes" line.
 - **`app.name`** — interpolated into the subject line.
 
 ## Related

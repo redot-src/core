@@ -1,32 +1,42 @@
 # Auth Overview
 
-Redot Auth registers a complete authentication stack — login, logout, registration, password reset, magic links, email verification, and a lock screen — for any guard with a single call. You describe a guard and which screens it uses, and the package wires up the routes, validation, throttling, and redirects for you. The same setup works for both web (session) and API (token) guards.
+Redot Auth gives any guard a complete authentication stack — login, logout, registration, password reset, magic links, email verification, and a lock screen. You describe each **panel** once in a service provider (its guard, views, and features), then register its routes with one line. The same setup works for web (session) and API (token) guards, and it's fully compatible with `route:cache` and `config:cache`.
 
 ## Quick start
 
-Inside the route group whose name prefix and middleware you want the auth routes to inherit, point `RedotAuth::routes()` at a guard from your `config/auth.php` and map each screen to a Blade view:
+Define the panel in a service provider's `boot()` method:
 
 ```php
 use Redot\Auth\Facades\RedotAuth;
+use Redot\Auth\Features\Login;
+use Redot\Auth\Features\Logout;
+use Redot\Auth\Features\PasswordReset;
 
-RedotAuth::routes(
-    guard: 'admin',
-    views: [
-        'login' => 'admin.auth.login',
-        'forgot-password' => 'admin.auth.forgot-password',
-        'reset-password' => 'admin.auth.reset-password',
-    ],
-    disable: ['register', 'email-verification'],
-);
+RedotAuth::panel('admin')
+    ->guard('admins')
+    ->views('admin.auth')
+    ->features(
+        Login::make(),
+        PasswordReset::make(),
+        Logout::make(),
+    );
 ```
 
-That registers login, logout, and password-reset routes for the `admin` guard and renders your views for the matching screens. An API guard needs no views at all — a bare `RedotAuth::routes(guard: 'api')` registers JSON endpoints that issue tokens.
+Then register its routes inside the route group whose name prefix and middleware they should inherit:
+
+```php
+Route::name('admin.')->prefix('admin')->group(function () {
+    RedotAuth::routes('admin');
+});
+```
+
+That registers `admin.login`, `admin.password.request`, `admin.logout`, and friends, rendering `admin.auth.login`, `admin.auth.forgot-password`, and so on.
 
 ## Common tasks
 
-- [Register auth routes](/packages/auth/routes) — choose a guard, map screens to views, enable/disable features, and set the post-login redirect.
-- [Customize auth actions](/packages/auth/customization) — change login identifiers and registration rules, or swap a whole flow for your own.
-- [Auth actions reference](/packages/auth/actions) — what each flow (login, magic link, lock screen, …) does and how to tune it.
+- [Define panels and register routes](/packages/auth/routes) — pick a guard, views, and features; set up API panels and the lock screen.
+- [Features reference](/packages/auth/actions) — what each feature does, the routes it adds, and its options.
+- [Customize auth](/packages/auth/customization) — custom registration, extra login steps (2FA, captcha), and your own responses.
 
 ## Related
 
