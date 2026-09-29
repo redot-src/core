@@ -8,6 +8,7 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\URL;
@@ -310,6 +311,37 @@ it('sends the password reset link after the response', function () {
     $this->post('/forgot-password', ['email' => 'admin@example.com'])->assertSessionHas('success');
     Notification::assertSentTo($user, ResetPassword::class);
 });
+
+it('finishes a password reset on panels with or without the login screen', function (bool $withLogin, string $redirect) {
+    config()->set('auth.passwords.admins', ['provider' => 'admins', 'table' => 'password_reset_tokens', 'expire' => 60]);
+
+    Schema::create('password_reset_tokens', function (Blueprint $table) {
+        $table->string('email')->primary();
+        $table->string('token');
+        $table->timestamp('created_at')->nullable();
+    });
+
+    config()->set('auth.providers.admins.model', ApiUser::class);
+
+    RedotAuth::panel('dashboard')->guard('admins')->features(PasswordReset::make(), ...($withLogin ? [Login::make()] : []));
+
+    register_panel();
+
+    $user = ApiUser::create(['email' => 'admin@example.com', 'password' => 'secret']);
+    $token = Password::broker('admins')->createToken($user);
+
+    $this->post('/reset-password', [
+        'token' => $token,
+        'email' => 'admin@example.com',
+        'password' => 'New-secret-123',
+        'password_confirmation' => 'New-secret-123',
+    ])->assertRedirect($redirect)->assertSessionHas('success');
+
+    expect(Hash::check('New-secret-123', ApiUser::firstOrFail()->password))->toBeTrue();
+})->with([
+    'with login' => [true, '/login'],
+    'without login' => [false, '/home'],
+]);
 
 it('throttles failed logins using the feature limits', function () {
     RedotAuth::panel('dashboard')->guard('admins')->features(Login::make()->throttle(2));
