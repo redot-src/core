@@ -3,7 +3,6 @@
 namespace Redot\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 use Redot\Casts\Union;
 use Redot\Support\SettingDefinition;
@@ -155,16 +154,30 @@ class Setting extends Model
      */
     protected static function forgetCachedValue(self $setting): void
     {
-        cache()->forget('settings.' . $setting->key);
+        $currentValue = $setting->value;
+        $defaultValue = static::default($setting->key);
+        $originalValue = $setting->getOriginal('value');
 
-        foreach (array_keys(Arr::dot(Arr::wrap(static::default($setting->key)))) as $key) {
-            cache()->forget('settings.' . $setting->key . '.' . $key);
+        $cacheKey = 'settings.' . $setting->key;
+
+        static::forgetCachedTree($cacheKey, $currentValue);
+        static::forgetCachedTree($cacheKey, $defaultValue);
+        static::forgetCachedTree($cacheKey, $originalValue);
+    }
+
+    /**
+     * Forget a cached value and every nested path, including parent arrays.
+     */
+    protected static function forgetCachedTree(string $cacheKey, mixed $value): void
+    {
+        cache()->forget($cacheKey);
+
+        if (! is_array($value)) {
+            return;
         }
 
-        if (is_array($setting->value)) {
-            foreach (array_keys(Arr::dot($setting->value)) as $key) {
-                cache()->forget('settings.' . $setting->key . '.' . $key);
-            }
+        foreach ($value as $key => $nestedValue) {
+            static::forgetCachedTree($cacheKey . '.' . $key, $nestedValue);
         }
     }
 
