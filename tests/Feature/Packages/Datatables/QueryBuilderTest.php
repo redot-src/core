@@ -133,3 +133,70 @@ it('cycles sorts through the livewire sort endpoint', function () {
         ->call('sort', 'post.title', true)->assertSet('sortColumn', 'body')
         ->call('sort')->assertSet('sortColumn', '');
 });
+
+describe('pagination updates', function () {
+    beforeEach(function () {
+        for ($i = 0; $i < 22; $i++) {
+            BlogComment::query()->create(['post_id' => 1, 'body' => 'Extra comment']);
+        }
+    });
+
+    it('returns to the first page when search changes or clears', function (string $search, array $expectedIds) {
+        Livewire\Livewire::test(BlogCommentsDatatable::class)
+            ->set('search', 'Extra')
+            ->call('gotoPage', 2)
+            ->assertSet('paginators.page', 2)
+            ->assertViewHas('rows', fn ($rows) => $rows->currentPage() === 2 && $rows->count() === 10)
+            ->set('search', $search)
+            ->assertSet('paginators.page', 1)
+            ->assertViewHas('rows', fn ($rows) => $rows->pluck('id')->all() === $expectedIds);
+    })->with([
+        'narrow search' => ['Nice work', [2]],
+        'clear search' => ['', range(25, 16)],
+    ]);
+
+    it('returns to the first page when the filter array changes', function () {
+        [$body] = (new BlogCommentsDatatable)->filters();
+
+        Livewire\Livewire::test(BlogCommentsDatatable::class)
+            ->call('gotoPage', 2)
+            ->set('filtered', [$body->index => ['operator' => 'equals', 'value' => 'Nice work']])
+            ->assertSet('paginators.page', 1)
+            ->assertViewHas('rows', fn ($rows) => $rows->pluck('id')->all() === [2]);
+    });
+
+    it('returns to the first page when a nested filter value or operator changes', function (string $property, string $value, array $expectedIds) {
+        [$body] = (new BlogCommentsDatatable)->filters();
+
+        Livewire\Livewire::test(BlogCommentsDatatable::class)
+            ->set('filtered', [$body->index => ['operator' => 'contains', 'value' => 'Extra']])
+            ->call('gotoPage', 2)
+            ->assertSet('paginators.page', 2)
+            ->set("filtered.{$body->index}.$property", $value)
+            ->assertSet('paginators.page', 1)
+            ->assertViewHas('rows', fn ($rows) => $rows->pluck('id')->all() === $expectedIds);
+    })->with([
+        'value' => ['value', 'Nice', [2]],
+        'operator' => ['operator', 'not_contains', [3, 2, 1]],
+    ]);
+
+    it('returns to the first page when all filters are cleared', function () {
+        [$body] = (new BlogCommentsDatatable)->filters();
+
+        Livewire\Livewire::test(BlogCommentsDatatable::class)
+            ->set('filtered', [$body->index => ['operator' => 'contains', 'value' => 'Extra']])
+            ->call('gotoPage', 2)
+            ->set('filtered', [])
+            ->assertSet('paginators.page', 1)
+            ->assertViewHas('rows', fn ($rows) => $rows->pluck('id')->all() === range(25, 16));
+    });
+
+    it('returns to the first page when the page size changes', function () {
+        Livewire\Livewire::test(BlogCommentsDatatable::class)
+            ->call('gotoPage', 3)
+            ->assertViewHas('rows', fn ($rows) => $rows->currentPage() === 3 && $rows->count() === 5)
+            ->set('perPage', 25)
+            ->assertSet('paginators.page', 1)
+            ->assertViewHas('rows', fn ($rows) => $rows->currentPage() === 1 && $rows->count() === 25);
+    });
+});

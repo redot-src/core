@@ -10,12 +10,14 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Traits\Macroable;
 use Illuminate\View\View;
 use Livewire\Attributes\Locked;
+use Livewire\Attributes\Renderless;
 use Livewire\Attributes\Url;
 use Livewire\Component;
 use Livewire\WithPagination;
 use Redot\Datatables\Actions\Action;
 use Redot\Datatables\Actions\ActionGroup;
 use Redot\Datatables\Actions\BulkAction;
+use Redot\Datatables\Attributes\ResetPage;
 use Redot\Datatables\Columns\Column;
 use Redot\Datatables\Exporters\ExportManager;
 use Redot\Datatables\Filters\Filter;
@@ -52,6 +54,7 @@ abstract class Datatable extends Component
      * The default per page value.
      */
     #[Url]
+    #[ResetPage]
     public int $perPage = 10;
 
     /**
@@ -64,6 +67,7 @@ abstract class Datatable extends Component
      * Search term for the datatable.
      */
     #[Url(as: 'q')]
+    #[ResetPage]
     public string $search = '';
 
     /**
@@ -76,6 +80,7 @@ abstract class Datatable extends Component
      * Filters values for the datatable.
      */
     #[Url(as: 'filter')]
+    #[ResetPage]
     public array $filtered = [];
 
     /**
@@ -232,6 +237,7 @@ abstract class Datatable extends Component
     /**
      * Export the datatable to a file in the given format.
      */
+    #[Renderless]
     public function export(string $format): BinaryFileResponse|StreamedResponse|Response
     {
         $manager = new ExportManager($this->exportable, $this->allowedExports);
@@ -254,6 +260,7 @@ abstract class Datatable extends Component
     /**
      * Export the datatable to a XLSX file.
      */
+    #[Renderless]
     public function toXlsx(): BinaryFileResponse|StreamedResponse|Response
     {
         return $this->export('xlsx');
@@ -262,6 +269,7 @@ abstract class Datatable extends Component
     /**
      * Export the datatable to a CSV file.
      */
+    #[Renderless]
     public function toCsv(): BinaryFileResponse|StreamedResponse|Response
     {
         return $this->export('csv');
@@ -270,6 +278,7 @@ abstract class Datatable extends Component
     /**
      * Export the datatable to a JSON file.
      */
+    #[Renderless]
     public function toJson(): BinaryFileResponse|StreamedResponse|Response
     {
         return $this->export('json');
@@ -278,6 +287,7 @@ abstract class Datatable extends Component
     /**
      * Export the datatable to a PDF file.
      */
+    #[Renderless]
     public function toPdf(): BinaryFileResponse|StreamedResponse|Response
     {
         return $this->export('pdf');
