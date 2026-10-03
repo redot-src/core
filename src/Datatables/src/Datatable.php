@@ -590,7 +590,7 @@ abstract class Datatable extends Component
      */
     protected function applySearch(Builder $query): void
     {
-        if (! $this->search) {
+        if ($this->search === '') {
             return;
         }
 

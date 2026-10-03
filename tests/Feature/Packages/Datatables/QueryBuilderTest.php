@@ -53,6 +53,20 @@ it('searches direct and relation columns globally', function () {
     expect($datatable->compiledQuery()->pluck('id')->all())->toBe([2, 1]);
 });
 
+it('searches for zero in direct and relation columns while allowing an empty search', function () {
+    BlogComment::query()->findOrFail(1)->update(['body' => '0']);
+    BlogPost::query()->findOrFail(2)->update(['title' => 'Version 0']);
+
+    $datatable = new BlogCommentsDatatable;
+    $datatable->search = '0';
+
+    expect($datatable->compiledQuery()->pluck('id')->all())->toBe([3, 1]);
+
+    $datatable->search = '';
+
+    expect($datatable->compiledQuery()->pluck('id')->all())->toBe([3, 2, 1]);
+});
+
 it('sorts by a single-level relation column', function () {
     $datatable = new BlogCommentsDatatable;
     $datatable->sortColumn = '-post.title';
