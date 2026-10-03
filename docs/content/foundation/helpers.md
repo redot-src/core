@@ -133,9 +133,7 @@ Blade — without importing anything.
   ```
 
 - **`create_thumbnail($path, $width, $height, $quality)`** — generate a thumbnail
-  next to an image (in a `thumbnails/` subfolder) and return its public-relative
-  path. Keeps aspect ratio, preserves PNG/GIF transparency, and reuses an existing
-  thumbnail when it is newer than the source. Defaults to 100×100.
+  next to an image (in a `thumbnails/` subfolder) and return its public-relative path. Keeps aspect ratio and preserves PNG/GIF transparency. Each width, height, and quality combination has its own cached file, reused when it is at least as new as the source. Defaults to 100×100.
 
   ```php
   $thumb = create_thumbnail(public_path($path));            // 100x100

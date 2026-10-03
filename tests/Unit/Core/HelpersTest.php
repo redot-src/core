@@ -2,6 +2,7 @@
 
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Image;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Validation\ValidationException;
 use Redot\Http\Middleware\RoutePermission;
@@ -40,14 +41,74 @@ it('creates proportionally scaled image thumbnails', function () {
 
     $image = imagecreatetruecolor(200, 100);
     imagepng($image, $source);
-    imagedestroy($image);
+    unset($image);
 
     $thumbnail = create_thumbnail($source, 100, 100, 90);
     $thumbnailPath = public_path($thumbnail);
 
-    expect($thumbnail)->toBe('/helper-image-test/thumbnails/source-thumb.png')
+    expect($thumbnail)->toBe('/helper-image-test/thumbnails/source-thumb-100x100-q90.png')
         ->and(File::exists($thumbnailPath))->toBeTrue()
         ->and(getimagesize($thumbnailPath))->toMatchArray([100, 50]);
+});
+
+it('caches separate thumbnails for different rendering options', function (int $width, int $height, int $quality, array $dimensions) {
+    $directory = public_path('helper-image-test');
+    $source = $directory . '/source.png';
+    File::ensureDirectoryExists($directory);
+
+    $image = imagecreatetruecolor(200, 100);
+    imagepng($image, $source);
+    unset($image);
+
+    $original = create_thumbnail($source, 100, 100, 90);
+    $variant = create_thumbnail($source, $width, $height, $quality);
+
+    expect($variant)->not->toBe($original)
+        ->and(File::exists(public_path($original)))->toBeTrue()
+        ->and(File::exists(public_path($variant)))->toBeTrue()
+        ->and(getimagesize(public_path($original)))->toMatchArray([100, 50])
+        ->and(getimagesize(public_path($variant)))->toMatchArray($dimensions);
+})->with([
+    'width' => [150, 100, 90, [150, 75]],
+    'height' => [100, 25, 90, [50, 25]],
+    'quality' => [100, 100, 80, [100, 50]],
+]);
+
+it('reuses a current thumbnail for identical rendering options', function () {
+    $directory = public_path('helper-image-test');
+    $source = $directory . '/source.png';
+    File::ensureDirectoryExists($directory);
+
+    $image = imagecreatetruecolor(200, 100);
+    imagepng($image, $source);
+    unset($image);
+
+    $thumbnail = create_thumbnail($source, 100, 100, 90);
+
+    Image::shouldReceive('fromPath')->never();
+
+    expect(create_thumbnail($source, 100, 100, 90))->toBe($thumbnail);
+});
+
+it('regenerates a thumbnail when its source image changes', function () {
+    $directory = public_path('helper-image-test');
+    $source = $directory . '/source.png';
+    File::ensureDirectoryExists($directory);
+
+    $image = imagecreatetruecolor(200, 100);
+    imagepng($image, $source);
+    unset($image);
+
+    $thumbnail = create_thumbnail($source, 100, 100, 90);
+
+    $image = imagecreatetruecolor(200, 200);
+    imagepng($image, $source);
+    unset($image);
+    touch($source, filemtime(public_path($thumbnail)) + 1);
+    clearstatcache();
+
+    expect(create_thumbnail($source, 100, 100, 90))->toBe($thumbnail)
+        ->and(getimagesize(public_path($thumbnail)))->toMatchArray([100, 100]);
 });
 
 it('returns an authenticated json error payload for authentication exceptions', function () {

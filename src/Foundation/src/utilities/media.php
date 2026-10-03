@@ -34,7 +34,7 @@ function create_thumbnail(string $path, int $width = 100, int $height = 100, int
         mkdir($thumbnailsDir, 0755, true);
     }
 
-    $thumbnailPath = $thumbnailsDir . DIRECTORY_SEPARATOR . $filename . '-thumb.' . $extension;
+    $thumbnailPath = $thumbnailsDir . DIRECTORY_SEPARATOR . sprintf('%s-thumb-%dx%d-q%d.%s', $filename, $width, $height, $quality, $extension);
 
     if (file_exists($thumbnailPath) && filemtime($thumbnailPath) >= filemtime($path)) {
         return str_replace(public_path(), '', $thumbnailPath);
