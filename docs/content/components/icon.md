@@ -1,7 +1,6 @@
 # Icon
 
-`<x-icon>` renders an icon — either from a Tabler icon-font class string or from
-a raw inline SVG/markup string.
+`<x-icon>` renders an icon — either from a Tabler icon-font class string or from a raw inline SVG/markup string.
 
 ## Usage
 
@@ -11,11 +10,9 @@ a raw inline SVG/markup string.
 
 ## Options
 
-- **`icon`** — required. Either an icon class string (e.g. `ti ti-plus`) or a
-  raw markup string starting with `<` (e.g. an inline `<svg>`).
+- **`icon`** — required. Either an icon class string (e.g. `ti ti-plus`) or a raw markup string starting with `<` (e.g. an inline `<svg>`).
 
-When you pass a class string, extra `class` values you add are merged onto the
-rendered element.
+When you pass a class string, extra `class` values you add are merged onto the rendered element.
 
 ## Examples
 

@@ -1,8 +1,6 @@
 # Date Picker
 
-`<x-date-picker>` is a text field with a calendar/time picker, backed by Tempus
-Dominus. It renders a labelled, hinted input group with a calendar icon and can
-pick dates, date-times, or times only.
+`<x-date-picker>` is a text field with a calendar/time picker, backed by Tempus Dominus. It renders a labelled, hinted input group with a calendar icon and can pick dates, date-times, or times only.
 
 ## Usage
 
@@ -10,16 +8,13 @@ pick dates, date-times, or times only.
 <x-date-picker name="published_at" :title="__('Published at')" :value="old('published_at', $post?->published_at)" />
 ```
 
-It shares the [common form-field attributes](/components/overview#shared-form-field-conventions)
-(`name`, `title`, `value`, `hint`, `validation`). The picker initializes itself
-through the [asset & init system](/frontend/asset-system).
+It shares the [common form-field attributes](/components/overview#shared-form-field-conventions) (`name`, `title`, `value`, `hint`, `validation`). The picker initializes itself through the [asset & init system](/frontend/asset-system).
 
 ## Options
 
 - **`title`** — label shown above the field.
 - **`hint`** — helper text shown below the field.
-- **`value`** — initial value; defaults to `yyyy-MM-dd`. Use `old()` to preserve
-  input on validation errors.
+- **`value`** — initial value; defaults to `yyyy-MM-dd`. Use `old()` to preserve input on validation errors.
 - **`datetime`** — also pick a time; the value format becomes `yyyy-MM-dd hh:mm T`.
 - **`only-time`** — pick a time only, with no calendar; format becomes `hh:mm T`.
 - **`id`** — element id; auto-generated when omitted.

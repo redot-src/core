@@ -1,9 +1,6 @@
 # Icon Picker
 
-`<x-icon-picker>` is a text field bound to a Tabler icon, with a live
-preview and a search button that opens a modal to browse and pick locally hosted
-Tabler icons. The selected icon class string (e.g. `ti ti-note`) is
-written back into the field.
+`<x-icon-picker>` is a text field bound to a Tabler icon, with a live preview and a search button that opens a modal to browse and pick locally hosted Tabler icons. The selected icon class string (e.g. `ti ti-note`) is written back into the field.
 
 ## Usage
 
@@ -11,10 +8,7 @@ written back into the field.
 <x-icon-picker name="icon" :title="__('Icon')" :value="old('icon', $category?->icon)" />
 ```
 
-It shares the [common form-field attributes](/components/overview#shared-form-field-conventions)
-(`name`, `title`, `value`, `hint`, `validation`). The stored value is a full Tabler
-icon class string, so seed `value` with that full string. The
-picker initializes itself through the [asset & init system](/frontend/asset-system).
+It shares the [common form-field attributes](/components/overview#shared-form-field-conventions) (`name`, `title`, `value`, `hint`, `validation`). The stored value is a full Tabler icon class string, so seed `value` with that full string. The picker initializes itself through the [asset & init system](/frontend/asset-system).
 
 ## Options
 
@@ -43,8 +37,7 @@ picker initializes itself through the [asset & init system](/frontend/asset-syst
 />
 ```
 
-The icon search reads the locally hosted Tabler Icons stylesheet and needs no
-external API access.
+The icon search reads the locally hosted Tabler Icons stylesheet and needs no external API access.
 
 ## Related
 

@@ -1,9 +1,6 @@
 # Repeater Card
 
-`<x-repeater-card>` is a ready-made card for a [Repeater](/components/repeater)
-item. It gives each item a drag handle and insert/remove buttons that the
-repeater wires up automatically, so you don't have to build that chrome yourself.
-Use it as the root element of a repeater's item template.
+`<x-repeater-card>` is a ready-made card for a [Repeater](/components/repeater) item. It gives each item a drag handle and insert/remove buttons that the repeater wires up automatically, so you don't have to build that chrome yourself. Use it as the root element of a repeater's item template.
 
 ## Usage
 
@@ -16,14 +13,11 @@ Use it as the root element of a repeater's item template.
 </x-repeater>
 ```
 
-Put the item's fields in the default slot; they render inside the card body. The
-grip and the insert/remove buttons only work inside an `<x-repeater>`, which
-clones the card per item.
+Put the item's fields in the default slot; they render inside the card body. The grip and the insert/remove buttons only work inside an `<x-repeater>`, which clones the card per item.
 
 ## Options
 
-This component has no options. Put the item fields in the default slot; any
-`class` you pass is merged onto the card body.
+This component has no options. Put the item fields in the default slot; any `class` you pass is merged onto the card body.
 
 ## Examples
 

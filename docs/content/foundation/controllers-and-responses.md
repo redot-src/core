@@ -1,10 +1,6 @@
 # Controllers & API Responses
 
-Extend the Redot base controller in your dashboard controllers to get two
-ready-made response styles: redirect-with-flash helpers for server-rendered
-(Blade) flows, and consistent JSON envelopes for API endpoints. Authorization
-(`$this->authorize(...)`) and validation (`$this->validate(...)`) are wired in
-too, so your controllers stay thin.
+Extend the Redot base controller in your dashboard controllers to get two ready-made response styles: redirect-with-flash helpers for server-rendered (Blade) flows, and consistent JSON envelopes for API endpoints. Authorization (`$this->authorize(...)`) and validation (`$this->validate(...)`) are wired in too, so your controllers stay thin.
 
 ## Usage
 
@@ -25,13 +21,9 @@ class PostController extends Controller
 
 ## Redirect + flash helpers
 
-For HTML flows, these return a redirect carrying a flashed message. Each takes an
-optional route name (and route parameters) to redirect to; with no route they
-redirect `back()`. The flash keys (`success`, `error`, `warning`, `info`) are
-what the dashboard's toast layer reads — see [Toastify](/packages/toastify).
+For HTML flows, these return a redirect carrying a flashed message. Each takes an optional route name (and route parameters) to redirect to; with no route they redirect `back()`. The flash keys (`success`, `error`, `warning`, `info`) are what the dashboard's toast layer reads — see [Toastify](/packages/toastify).
 
-The CRUD helpers build a translated message for you (e.g. "Post has been
-created.") and flash it as a success:
+The CRUD helpers build a translated message for you (e.g. "Post has been created.") and flash it as a success:
 
 - **`created`** — confirm a resource was created. Pass the resource label.
 - **`updated`** — confirm a resource was updated.
@@ -47,25 +39,16 @@ The generic helpers flash an arbitrary message under their own key:
 
 ## JSON responses
 
-For API endpoints, two helpers emit a consistent envelope (`code`, `success`,
-`message`, and an optional `payload`):
+For API endpoints, two helpers emit a consistent envelope (`code`, `success`, `message`, and an optional `payload`):
 
 ```json
 { "code": 200, "success": true, "message": "OK", "payload": {} }
 ```
 
-- **`respond`** — return a success response. Pass the payload (a model, array, or
-  paginator), an optional message, and an optional HTTP status. The `payload`
-  key is omitted only when you pass `null` explicitly (handy for message-only
-  responses).
-- **`fail`** — emit a failure envelope. It *throws*, short-circuiting the
-  request, so you do not need to `return` it.
+- **`respond`** — return a success response. Pass the payload (a model, array, or paginator), an optional message, and an optional HTTP status. The `payload` key is omitted only when you pass `null` explicitly (handy for message-only responses).
+- **`fail`** — emit a failure envelope. It *throws*, short-circuiting the request, so you do not need to `return` it.
 
-Any exception thrown from an `api/*` route (or a request that expects JSON) is
-automatically converted into this same envelope — including the one thrown by
-`fail()`. Validation errors surface as a `422` with the field errors in
-`payload`; not-found as `404`, auth failures as `401`/`403`, and so on. You
-rarely call the underlying converter yourself.
+Any exception thrown from an `api/*` route (or a request that expects JSON) is automatically converted into this same envelope — including the one thrown by `fail()`. Validation errors surface as a `422` with the field errors in `payload`; not-found as `404`, auth failures as `401`/`403`, and so on. You rarely call the underlying converter yourself.
 
 ## Examples
 

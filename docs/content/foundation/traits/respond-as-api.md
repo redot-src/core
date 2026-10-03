@@ -1,10 +1,6 @@
 # RespondAsApi
 
-Add this trait to a controller to emit consistent JSON API responses. It gives
-you two helpers — `respond()` for successes and `fail()` for failures — that
-produce a uniform envelope (`code`, `success`, `message`, and an optional
-`payload`). The [base controller](/foundation/controllers-and-responses) already
-includes it, so most controllers get these for free.
+Add this trait to a controller to emit consistent JSON API responses. It gives you two helpers — `respond()` for successes and `fail()` for failures — that produce a uniform envelope (`code`, `success`, `message`, and an optional `payload`). The [base controller](/foundation/controllers-and-responses) already includes it, so most controllers get these for free.
 
 ## Usage
 
@@ -22,8 +18,7 @@ class PostController extends Controller
 }
 ```
 
-To use it on a class that doesn't extend the base controller, add the trait
-directly:
+To use it on a class that doesn't extend the base controller, add the trait directly:
 
 ```php
 use Redot\Traits\RespondAsApi;
@@ -47,12 +42,8 @@ Every response shares the same shape:
 
 ## What the trait gives you
 
-- **`respond`** — return a success response. Pass the payload (a model, array, or
-  paginator), an optional message, and an optional HTTP status. The `payload`
-  key is omitted only when you pass `null` explicitly — handy for message-only
-  responses.
-- **`fail`** — emit a failure response. It *throws*, short-circuiting the
-  request, so you do not need to `return` it.
+- **`respond`** — return a success response. Pass the payload (a model, array, or paginator), an optional message, and an optional HTTP status. The `payload` key is omitted only when you pass `null` explicitly — handy for message-only responses.
+- **`fail`** — emit a failure response. It *throws*, short-circuiting the request, so you do not need to `return` it.
 
 ## Examples
 
@@ -77,13 +68,9 @@ $this->fail(__('Validation failed.'), 422, $errors);
 
 ## Notes
 
-- **`fail()` throws** — don't write code expecting execution to continue after
-  it.
-- For HTML/redirect flows, use the base controller's flash helpers
-  (`created()`/`updated()`/`error()`/…) instead — see
-  [Controllers & API Responses](/foundation/controllers-and-responses).
+- **`fail()` throws** — don't write code expecting execution to continue after it.
+- For HTML/redirect flows, use the base controller's flash helpers (`created()`/`updated()`/`error()`/…) instead — see [Controllers & API Responses](/foundation/controllers-and-responses).
 
 ## Related
 
-- [Controllers & API Responses](/foundation/controllers-and-responses) — the base
-  controller and its flash helpers.
+- [Controllers & API Responses](/foundation/controllers-and-responses) — the base controller and its flash helpers.

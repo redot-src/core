@@ -1,9 +1,6 @@
 # Repeater
 
-`<x-repeater>` lets the user add, remove, and reorder repeated groups of fields.
-Define one item's fields once in the body; the repeater clones that template per
-item and serializes the whole list into a hidden input as JSON on submit. Use it
-for things like a list of links, phone numbers, or tags.
+`<x-repeater>` lets the user add, remove, and reorder repeated groups of fields. Define one item's fields once in the body; the repeater clones that template per item and serializes the whole list into a hidden input as JSON on submit. Use it for things like a list of links, phone numbers, or tags.
 
 ## Usage
 
@@ -21,34 +18,23 @@ for things like a list of links, phone numbers, or tags.
 </x-repeater>
 ```
 
-The body is the per-item template. Field `name`s inside are rewritten to indexed
-array names automatically (`links[0][label]`, `links[1][label]`, …), so set a
-`name` on the repeater for the submitted data, and an `id` when you need it
-stable. It shares the
-[common form-field attributes](/components/overview#shared-form-field-conventions)
-(`name`, `title`, `value`, `hint`, `validation`) and initializes itself through
-the [asset & init system](/frontend/asset-system).
+The body is the per-item template. Field `name`s inside are rewritten to indexed array names automatically (`links[0][label]`, `links[1][label]`, …), so set a `name` on the repeater for the submitted data, and an `id` when you need it stable. It shares the [common form-field attributes](/components/overview#shared-form-field-conventions) (`name`, `title`, `value`, `hint`, `validation`) and initializes itself through the [asset & init system](/frontend/asset-system).
 
 ## Options
 
 - **`title`** — label shown in the toolbar.
 - **`hint`** — helper text shown below the component.
-- **`value`** — initial items (an array, collection, or JSON string); one item is
-  inserted per entry.
+- **`value`** — initial items (an array, collection, or JSON string); one item is inserted per entry.
 - **`id`** — element id; auto-generated when omitted.
 
-Use these markers inside the item template to wire up the toolbar buttons and
-drag handle:
+Use these markers inside the item template to wire up the toolbar buttons and drag handle:
 
 - **`action="insert"`** — add a new item after this one.
 - **`action="remove"`** — remove this item.
 - **`action="clear"`** — clear all items.
 - **`sortable-handle`** — restrict drag-reordering to this element.
 
-Plugin behavior can be tuned per element with `repeater-*` attributes (e.g.
-`repeater-sortable="false"`, `repeater-initial-items="3"`) — see
-[RedotRepeater](/frontend/plugins/redot-repeater). Override the toolbar/list with
-a **`wrapper`** slot, or the empty state with an **`empty`** slot.
+Plugin behavior can be tuned per element with `repeater-*` attributes (e.g. `repeater-sortable="false"`, `repeater-initial-items="3"`) — see [RedotRepeater](/frontend/plugins/redot-repeater). Override the toolbar/list with a **`wrapper`** slot, or the empty state with an **`empty`** slot.
 
 ## Examples
 

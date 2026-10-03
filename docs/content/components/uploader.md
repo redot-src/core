@@ -1,9 +1,6 @@
 # Uploader
 
-`<x-uploader>` is a drag-and-drop file upload field. Files upload as they're
-dropped, and their references are stored in a hidden input so the value submits
-with a normal form post. It's the input counterpart to
-[Attachments](/components/attachments).
+`<x-uploader>` is a drag-and-drop file upload field. Files upload as they're dropped, and their references are stored in a hidden input so the value submits with a normal form post. It's the input counterpart to [Attachments](/components/attachments).
 
 ## Usage
 
@@ -11,10 +8,7 @@ with a normal form post. It's the input counterpart to
 <x-uploader name="attachments" :title="__('Attachments')" :value="old('attachments', $post?->attachments)" directory="posts" />
 ```
 
-It shares the [common form-field attributes](/components/overview#shared-form-field-conventions)
-(`name`, `title`, `value`, `hint`, `validation`), and initializes itself through
-the [asset & init system](/frontend/asset-system). Seed `value` with the same
-shape the uploader stored previously.
+It shares the [common form-field attributes](/components/overview#shared-form-field-conventions) (`name`, `title`, `value`, `hint`, `validation`), and initializes itself through the [asset & init system](/frontend/asset-system). Seed `value` with the same shape the uploader stored previously.
 
 ## Options
 

@@ -1,7 +1,6 @@
 # Textarea
 
-`<x-textarea>` is the standard multi-line text field, with an optional label and
-hint. It can auto-grow its height as the user types.
+`<x-textarea>` is the standard multi-line text field, with an optional label and hint. It can auto-grow its height as the user types.
 
 ## Usage
 
@@ -9,10 +8,7 @@ hint. It can auto-grow its height as the user types.
 <x-textarea name="body" :title="__('Body')" :value="old('body', $post?->body)" />
 ```
 
-It shares the [common form-field attributes](/components/overview#shared-form-field-conventions)
-(`name`, `title`, `value`, `hint`, `validation`). Any other HTML attribute you
-pass (`placeholder`, `rows`, `wire:model`, …) falls through to the underlying
-`<textarea>`.
+It shares the [common form-field attributes](/components/overview#shared-form-field-conventions) (`name`, `title`, `value`, `hint`, `validation`). Any other HTML attribute you pass (`placeholder`, `rows`, `wire:model`, …) falls through to the underlying `<textarea>`.
 
 ## Options
 

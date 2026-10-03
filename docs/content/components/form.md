@@ -1,9 +1,6 @@
 # Form
 
-`<x-form>` is the standard form wrapper. It renders the `<form>`
-tags, injects the CSRF token, spoofs the HTTP method when needed, and stamps a
-hidden form identifier — so every page-level form is
-built on top of it.
+`<x-form>` is the standard form wrapper. It renders the `<form>` tags, injects the CSRF token, spoofs the HTTP method when needed, and stamps a hidden form identifier — so every page-level form is built on top of it.
 
 ## Usage
 
@@ -13,22 +10,17 @@ built on top of it.
 </x-form>
 ```
 
-Put your fields and buttons inside the default slot. Any extra attribute
-(`class`, `id`, …) is forwarded to the underlying `<form>` element.
+Put your fields and buttons inside the default slot. Any extra attribute (`class`, `id`, …) is forwarded to the underlying `<form>` element.
 
 ## Options
 
 - **`action`** — the form action URL.
-- **`method`** — the HTTP verb (`GET`, `POST`, `PUT`, `PATCH`, `DELETE`).
-  Real verbs other than `GET`/`POST` are sent as `POST` with a spoofed method
-  field automatically.
+- **`method`** — the HTTP verb (`GET`, `POST`, `PUT`, `PATCH`, `DELETE`). Real verbs other than `GET`/`POST` are sent as `POST` with a spoofed method field automatically.
 - **`route`** — a named route used to build the action instead of `action`.
 - **`routeParams`** — parameters passed to the named route.
-- **`enctype`** — the form encoding type. Defaults to `multipart/form-data` so
-  file uploads work without extra config.
+- **`enctype`** — the form encoding type. Defaults to `multipart/form-data` so file uploads work without extra config.
 - **`id`** — the form id; auto-generated when omitted.
-- **`disable-validation`** — opt the form out of client-side validation (see
-  [RedotValidator](/frontend/plugins/redot-validator)).
+- **`disable-validation`** — opt the form out of client-side validation (see [RedotValidator](/frontend/plugins/redot-validator)).
 
 ## Examples
 

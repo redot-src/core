@@ -1,33 +1,18 @@
 # Localization
 
-Redot Core resolves the active locale on every request, persists it in the
-session and a cookie, and keeps URLs in sync — so the right language is served
-and links carry the locale automatically. Translation strings are managed in the
-dashboard and published back to your Laravel language files.
+Redot Core resolves the active locale on every request, persists it in the session and a cookie, and keeps URLs in sync — so the right language is served and links carry the locale automatically. Translation strings are managed in the dashboard and published back to your Laravel language files.
 
 ## How locale resolution works
 
-The localization layer runs automatically on website and dashboard routes; you
-do not wire it up. The `website` or `dashboard` scope is passed into the
-middleware when those groups are registered — it is not inferred from the URL.
-For each request it:
+The localization layer runs automatically on website and dashboard routes; you do not wire it up. The `website` or `dashboard` scope is passed into the middleware when those groups are registered — it is not inferred from the URL. For each request it:
 
-1. Uses the **scope** passed to the middleware (`website` or `dashboard`). Each
-   scope has its own allowed-locale list (`dashboard_locales` /
-   `website_locales` settings) and its own session and cookie keys.
-2. Picks the first allowed locale from: `?locale=` query string → the locale URL
-   segment → the session → the locale cookie → the browser's `Accept-Language`.
-3. Falls back to the first allowed locale if none of those are allowed — so an
-   unsupported URL segment still prefers the visitor's last language.
-4. Applies it, stores it in the session and a long-lived cookie, and makes
-   generated URLs carry it automatically — so `route()` calls do not need a
-   `locale` argument.
-5. If the URL carried a different locale than the one resolved, redirects to the
-   corrected URL.
+1. Uses the **scope** passed to the middleware (`website` or `dashboard`). Each scope has its own allowed-locale list (`dashboard_locales` / `website_locales` settings) and its own session and cookie keys.
+2. Picks the first allowed locale from: `?locale=` query string → the locale URL segment → the session → the locale cookie → the browser's `Accept-Language`.
+3. Falls back to the first allowed locale if none of those are allowed — so an unsupported URL segment still prefers the visitor's last language.
+4. Applies it, stores it in the session and a long-lived cookie, and makes generated URLs carry it automatically — so `route()` calls do not need a `locale` argument.
+5. If the URL carried a different locale than the one resolved, redirects to the corrected URL.
 
-Because the allowed locales come from settings (not config), changing
-`website_locales` / `dashboard_locales` takes effect immediately. See
-[Settings](/foundation/settings).
+Because the allowed locales come from settings (not config), changing `website_locales` / `dashboard_locales` takes effect immediately. See [Settings](/foundation/settings).
 
 ## Configuration
 
@@ -46,16 +31,13 @@ The relevant keys live in `config/redot.php`:
 ],
 ```
 
-The available codes and display names are exposed at runtime as
-`config('app.locales')` (a `code => name` map), populated from the languages you
-have configured.
+The available codes and display names are exposed at runtime as `config('app.locales')` (a `code => name` map), populated from the languages you have configured.
 
 ## Usage
 
 ### A locale switcher
 
-Render links that set `?locale=`; the request layer reads and remembers the
-choice:
+Render links that set `?locale=`; the request layer reads and remembers the choice:
 
 ```blade
 @if (count(setting('dashboard_locales')) > 1)
@@ -79,14 +61,11 @@ $direction = Language::current()->direction; // 'rtl' for Arabic, 'ltr' otherwis
 
 ### Querying translation tokens
 
-Translation entries expose convenience scopes you can compose. Use them to drive
-the token-management UI or your own reporting:
+Translation entries expose convenience scopes you can compose. Use them to drive the token-management UI or your own reporting:
 
 - **`published()` / `unpublished()`** — entries written back to disk, or not yet.
-- **`modified()` / `notModified()`** — entries whose value differs from the
-  original it was extracted with.
-- **`fromJson()` / `notFromJson()`** — entries from the JSON catalog vs. PHP
-  language files.
+- **`modified()` / `notModified()`** — entries whose value differs from the original it was extracted with.
+- **`fromJson()` / `notFromJson()`** — entries from the JSON catalog vs. PHP language files.
 
 ```php
 use Redot\Models\LanguageToken;
@@ -98,10 +77,8 @@ LanguageToken::unpublished()->modified()->count();
 ## Notes
 
 - Editing a translation value un-publishes it — re-publish after edits.
-- `Language::current()` resolves the language matching the active locale, so make
-  sure your locales are seeded.
-- With `append_locale_to_url` off, locale comes from query/session/cookie/browser
-  only and there is no URL prefix or redirect.
+- `Language::current()` resolves the language matching the active locale, so make sure your locales are seeded.
+- With `append_locale_to_url` off, locale comes from query/session/cookie/browser only and there is no URL prefix or redirect.
 
 ## Related
 

@@ -1,8 +1,6 @@
 # Toggle
 
-`<x-toggle>` renders a switch-style checkbox with an optional label, hint, and
-distinct on/off captions. It submits as a normal checkbox, so it works in plain
-form posts with no JavaScript.
+`<x-toggle>` renders a switch-style checkbox with an optional label, hint, and distinct on/off captions. It submits as a normal checkbox, so it works in plain form posts with no JavaScript.
 
 ## Usage
 
@@ -10,8 +8,7 @@ form posts with no JavaScript.
 <x-toggle name="published" :title="__('Published')" :value="old('published', $post?->published ?? true)" />
 ```
 
-It shares the [common form-field attributes](/components/overview#shared-form-field-conventions)
-(`name`, `title`, `value`, `hint`, `validation`). `value` is the checked state.
+It shares the [common form-field attributes](/components/overview#shared-form-field-conventions) (`name`, `title`, `value`, `hint`, `validation`). `value` is the checked state.
 
 ## Options
 
@@ -22,8 +19,7 @@ It shares the [common form-field attributes](/components/overview#shared-form-fi
 - **`off`** — caption shown when off (defaults to "Disabled").
 - **`id`** — element id; auto-generated when omitted.
 
-Any `class` you pass lands on the switch wrapper, so use Bootstrap layout helpers
-like `form-check-reverse` or `mb-0` there.
+Any `class` you pass lands on the switch wrapper, so use Bootstrap layout helpers like `form-check-reverse` or `mb-0` there.
 
 ## Examples
 

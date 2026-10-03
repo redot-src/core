@@ -1,14 +1,10 @@
 # Components Overview
 
-Redot Dashboard ships a library of Blade components for building admin and
-website screens — form inputs, layout primitives, display widgets, and
-third-party integrations. This page covers how to use them and the conventions
-every component shares; each component has its own page for the details.
+Redot Dashboard ships a library of Blade components for building admin and website screens — form inputs, layout primitives, display widgets, and third-party integrations. This page covers how to use them and the conventions every component shares; each component has its own page for the details.
 
 ## Using a component
 
-Components are plain Blade tags. Pass props as attributes, and prefix any value
-that is a PHP expression with `:`.
+Components are plain Blade tags. Pass props as attributes, and prefix any value that is a PHP expression with `:`.
 
 ```blade
 <x-input name="title" :title="__('Title')" :value="old('title', $post?->title)" validation="required" />
@@ -16,28 +12,19 @@ that is a PHP expression with `:`.
 
 - Plain attributes pass a literal string: `type="email"`.
 - `:` attributes evaluate PHP: `:value="$post->title"`, `:title="__('Name')"`.
-- Any extra HTML attribute you add (`id`, `class`, `placeholder`, `disabled`,
-  `readonly`, `wire:model`, …) is forwarded to the underlying element, so you can
-  treat a component like the input it wraps.
+- Any extra HTML attribute you add (`id`, `class`, `placeholder`, `disabled`, `readonly`, `wire:model`, …) is forwarded to the underlying element, so you can treat a component like the input it wraps.
 
 ## Shared form-field conventions
 
-Most form inputs (`<x-input>`, `<x-select>`, `<x-textarea>`, `<x-date-picker>`,
-and friends) accept the same core attributes, so once you learn one you know them
-all:
+Most form inputs (`<x-input>`, `<x-select>`, `<x-textarea>`, `<x-date-picker>`, and friends) accept the same core attributes, so once you learn one you know them all:
 
 - **`name`** — the field name submitted with the form.
 - **`title`** — label text shown above the field (a localized string).
-- **`value`** — the initial value; pair with `old()` to preserve input on
-  validation errors.
+- **`value`** — the initial value; pair with `old()` to preserve input on validation errors.
 - **`hint`** — small helper text shown beneath the field.
-- **`validation`** — client-side validation rules (e.g. `required`,
-  `required|email`). If the rules contain `required`, the label shows a required
-  marker. See [RedotValidator](/frontend/plugins/redot-validator).
+- **`validation`** — client-side validation rules (e.g. `required`, `required|email`). If the rules contain `required`, the label shows a required marker. See [RedotValidator](/frontend/plugins/redot-validator).
 
-Components that wrap a JavaScript widget (date pickers, selects, the rich editor,
-uploader, …) light up automatically through the [asset & init
-system](/frontend/asset-system) — you don't wire up any JS yourself.
+Components that wrap a JavaScript widget (date pickers, selects, the rich editor, uploader, …) light up automatically through the [asset & init system](/frontend/asset-system) — you don't wire up any JS yourself.
 
 ## Component index
 

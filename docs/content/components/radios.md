@@ -1,8 +1,6 @@
 # Radios
 
-`<x-radios>` renders a group of radio buttons from an `options` map, with an
-optional label, hint, per-option disabling, and inline layout. Use it for
-single-choice fields.
+`<x-radios>` renders a group of radio buttons from an `options` map, with an optional label, hint, per-option disabling, and inline layout. Use it for single-choice fields.
 
 ## Usage
 
@@ -10,15 +8,11 @@ single-choice fields.
 <x-radios name="theme" :title="__('Theme')" :value="$current" :options="$options" />
 ```
 
-`options` is a key/label map: the **key** is the value submitted with the form,
-the **value** is the visible label. It shares the
-[common form-field attributes](/components/overview#shared-form-field-conventions)
-(`name`, `title`, `value`, `hint`, `validation`).
+`options` is a key/label map: the **key** is the value submitted with the form, the **value** is the visible label. It shares the [common form-field attributes](/components/overview#shared-form-field-conventions) (`name`, `title`, `value`, `hint`, `validation`).
 
 ## Options
 
-- **`options`** — key/label map of radios. The key becomes the submitted value;
-  the value is the displayed label.
+- **`options`** — key/label map of radios. The key becomes the submitted value; the value is the displayed label.
 - **`title`** — label shown above the group.
 - **`hint`** — helper text shown below the group.
 - **`value`** — the option key to pre-select.

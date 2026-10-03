@@ -1,7 +1,6 @@
 # Flag
 
-`<x-flag>` renders a single country flag glyph. It's a lightweight,
-presentation-only component that pulls in its own stylesheet on first use.
+`<x-flag>` renders a single country flag glyph. It's a lightweight, presentation-only component that pulls in its own stylesheet on first use.
 
 ## Usage
 

@@ -1,49 +1,32 @@
 # Helpers
 
-`redot/core` ships a set of global helper functions for everyday needs:
-reading settings, building permission-aware UI, formatting
-values, working with assets, and shaping API responses. They are plain global
-functions, so you can call them anywhere — controllers, Livewire components, or
-Blade — without importing anything.
+`redot/core` ships a set of global helper functions for everyday needs: reading settings, building permission-aware UI, formatting values, working with assets, and shaping API responses. They are plain global functions, so you can call them anywhere — controllers, Livewire components, or Blade — without importing anything.
 
 ## Settings
 
-- **`setting('key', $default)`** — read an application setting, falling back to
-  the schema default (or your `$default`) when none is stored. Pass `true` as a
-  third argument for an uncached read. Call with no key to get the full map. See
-  [Settings](/foundation/settings) for the full reference.
+- **`setting('key', $default)`** — read an application setting, falling back to the schema default (or your `$default`) when none is stored. Pass `true` as a third argument for an uncached read. Call with no key to get the full map. See [Settings](/foundation/settings) for the full reference.
 
   ```blade
   <x-input name="site_title" :value="setting('site_title')" />
   ```
 
-- **`app_name()`** — the application name for the current locale (from the
-  translatable `app_name` setting), falling back to `config('app.name')`.
+- **`app_name()`** — the application name for the current locale (from the translatable `app_name` setting), falling back to `config('app.name')`.
 
   ```blade
   <a href="{{ url('/') }}">{{ app_name() }}</a>
   ```
 
-- **`app_url()`** — the application base URL. Mostly used to tell whether a URL
-  is internal or external.
+- **`app_url()`** — the application base URL. Mostly used to tell whether a URL is internal or external.
 
 ## URLs & routing
 
-- **`route_allowed('route.name')`** — whether the current admin may access a
-  named route. Use it to show/hide permission-gated UI. It applies the same
-  conventional and explicit permission aliases as route middleware. Routes that
-  opt out of permission middleware are allowed; protected routes defer to the
-  gate. The guard is guessed from the route's `auth` middleware (falling back
-  to `admins`); pass one explicitly as the second argument to override. See
-  [Datatables](/packages/datatables/overview) for the common use.
+- **`route_allowed('route.name')`** — whether the current admin may access a named route. Use it to show/hide permission-gated UI. It applies the same conventional and explicit permission aliases as route middleware. Routes that opt out of permission middleware are allowed; protected routes defer to the gate. The guard is guessed from the route's `auth` middleware (falling back to `admins`); pass one explicitly as the second argument to override. See [Datatables](/packages/datatables/overview) for the common use.
 
   ```php
   Action::edit('posts.edit')->visible(route_allowed('posts.edit'));
   ```
 
-- **`url_allowed($url)`** — the URL counterpart to `route_allowed()`. External
-  URLs are always allowed; internal ones resolve to a route name and defer to
-  `route_allowed()`. Handy for conditionally rendering links in Blade.
+- **`url_allowed($url)`** — the URL counterpart to `route_allowed()`. External URLs are always allowed; internal ones resolve to a route name and defer to `route_allowed()`. Handy for conditionally rendering links in Blade.
 
   ```blade
   @if ($create && url_allowed($create))
@@ -51,12 +34,9 @@ Blade — without importing anything.
   @endif
   ```
 
-- **`route_from_url($url)`** — resolve a URL string to its matched route name (or
-  `null` if nothing matches).
+- **`route_from_url($url)`** — resolve a URL string to its matched route name (or `null` if nothing matches).
 
-- **`back_or_route('route.name', $params)`** — a safe "go back" URL: the previous
-  page when it belongs to the app, otherwise the named route. Prevents open
-  redirects to external referrers.
+- **`back_or_route('route.name', $params)`** — a safe "go back" URL: the previous page when it belongs to the app, otherwise the named route. Prevents open redirects to external referrers.
 
   ```blade
   <a href="{{ back_or_route($back, $backParams) }}" class="btn">{{ __('Back') }}</a>
@@ -64,10 +44,7 @@ Blade — without importing anything.
 
 ## Requests & API responses
 
-- **`throw_api_exception($e)`** — turn any caught exception into the standard JSON
-  error envelope (mapping common exceptions to the right HTTP status). You rarely
-  call this directly — it is wired in as the global JSON exception renderer. See
-  [Controllers & API Responses](/foundation/controllers-and-responses).
+- **`throw_api_exception($e)`** — turn any caught exception into the standard JSON error envelope (mapping common exceptions to the right HTTP status). You rarely call this directly — it is wired in as the global JSON exception renderer. See [Controllers & API Responses](/foundation/controllers-and-responses).
 
   ```php
   try {
@@ -77,8 +54,7 @@ Blade — without importing anything.
   }
   ```
 
-- **`is_mobile()` / `is_desktop()`** — detect the device from the request's
-  user agent. Both return `false` safely when there is no request (e.g. console).
+- **`is_mobile()` / `is_desktop()`** — detect the device from the request's user agent. Both return `false` safely when there is no request (e.g. console).
 
   ```php
   if (is_mobile()) {
@@ -88,33 +64,27 @@ Blade — without importing anything.
 
 ## Formatting & display
 
-- **`format_phone($phone, $country)`** — normalize a phone number to E.164 form.
-  The default region is `EG`. Validate the input first (with the
-  [`Phone` rule](/foundation/rules)) — an unparseable string throws.
+- **`format_phone($phone, $country)`** — normalize a phone number to E.164 form. The default region is `EG`. Validate the input first (with the [`Phone` rule](/foundation/rules)) — an unparseable string throws.
 
   ```php
   format_phone('01001234567');        // +201001234567
   format_phone('2025550123', 'US');   // +12025550123
   ```
 
-- **`switch_badge($value, $true, $false)`** — render a green/red yes/no badge for
-  a truthy/falsy value. Returns raw HTML, so echo it unescaped.
+- **`switch_badge($value, $true, $false)`** — render a green/red yes/no badge for a truthy/falsy value. Returns raw HTML, so echo it unescaped.
 
   ```blade
   {!! switch_badge($post->is_active) !!}
   {!! switch_badge($post->published, __('Published'), __('Draft')) !!}
   ```
 
-- **`no_content()`** — a muted "No content" placeholder for empty rich-text
-  fields. Echo it raw.
+- **`no_content()`** — a muted "No content" placeholder for empty rich-text fields. Echo it raw.
 
   ```blade
   {!! $post->body ?: no_content() !!}
   ```
 
-- **`collect_ellipsis($items, $limit, $ellipsis)`** — take the first few items of
-  a collection and, when there are more, append a translated "and N more" marker.
-  The `:count` placeholder receives the number of hidden items.
+- **`collect_ellipsis($items, $limit, $ellipsis)`** — take the first few items of a collection and, when there are more, append a translated "and N more" marker. The `:count` placeholder receives the number of hidden items.
 
   ```php
   collect_ellipsis($tags, 2, ':count more')->implode(', ');
@@ -123,8 +93,7 @@ Blade — without importing anything.
 
 ## Files & images
 
-- **`is_image($path)`** — whether a file is an image (by MIME type). Takes a
-  filesystem path, not a URL.
+- **`is_image($path)`** — whether a file is an image (by MIME type). Takes a filesystem path, not a URL.
 
   ```php
   if (is_image(public_path($path))) {
@@ -132,16 +101,14 @@ Blade — without importing anything.
   }
   ```
 
-- **`create_thumbnail($path, $width, $height, $quality)`** — generate a thumbnail
-  next to an image (in a `thumbnails/` subfolder) and return its public-relative path. Keeps aspect ratio and preserves PNG/GIF transparency. Each width, height, and quality combination has its own cached file, reused when it is at least as new as the source. Defaults to 100×100.
+- **`create_thumbnail($path, $width, $height, $quality)`** — generate a thumbnail next to an image (in a `thumbnails/` subfolder) and return its public-relative path. Keeps aspect ratio and preserves PNG/GIF transparency. Each width, height, and quality combination has its own cached file, reused when it is at least as new as the source. Defaults to 100×100.
 
   ```php
   $thumb = create_thumbnail(public_path($path));            // 100x100
   $thumb = create_thumbnail(public_path($path), 200, 200, 90);
   ```
 
-- **`parse_csv($csv, $separator, $callback)`** — turn a comma-separated string
-  (or array) into a clean, trimmed, re-indexed array with empties removed.
+- **`parse_csv($csv, $separator, $callback)`** — turn a comma-separated string (or array) into a clean, trimmed, re-indexed array with empties removed.
 
   ```php
   parse_csv('a, b, , c'); // ['a', 'b', 'c']
@@ -151,35 +118,29 @@ Blade — without importing anything.
 
 See the [Asset & Init System](/frontend/asset-system) for the bigger picture.
 
-- **`hashed_asset($path)`** — a public asset URL with a cache-busting `?v=`
-  suffix derived from the file's modification time.
+- **`hashed_asset($path)`** — a public asset URL with a cache-busting `?v=` suffix derived from the file's modification time.
 
   ```blade
   <link rel="stylesheet" href="{{ hashed_asset('/assets/css/app.css') }}" />
   ```
 
-- **`dist_path($suffix)`** — the path to the build output directory, optionally
-  with a file appended.
+- **`dist_path($suffix)`** — the path to the build output directory, optionally with a file appended.
 
   ```php
   dist_path('init.js'); // .../public/assets/dist/init.js
   ```
 
-- **`trigger_dependencies_build()`** — clear the build output so front-end
-  dependencies are regenerated on the next request.
+- **`trigger_dependencies_build()`** — clear the build output so front-end dependencies are regenerated on the next request.
 
 ## Querying & components
 
-- **`search_model($query, $columns, $term)`** — apply a grouped `LIKE` search
-  across columns onto a query. Dotted columns (e.g. `category.name`) search the
-  related model. An empty term leaves the query untouched.
+- **`search_model($query, $columns, $term)`** — apply a grouped `LIKE` search across columns onto a query. Dotted columns (e.g. `category.name`) search the related model. An empty term leaves the query untouched.
 
   ```php
   search_model(Post::query(), ['title', 'body', 'category.name'], 'laravel');
   ```
 
-- **`component('name', $data)`** — render a Blade component to a string from PHP,
-  outside the usual `<x-...>` syntax. Useful inside Datatable column getters.
+- **`component('name', $data)`** — render a Blade component to a string from PHP, outside the usual `<x-...>` syntax. Useful inside Datatable column getters.
 
   ```php
   ->getter(fn ($value, User $user) => component('avatar', [
@@ -191,7 +152,5 @@ See the [Asset & Init System](/frontend/asset-system) for the bigger picture.
 ## Related
 
 - [Settings](/foundation/settings) — the store behind `setting()` and `app_name()`.
-- [Controllers & API Responses](/foundation/controllers-and-responses) — where
-  `throw_api_exception()` is used.
-- [Datatables](/packages/datatables/overview) — heavy consumer of `route_allowed()`
-  and `component()`.
+- [Controllers & API Responses](/foundation/controllers-and-responses) — where `throw_api_exception()` is used.
+- [Datatables](/packages/datatables/overview) — heavy consumer of `route_allowed()` and `component()`.

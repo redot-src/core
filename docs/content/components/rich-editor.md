@@ -1,7 +1,6 @@
 # Rich Editor
 
-`<x-rich-editor>` is a WYSIWYG rich-text field. Use it wherever you need
-formatted HTML content (post bodies, page content, descriptions) instead of plain text.
+`<x-rich-editor>` is a WYSIWYG rich-text field. Use it wherever you need formatted HTML content (post bodies, page content, descriptions) instead of plain text.
 
 ## Usage
 
@@ -9,10 +8,7 @@ formatted HTML content (post bodies, page content, descriptions) instead of plai
 <x-rich-editor name="body" :title="__('Body')" :value="old('body', $post?->body)" />
 ```
 
-It shares the [common form-field attributes](/components/overview#shared-form-field-conventions)
-(`name`, `title`, `value`, `validation`). Seed the editor's initial HTML with
-`value`. The editor initializes itself through the
-[asset & init system](/frontend/asset-system).
+It shares the [common form-field attributes](/components/overview#shared-form-field-conventions) (`name`, `title`, `value`, `validation`). Seed the editor's initial HTML with `value`. The editor initializes itself through the [asset & init system](/frontend/asset-system).
 
 ## Options
 

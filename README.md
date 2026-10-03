@@ -1,7 +1,6 @@
 # Redot Core
 
-Core package for the Redot Dashboard. It bundles five focused packages on top of
-a shared foundation of helpers, models, traits, casts, and validation rules:
+Core package for the Redot Dashboard. It bundles five focused packages on top of a shared foundation of helpers, models, traits, casts, and validation rules:
 
 - **Auth** — drop-in authentication actions, routes, and customization hooks.
 - **Datatables** — server-driven tables with columns, filters, row actions, and PDF export.
@@ -36,5 +35,4 @@ Tests that specifically check disabled features can opt out by setting `redot.te
 
 ## License
 
-This package is proprietary and intended for use only within the paid Redot Dashboard.
-See `LICENSE` for details.
+This package is proprietary and intended for use only within the paid Redot Dashboard. See `LICENSE` for details.

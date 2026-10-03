@@ -1,7 +1,6 @@
 # Empty
 
-`<x-empty>` renders an empty-state placeholder — an icon, a title, and a
-subtitle inside a card — for when a list, page, or section has nothing to show.
+`<x-empty>` renders an empty-state placeholder — an icon, a title, and a subtitle inside a card — for when a list, page, or section has nothing to show.
 
 ## Usage
 
@@ -13,8 +12,7 @@ The defaults read "Nothing to show here"; override them per context.
 
 ## Options
 
-- **`icon`** — icon class shown above the text. Pass a falsy value
-  (`:icon="false"`) to hide it.
+- **`icon`** — icon class shown above the text. Pass a falsy value (`:icon="false"`) to hide it.
 - **`title`** — the bold heading.
 - **`subtitle`** — secondary text below the title. Pass a falsy value to hide it.
 

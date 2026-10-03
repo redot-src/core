@@ -1,7 +1,6 @@
 # Avatar
 
-`<x-avatar>` renders a circular avatar. Give it an `image` and it shows that
-image; leave it off and it falls back to the first letter of `name`.
+`<x-avatar>` renders a circular avatar. Give it an `image` and it shows that image; leave it off and it falls back to the first letter of `name`.
 
 ## Usage
 
@@ -35,9 +34,7 @@ Omit `image` to render the first letter of the name:
 
 ### Live preview on file upload
 
-Add an `avatar-preview` marker attribute and wire a file input to the global
-`applyAvatarPreview` helper so the avatar updates client-side when a file is
-chosen:
+Add an `avatar-preview` marker attribute and wire a file input to the global `applyAvatarPreview` helper so the avatar updates client-side when a file is chosen:
 
 ```blade
 <x-avatar :name="$user->name" :image="$user->avatar" size="xl" avatar-preview />

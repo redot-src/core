@@ -1,9 +1,6 @@
 # Casts
 
-The `Union` cast lets a single text column hold a mix of value types — boolean,
-integer, float, array, or string — and read each one back as the type you stored. It is
-useful for generic key/value tables (like the settings store) where one `value`
-column must hold whatever a given row needs.
+The `Union` cast lets a single text column hold a mix of value types — boolean, integer, float, array, or string — and read each one back as the type you stored. It is useful for generic key/value tables (like the settings store) where one `value` column must hold whatever a given row needs.
 
 ## Usage
 
@@ -36,15 +33,10 @@ $setting->save();
 ## Behavior
 
 - **Booleans** — round-trip exactly.
-- **Integers and floats** — stored as strings in the column and cast back to
-  `int` / `float` on read (`"42"` → `42`, `"3.14"` → `3.14`).
-- **Arrays** — stored as JSON and decoded back to an associative array (never an
-  object).
-- **Leading-zero and oversized numeric strings stay strings** — values like
-  `"007"` / `"01001234567"` (leading zeros) and integers outside PHP's int range
-  are left as strings so they are not corrupted.
-- **Malformed JSON throws** — invalid stored JSON (or an unencodable array)
-  raises an exception on read/write.
+- **Integers and floats** — stored as strings in the column and cast back to `int` / `float` on read (`"42"` → `42`, `"3.14"` → `3.14`).
+- **Arrays** — stored as JSON and decoded back to an associative array (never an object).
+- **Leading-zero and oversized numeric strings stay strings** — values like `"007"` / `"01001234567"` (leading zeros) and integers outside PHP's int range are left as strings so they are not corrupted.
+- **Malformed JSON throws** — invalid stored JSON (or an unencodable array) raises an exception on read/write.
 
 ## Related
 

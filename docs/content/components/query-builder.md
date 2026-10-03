@@ -1,9 +1,6 @@
 # Query Builder
 
-`<x-query-builder>` renders a visual filter builder. The user composes
-AND/OR rule groups, and the result is stored as a JSON rule tree in a hidden
-input that you apply to a query on the server. Use it for report filters and
-advanced search screens.
+`<x-query-builder>` renders a visual filter builder. The user composes AND/OR rule groups, and the result is stored as a JSON rule tree in a hidden input that you apply to a query on the server. Use it for report filters and advanced search screens.
 
 ## Usage
 
@@ -11,25 +8,17 @@ advanced search screens.
 <x-query-builder name="builder" :title="__('Filters')" :model="\App\Models\Post::class" :value="old('builder')" />
 ```
 
-Give it a `name` so the rule tree is submitted with the form, and either a
-`model` (filters are derived from its columns) or an explicit `filters`
-definition. It shares the
-[common form-field attributes](/components/overview#shared-form-field-conventions)
-(`name`, `title`, `value`, `hint`, `validation`) and initializes itself through
-the [asset & init system](/frontend/asset-system).
+Give it a `name` so the rule tree is submitted with the form, and either a `model` (filters are derived from its columns) or an explicit `filters` definition. It shares the [common form-field attributes](/components/overview#shared-form-field-conventions) (`name`, `title`, `value`, `hint`, `validation`) and initializes itself through the [asset & init system](/frontend/asset-system).
 
 ## Options
 
 - **`title`** — label shown above the builder.
 - **`hint`** — helper text shown below the builder.
 - **`value`** — initial rule tree (an array or JSON string) to pre-populate rules.
-- **`model`** — a model class to derive filters from automatically. Hidden and
-  JSON columns are skipped.
-- **`filters`** — an explicit filter definition map, used instead of `model`.
-  Each entry is keyed by field name and accepts:
+- **`model`** — a model class to derive filters from automatically. Hidden and JSON columns are skipped.
+- **`filters`** — an explicit filter definition map, used instead of `model`. Each entry is keyed by field name and accepts:
   - **`title`** — label shown in the builder.
-  - **`type`** — one of `string`, `integer`, `double`, `boolean`, `date`,
-    `datetime`, `time`.
+  - **`type`** — one of `string`, `integer`, `double`, `boolean`, `date`, `datetime`, `time`.
   - **`values`** — options for a dropdown filter (an array or a callable).
   - **`query`** — a raw SQL expression to filter on instead of a column.
 - **`id`** — element id; auto-generated when omitted.

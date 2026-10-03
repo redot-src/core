@@ -1,8 +1,6 @@
 # Alert
 
-`<x-alert>` renders a contextual alert box with an icon, optional title and
-description, and an optional dismiss button. Pick a semantic `type` and it
-chooses a matching colour and default icon for you.
+`<x-alert>` renders a contextual alert box with an icon, optional title and description, and an optional dismiss button. Pick a semantic `type` and it chooses a matching colour and default icon for you.
 
 ## Usage
 
@@ -16,10 +14,8 @@ The body can be a slot (as above) or the `title` / `description` attributes.
 
 ## Options
 
-- **`type`** — semantic variant: `success` (default), `error`, `warning`, or
-  `info`. Sets the colour and the default icon.
-- **`title`** — heading text. On its own it's the alert body; with `description`
-  it becomes a bold title above the description.
+- **`type`** — semantic variant: `success` (default), `error`, `warning`, or `info`. Sets the colour and the default icon.
+- **`title`** — heading text. On its own it's the alert body; with `description` it becomes a bold title above the description.
 - **`description`** — secondary text shown below the title.
 - **`icon`** — override the default icon. Pass `:icon="false"` to show no icon.
 - **`dismissible`** — add a close button so the user can dismiss the alert.

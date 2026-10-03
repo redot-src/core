@@ -1,8 +1,6 @@
 # Color Picker
 
-`<x-color-picker>` is a text field that opens a color swatch popup, backed by the
-Coloris library. It renders a labelled, hinted control and seeds an initial
-color from its `value`.
+`<x-color-picker>` is a text field that opens a color swatch popup, backed by the Coloris library. It renders a labelled, hinted control and seeds an initial color from its `value`.
 
 ## Usage
 
@@ -10,10 +8,7 @@ color from its `value`.
 <x-color-picker name="background" value="#ffffff" :title="__('Background Color')" />
 ```
 
-It shares the [common form-field attributes](/components/overview#shared-form-field-conventions)
-(`name`, `title`, `value`, `hint`, `validation`). Seed the initial color with
-`value="#rrggbb"`. The picker initializes itself through the
-[asset & init system](/frontend/asset-system).
+It shares the [common form-field attributes](/components/overview#shared-form-field-conventions) (`name`, `title`, `value`, `hint`, `validation`). Seed the initial color with `value="#rrggbb"`. The picker initializes itself through the [asset & init system](/frontend/asset-system).
 
 ## Options
 
@@ -22,8 +17,7 @@ It shares the [common form-field attributes](/components/overview#shared-form-fi
 - **`value`** — initial color, as a hex string (e.g. `#3b82f6`).
 - **`id`** — element id; auto-generated when omitted.
 
-Coloris options can be supplied per element with `coloris-*` attributes (e.g.
-`coloris-format-toggle="false"`).
+Coloris options can be supplied per element with `coloris-*` attributes (e.g. `coloris-format-toggle="false"`).
 
 ## Examples
 

@@ -1,8 +1,6 @@
 # Countries
 
-`<x-countries>` is a searchable country picker — a dropdown of countries, each
-shown with its flag, that stores the selected country's ISO code (e.g. `eg`,
-`us`) as the value.
+`<x-countries>` is a searchable country picker — a dropdown of countries, each shown with its flag, that stores the selected country's ISO code (e.g. `eg`, `us`) as the value.
 
 ## Usage
 
@@ -10,8 +8,7 @@ shown with its flag, that stores the selected country's ISO code (e.g. `eg`,
 <x-countries name="country" :title="__('Country')" />
 ```
 
-It builds on [`<x-select>`](/components/select), so every select attribute
-(`name`, `title`, `hint`, `value`, `multiple`, `validation`, …) works here too.
+It builds on [`<x-select>`](/components/select), so every select attribute (`name`, `title`, `hint`, `value`, `multiple`, `validation`, …) works here too.
 
 ## Options
 

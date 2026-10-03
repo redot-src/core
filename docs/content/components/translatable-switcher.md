@@ -1,9 +1,6 @@
 # Translatable Switcher
 
-`<x-translatable-switcher>` renders a globe dropdown of the app's locales.
-Picking one switches every [`<x-translatable>`](/components/translatable) field
-on the page to that language at once — handy in a form header so editors can flip
-languages without touching each field's tabs.
+`<x-translatable-switcher>` renders a globe dropdown of the app's locales. Picking one switches every [`<x-translatable>`](/components/translatable) field on the page to that language at once — handy in a form header so editors can flip languages without touching each field's tabs.
 
 ## Usage
 
@@ -11,13 +8,11 @@ languages without touching each field's tabs.
 <x-translatable-switcher />
 ```
 
-Place it on the same page as your translatable fields (commonly in a form card's
-header slot). It activates the matching tab on every `<x-translatable>` present.
+Place it on the same page as your translatable fields (commonly in a form card's header slot). It activates the matching tab on every `<x-translatable>` present.
 
 ## Options
 
-- **`locales`** — which locales to list. Defaults to the app's configured
-  locales. Each is shown with its label and key, e.g. `English (en)`.
+- **`locales`** — which locales to list. Defaults to the app's configured locales. Each is shown with its label and key, e.g. `English (en)`.
 - **`id`** — element id; auto-generated when omitted.
 
 Any extra `class` is added to the dropdown styling.
