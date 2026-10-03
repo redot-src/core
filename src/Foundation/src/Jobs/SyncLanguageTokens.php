@@ -8,8 +8,10 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\File;
 use Redot\Models\Language;
 use Symfony\Component\Finder\Finder;
+use UnexpectedValueException;
 
 class SyncLanguageTokens implements ShouldQueue
 {
@@ -29,21 +31,33 @@ class SyncLanguageTokens implements ShouldQueue
     {
         $locale = strtolower($this->language->code);
 
-        // Delete all tokens for the language
-        $this->language->tokens()->delete();
-
         $path = lang_path($locale . '.json');
-        $this->syncTokens($this->language, json_decode(file_get_contents($path) ?: '{}', true), true);
+        $jsonTokens = json_decode(File::get($path), true, 512, JSON_THROW_ON_ERROR);
+
+        if (! is_array($jsonTokens)) {
+            throw new UnexpectedValueException("The translation catalog [$path] must contain a JSON object or array.");
+        }
 
         $translations = [];
         foreach (Finder::create()->files()->in(lang_path($locale)) as $file) {
+            $tokens = require $file->getRealPath();
+
+            if (! is_array($tokens)) {
+                throw new UnexpectedValueException("The translation file [{$file->getRealPath()}] must return an array.");
+            }
+
             $basename = $file->getBasename('.php');
-            $translations[$basename] = require $file->getRealPath();
+            $translations[$basename] = $tokens;
         }
 
-        // Use Dot notation for the translations
         $translations = Arr::dot($translations);
-        $this->syncTokens($this->language, $translations, false);
+
+        $this->language->getConnection()->transaction(function () use ($jsonTokens, $translations) {
+            $this->language->tokens()->delete();
+
+            $this->syncTokens($this->language, $jsonTokens, true);
+            $this->syncTokens($this->language, $translations, false);
+        });
     }
 
     /**
