@@ -48,7 +48,7 @@ return view('posts.create', [
 
 ```blade
 <x-select name="tags[]" :title="__('Tags')" :options="$tags"
-    :value="old('tags', $post?->tags)" tags multiple />
+    :value="$post?->tags" tags multiple />
 ```
 
 ### Saving tags through mass assignment

@@ -5,7 +5,7 @@
 ## Usage
 
 ```blade
-<x-textarea name="body" :title="__('Body')" :value="old('body', $post?->body)" />
+<x-textarea name="body" :title="__('Body')" :value="$post?->body" />
 ```
 
 It shares the [common form-field attributes](/components/overview#shared-form-field-conventions) (`name`, `title`, `value`, `hint`, `validation`). Any other HTML attribute you pass (`placeholder`, `rows`, `wire:model`, …) falls through to the underlying `<textarea>`.
@@ -23,7 +23,7 @@ It shares the [common form-field attributes](/components/overview#shared-form-fi
 ### Field with custom rows
 
 ```blade
-<x-textarea name="excerpt" :title="__('Excerpt')" :value="old('excerpt', $post?->excerpt)" rows="3" />
+<x-textarea name="excerpt" :title="__('Excerpt')" :value="$post?->excerpt" rows="3" />
 ```
 
 ### Auto-growing, required field

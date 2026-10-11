@@ -26,7 +26,7 @@ For a create page, give it a `resource`. For an edit page, also pass `entry`. By
 - **`back`** — Back link target. Pass `:back="false"` to hide the Back button.
 - **`backParams`** — parameters for the back route.
 
-Provide a default slot to replace the auto-included form partial with your own body. Use the **`header`** slot to add content next to the title.
+Provide a default slot to replace the auto-included form partial with your own body. Use the **`header`** slot to add content next to the title, and the **`actions`** slot to add buttons to the footer, between Back and submit.
 
 ## Examples
 
@@ -51,6 +51,16 @@ The `data` array is forwarded to the partial, so `$categories` is available ther
     <x-slot:header>
         <x-translatable-switcher />
     </x-slot:header>
+</x-form-card>
+```
+
+### Extra footer button
+
+```blade
+<x-form-card resource="posts" :entry="$post">
+    <x-slot:actions>
+        <a href="{{ route('posts.show', $post) }}" class="btn">{{ __('Preview') }}</a>
+    </x-slot:actions>
 </x-form-card>
 ```
 

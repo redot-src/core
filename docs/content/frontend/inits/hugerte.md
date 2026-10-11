@@ -1,20 +1,20 @@
-# Tinymce Initializer
+# HugeRTE Initializer
 
-`tinymce` turns a textarea into a [TinyMCE](https://www.tiny.cloud/docs/) rich-text (WYSIWYG) editor with image upload support. It backs the [`<x-rich-editor>` component](/components/rich-editor) and follows the page's locale, text direction, and light/dark theme.
+`hugerte` turns a textarea into a [HugeRTE](https://github.com/hugerte/hugerte) rich-text (WYSIWYG) editor with image upload support. It backs the [`<x-rich-editor>` component](/components/rich-editor) and follows the page's locale, text direction, and light/dark theme.
 
 ## Enable it
 
-You rarely write `init="tinymce"` yourself — render the [`<x-rich-editor>` component](/components/rich-editor), which emits a textarea carrying the attribute and loads the vendor script:
+You rarely write `init="hugerte"` yourself — render the [`<x-rich-editor>` component](/components/rich-editor), which emits a textarea carrying the attribute and loads the vendor script:
 
 ```blade
-<x-rich-editor name="body" :title="__('Body')" :value="old('body', $post?->body)" />
+<x-rich-editor name="body" :title="__('Body')" :value="$post?->body" />
 ```
 
 For a translatable editor, wrap it:
 
 ```blade
 <x-translatable component="rich-editor" name="body" :title="__('Body')"
-    :value="$post ? $post->getTranslations('body') : old('body')" />
+    :value="$post?->getTranslations('body')" />
 ```
 
 See [Asset & Init System](/frontend/asset-system) for how the `init` attribute is wired.

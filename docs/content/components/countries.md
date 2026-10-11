@@ -8,7 +8,7 @@
 <x-countries name="country" :title="__('Country')" />
 ```
 
-It builds on [`<x-select>`](/components/select), so every select attribute (`name`, `title`, `hint`, `value`, `multiple`, `validation`, …) works here too.
+It builds on [`<x-select-remote>`](/components/select-remote), so every select attribute (`name`, `title`, `hint`, `value`, `multiple`, `validation`, …) works here too.
 
 ## Options
 
@@ -40,6 +40,6 @@ The value is the ISO code, not a database id:
 
 ## Related
 
-- [Select](/components/select) — the underlying component and all its options.
+- [Select Remote](/components/select-remote) — the underlying component and all its options.
 - [Flag](/components/flag) — render a single standalone flag.
 - [Localization](/foundation/localization) — country and locale display.

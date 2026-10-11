@@ -5,7 +5,7 @@
 ## Usage
 
 ```blade
-<x-translatable component="input" name="title" :title="__('Title')" :value="$post?->getTranslations('title') ?? old('title')" validation="required" />
+<x-translatable component="input" name="title" :title="__('Title')" :value="$post?->getTranslations('title')" validation="required" />
 ```
 
 Each locale gets its own field with the name suffixed by the locale (`title[en]`, `title[ar]`, …). Pass `value` as a `locale => value` map (Spatie's `getTranslations()` returns exactly this). Any extra attribute (`type`, `placeholder`, …) is forwarded to each per-locale field. Pair it with [`<x-translatable-switcher>`](/components/translatable-switcher) to flip every field's locale at once.
@@ -28,11 +28,11 @@ Each locale gets its own field with the name suffixed by the locale (`title[en]`
 
 ```blade
 <x-translatable component="input" name="title"
-    :value="$post ? $post->getTranslations('title') : old('title')"
+    :value="$post?->getTranslations('title')"
     :title="__('Title')" validation="required" />
 
 <x-translatable component="rich-editor" name="body"
-    :value="$post ? $post->getTranslations('body') : old('body')"
+    :value="$post?->getTranslations('body')"
     :title="__('Body')" />
 ```
 

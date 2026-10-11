@@ -18,7 +18,10 @@ It shares the [common form-field attributes](/components/overview#shared-form-fi
 - **`stars`** — number of stars to render (5 by default).
 - **`size`** — star size. A bare number is treated as pixels (e.g. `32` → `32px`); pass a full CSS length (e.g. `2rem`) for other units.
 - **`icon`** — icon used for each star (a star by default).
+- **`validation`** — validation rules for the rating; with `required`, the user must pick a star. See [RedotValidator](/frontend/plugins/redot-validator).
 - **`id`** — element id; auto-generated when omitted.
+
+Any `class` you pass goes on the stars wrapper; other attributes are added to every star input.
 
 ## Examples
 

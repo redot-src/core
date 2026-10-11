@@ -22,10 +22,10 @@ The default template wraps the table in the [`<x-layouts::pdf>`](/layouts/overvi
 
 ## Select option templates
 
-Remote `<x-select>` components — the ones that fetch results from the server — render each option with a template, so you can show avatars, secondary text, or flags instead of plain labels. You opt in with the `template` attribute:
+[`<x-select-remote>`](/components/select-remote) components — the ones that fetch results from the server — render each option with a template, so you can show avatars, secondary text, or flags instead of plain labels. You opt in with the `template` attribute:
 
 ```blade
-<x-select name="admin_id" :title="__('Admin')" :query="$admins" template="admin" validation="required" />
+<x-select-remote name="admin_id" :title="__('Admin')" :query="$admins" template="admin" validation="required" />
 ```
 
 You pass the short template name (`admin`, `user`, `country`, …); it is resolved under the select templates automatically. The matched record is available in the template as `$item`.
@@ -41,7 +41,7 @@ You pass the short template name (`admin`, `user`, `country`, …); it is resolv
 A template can only use data the select loaded. Declare any attribute or relation your template references in the select's `key`, `text`, `search`, or `appends` so it is eager-loaded:
 
 ```blade
-<x-select name="user_id" :title="__('User')" :query="$users" text="name"
+<x-select-remote name="user_id" :title="__('User')" :query="$users" text="name"
     search="name, email" template="user" validation="required" />
 ```
 
@@ -60,18 +60,18 @@ Add a template that renders the option markup using `$item`:
 Then reference it by its short name:
 
 ```blade
-<x-select :query="\App\Models\Country::class" key="code" template="country" same-template {{ $attributes }} />
+<x-select-remote :query="\App\Models\Country::class" key="code" template="country" same-template {{ $attributes }} />
 ```
 
 ## Gotchas
 
-- **Select templates only apply to remote selects.** A plain (non-`query`) select never uses them.
+- **Select templates only apply to remote selects.** A plain `<x-select>` never uses them.
 - **Reference only loaded data.** Cover any attribute or relation your template uses with the select's `key`, `text`, `search`, or `appends`.
 - **PDF cells are unescaped.** Sanitize upstream if cells can contain user input.
 - **Use the short name.** Pass `user`, `admin`, or `country` — not a full view path.
 
 ## Related
 
-- [Select component](/components/select)
+- [Select Remote component](/components/select-remote)
 - [DataTables export](/packages/datatables/export)
 - [Layouts](/layouts/overview)

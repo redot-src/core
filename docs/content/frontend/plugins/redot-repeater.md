@@ -7,7 +7,7 @@ The engine behind the [`<x-repeater>` component](/components/repeater): a repeat
 The component's default slot is the template that gets cloned per row. Mark action buttons with an `action` attribute and a drag handle with `sortable-handle`:
 
 ```blade
-<x-repeater id="contacts" name="contacts" :title="__('Contacts')" :value="old('contacts', $contacts)">
+<x-repeater id="contacts" name="contacts" :title="__('Contacts')" :value="$contacts">
     <div class="card mb-2">
         <div class="card-body">
             <x-input name="name" :title="__('Name')" />

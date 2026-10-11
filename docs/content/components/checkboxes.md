@@ -21,6 +21,8 @@
 - **`validation`** — validation rules applied to the group as a whole; if they contain `required`, the label shows a required marker. See [RedotValidator](/frontend/plugins/redot-validator).
 - **`id`** — wrapper id; auto-generated when omitted.
 
+Any `class` you pass goes on the group wrapper; other attributes (such as `wire:model` or `data-*`) are added to every checkbox. Content in the default slot is placed after the options, inside the group.
+
 ## Examples
 
 ### Inline tag selector
@@ -30,7 +32,7 @@
     name="tags[]"
     :title="__('Tags')"
     :options="$tags"
-    :value="old('tags', $post?->tags)"
+    :value="$post?->tags"
     :inline="true"
     validation="required|min:1"
 />
@@ -43,7 +45,7 @@
     $options = $categories->pluck('title', 'id')->all();
 @endphp
 
-<x-checkboxes name="categories[]" :options="$options" :value="old('categories', $post?->categories)" :inline="true" />
+<x-checkboxes name="categories[]" :options="$options" :value="$post?->categories" :inline="true" />
 ```
 
 ## Related

@@ -10,13 +10,13 @@
 </x-alert>
 ```
 
-The body can be a slot (as above) or the `title` / `description` attributes.
+The body can be a slot (as above) or the `title` / `description` attributes. Combine `title` with either one to show a bold heading above the body.
 
 ## Options
 
 - **`type`** — semantic variant: `success` (default), `error`, `warning`, or `info`. Sets the colour and the default icon.
-- **`title`** — heading text. On its own it's the alert body; with `description` it becomes a bold title above the description.
-- **`description`** — secondary text shown below the title.
+- **`title`** — heading text. On its own it's the alert body; with a `description` or slot content it becomes a bold title above that body.
+- **`description`** — secondary text shown below the title. Takes priority over the slot.
 - **`icon`** — override the default icon. Pass `:icon="false"` to show no icon.
 - **`dismissible`** — add a close button so the user can dismiss the alert.
 
@@ -36,6 +36,14 @@ The body can be a slot (as above) or the `title` / `description` attributes.
 
 ```blade
 <x-alert type="success" :title="__('Saved')" :description="__('Your changes have been stored.')" />
+```
+
+### Titled alert with slot content
+
+```blade
+<x-alert type="warning" :title="__('Heads up')">
+    {{ __('Publishing will notify all subscribers.') }}
+</x-alert>
 ```
 
 ### Dismissible alert from a flash message

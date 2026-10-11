@@ -17,7 +17,10 @@
 - **`hint`** — helper text shown below the swatches.
 - **`value`** — the option key to pre-select.
 - **`disabled`** — keys to render disabled. Accepts an array or a CSV string.
+- **`validation`** — validation rules applied to the group as a whole. See [RedotValidator](/frontend/plugins/redot-validator).
 - **`id`** — wrapper id; auto-generated when omitted.
+
+Any `class` you pass goes on the group wrapper; other attributes (such as `wire:model` or `data-*`) are added to every swatch. Content in the default slot is placed after the options, inside the group.
 
 ## Examples
 

@@ -5,7 +5,7 @@
 ## Usage
 
 ```blade
-<x-query-builder name="builder" :title="__('Filters')" :model="\App\Models\Post::class" :value="old('builder')" />
+<x-query-builder name="builder" :title="__('Filters')" :model="\App\Models\Post::class" />
 ```
 
 Give it a `name` so the rule tree is submitted with the form, and either a `model` (filters are derived from its columns) or an explicit `filters` definition. It shares the [common form-field attributes](/components/overview#shared-form-field-conventions) (`name`, `title`, `value`, `hint`, `validation`) and initializes itself through the [asset & init system](/frontend/asset-system).
@@ -54,7 +54,6 @@ Give it a `name` so the rule tree is submitted with the form, and either a `mode
             'query' => 'concat(first_name, \' \', last_name)',
         ],
     ]"
-    :value="old('builder')"
 />
 ```
 

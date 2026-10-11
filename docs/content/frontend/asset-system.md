@@ -20,16 +20,47 @@ Most of the time you don't even write the `init` attribute yourself: the JS-back
 
 Each has its own page with the options it accepts:
 
+- [Apex Chart](/frontend/inits/apex-chart) — charts
 - [Coloris](/frontend/inits/coloris) — colour picker
+- [HugeRTE](/frontend/inits/hugerte) — rich text editor
 - [Icon Picker](/frontend/inits/icon-picker)
+- [Overlay Scrollbars](/frontend/inits/overlay-scrollbars) — slim overlay scrollbars
 - [Query Builder](/frontend/inits/query-builder)
 - [Repeater](/frontend/inits/repeater)
 - [Sortable](/frontend/inits/sortable) — drag-to-reorder
 - [Tempus Dominus](/frontend/inits/tempus-dominus) — date/time picker
-- [TinyMCE](/frontend/inits/tinymce) — rich text editor
 - [Tom Select](/frontend/inits/tomselect) — enhanced selects
 - [Turnstile](/frontend/inits/turnstile) — Cloudflare captcha
 - [Uploader](/frontend/inits/uploader)
+
+## Loading a widget's vendor files
+
+Components load the third-party scripts and styles their widget needs. If you put an `init` attribute on your own markup instead, include the matching `<x-assets.*>` component so those files are on the page:
+
+```blade
+<x-assets.tom-select />
+
+<select name="status" init="tomselect">
+    <option value="draft">{{ __('Draft') }}</option>
+    <option value="published">{{ __('Published') }}</option>
+</select>
+```
+
+Each asset component adds its files only once per page, no matter how many times it's rendered. Available asset components:
+
+- **`<x-assets.apexcharts />`** — ApexCharts.
+- **`<x-assets.cloudflare-turnstile />`** — Cloudflare Turnstile and its site-key meta tag.
+- **`<x-assets.coloris />`** — Coloris colour picker.
+- **`<x-assets.hugerte />`** — HugeRTE rich-text editor.
+- **`<x-assets.query-builder />`** — the query builder, plus Tom Select and Tempus Dominus.
+- **`<x-assets.redot-icon-picker />`** — the icon picker plugin and its modal template.
+- **`<x-assets.redot-repeater />`** — the repeater plugin.
+- **`<x-assets.redot-toasts />`** — the toasts plugin.
+- **`<x-assets.redot-uploader />`** — the uploader plugin.
+- **`<x-assets.tabler-flags />`** — Tabler flag styles.
+- **`<x-assets.tabler-socials />`** — Tabler social icon styles.
+- **`<x-assets.tempus-dominus />`** — Tempus Dominus date picker.
+- **`<x-assets.tom-select />`** — Tom Select.
 
 ## Cache-busting assets
 

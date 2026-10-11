@@ -5,7 +5,7 @@
 ## Usage
 
 ```blade
-<x-rich-editor name="body" :title="__('Body')" :value="old('body', $post?->body)" />
+<x-rich-editor name="body" :title="__('Body')" :value="$post?->body" />
 ```
 
 It shares the [common form-field attributes](/components/overview#shared-form-field-conventions) (`name`, `title`, `value`, `validation`). Seed the editor's initial HTML with `value`. The editor initializes itself through the [asset & init system](/frontend/asset-system).
@@ -18,12 +18,6 @@ It shares the [common form-field attributes](/components/overview#shared-form-fi
 - **`id`** — element id; auto-generated when omitted.
 
 ## Examples
-
-### Content field, preserving old input
-
-```blade
-<x-rich-editor name="body" :title="__('Body')" :value="old('body', $post?->body)" />
-```
 
 ### Required body with a hint
 
@@ -39,5 +33,5 @@ It shares the [common form-field attributes](/components/overview#shared-form-fi
 ## Related
 
 - [Textarea](/components/textarea) — the plain-text field this builds on.
-- [TinyMCE init](/frontend/inits/tinymce) — how the editor initializes.
+- [HugeRTE init](/frontend/inits/hugerte) — how the editor initializes.
 - [Components overview](/components/overview) — shared form-field conventions.

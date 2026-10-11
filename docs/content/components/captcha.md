@@ -15,6 +15,7 @@ Always guard usage with the site-key check — the widget needs a configured sit
 ## Options
 
 - **`title`** — label shown above the widget.
+- **`hint`** — helper text shown below the widget.
 - **`name`** — name of the hidden field that holds the verification token (defaults to `captcha`).
 - **`id`** — element id; auto-generated when omitted.
 

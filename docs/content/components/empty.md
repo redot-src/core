@@ -1,6 +1,6 @@
 # Empty
 
-`<x-empty>` renders an empty-state placeholder — an icon, a title, and a subtitle inside a card — for when a list, page, or section has nothing to show.
+`<x-empty>` renders an empty-state placeholder — an icon, a title, a subtitle, and optional actions inside a card — for when a list, page, or section has nothing to show.
 
 ## Usage
 
@@ -16,7 +16,7 @@ The defaults read "Nothing to show here"; override them per context.
 - **`title`** — the bold heading.
 - **`subtitle`** — secondary text below the title. Pass a falsy value to hide it.
 
-Extra classes and attributes are merged onto the card.
+Content in the default slot is shown below the text as the empty state's actions, e.g. a "Create" button. Extra classes and attributes are merged onto the card.
 
 ## Examples
 
@@ -28,6 +28,14 @@ Extra classes and attributes are merged onto the card.
     :title="__('No posts found')"
     :subtitle="__('Create your first post to get started.')"
 />
+```
+
+### Empty state with an action
+
+```blade
+<x-empty icon="ti ti-file-text" :title="__('No posts found')">
+    <a href="{{ route('posts.create') }}" class="btn btn-primary">{{ __('Create post') }}</a>
+</x-empty>
 ```
 
 ### Empty state with a marker attribute

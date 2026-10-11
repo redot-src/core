@@ -5,7 +5,7 @@
 ## Usage
 
 ```blade
-<x-toggle name="published" :title="__('Published')" :value="old('published', $post?->published ?? true)" />
+<x-toggle name="published" :title="__('Published')" :value="$post?->published ?? true" />
 ```
 
 It shares the [common form-field attributes](/components/overview#shared-form-field-conventions) (`name`, `title`, `value`, `hint`, `validation`). `value` is the checked state.
@@ -26,13 +26,13 @@ Any `class` you pass lands on the switch wrapper, so use Bootstrap layout helper
 ### Custom on/off captions
 
 ```blade
-<x-toggle name="published" :title="__('Published')" :value="old('published', $post?->published ?? true)" :on="__('Yes')" :off="__('No')" />
+<x-toggle name="published" :title="__('Published')" :value="$post?->published ?? true" :on="__('Yes')" :off="__('No')" />
 ```
 
 ### Toggle with default captions
 
 ```blade
-<x-toggle name="featured" :title="__('Featured')" :value="old('featured', $post?->featured)" />
+<x-toggle name="featured" :title="__('Featured')" :value="$post?->featured" />
 ```
 
 ### Title-less "select all" control

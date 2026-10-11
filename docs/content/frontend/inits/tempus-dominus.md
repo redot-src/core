@@ -21,7 +21,7 @@ Pick the mode with a flag attribute on the field:
 - *(neither)* — calendar only (format `yyyy-MM-dd`).
 
 ```blade
-<x-date-picker name="date" :title="__('Date')" :value="old('date', now())" datetime />
+<x-date-picker name="date" :title="__('Date')" :value="now()" datetime />
 ```
 
 Tune the picker further with `date-` attributes (kebab-case maps to nested Tempus Dominus options):

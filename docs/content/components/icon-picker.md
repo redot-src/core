@@ -5,7 +5,7 @@
 ## Usage
 
 ```blade
-<x-icon-picker name="icon" :title="__('Icon')" :value="old('icon', $category?->icon)" />
+<x-icon-picker name="icon" :title="__('Icon')" :value="$category?->icon" />
 ```
 
 It shares the [common form-field attributes](/components/overview#shared-form-field-conventions) (`name`, `title`, `value`, `hint`, `validation`). The stored value is a full Tabler icon class string, so seed `value` with that full string. The picker initializes itself through the [asset & init system](/frontend/asset-system).
@@ -22,7 +22,7 @@ It shares the [common form-field attributes](/components/overview#shared-form-fi
 ### Icon field with a default
 
 ```blade
-<x-icon-picker name="icon" :title="__('Icon')" :value="old('icon', $category?->icon ?? 'ti ti-note')" />
+<x-icon-picker name="icon" :title="__('Icon')" :value="$category?->icon ?? 'ti ti-note'" />
 ```
 
 ### With a hint and required marker
@@ -33,7 +33,6 @@ It shares the [common form-field attributes](/components/overview#shared-form-fi
     :title="__('Icon')"
     :hint="__('Pick a Tabler icon')"
     validation="required"
-    :value="old('icon')"
 />
 ```
 

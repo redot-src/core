@@ -5,7 +5,7 @@
 ## Usage
 
 ```blade
-<x-date-picker name="published_at" :title="__('Published at')" :value="old('published_at', $post?->published_at)" />
+<x-date-picker name="published_at" :title="__('Published at')" :value="$post?->published_at" />
 ```
 
 It shares the [common form-field attributes](/components/overview#shared-form-field-conventions) (`name`, `title`, `value`, `hint`, `validation`). The picker initializes itself through the [asset & init system](/frontend/asset-system).
@@ -14,7 +14,7 @@ It shares the [common form-field attributes](/components/overview#shared-form-fi
 
 - **`title`** — label shown above the field.
 - **`hint`** — helper text shown below the field.
-- **`value`** — initial value; defaults to `yyyy-MM-dd`. Use `old()` to preserve input on validation errors.
+- **`value`** — initial value, in `yyyy-MM-dd` format by default.
 - **`datetime`** — also pick a time; the value format becomes `yyyy-MM-dd hh:mm T`.
 - **`only-time`** — pick a time only, with no calendar; format becomes `hh:mm T`.
 - **`id`** — element id; auto-generated when omitted.
@@ -29,7 +29,7 @@ Additional picker behavior can be set per element with `date-*` attributes.
 <x-date-picker
     name="published_at"
     :title="__('Published at')"
-    :value="old('published_at', $post?->published_at ?? now())"
+    :value="$post?->published_at ?? now()"
     datetime
 />
 ```

@@ -14,7 +14,7 @@
 - **`image`** — image URL. When present it's shown instead of the letter.
 - **`size`** — size modifier: `sm` (default), `xl`, etc.
 
-Any other attribute or class you pass falls through to the element.
+Any other attribute or class you pass falls through to the element. Content in the default slot is rendered inside the avatar, e.g. a status badge.
 
 ## Examples
 

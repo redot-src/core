@@ -7,7 +7,7 @@ Redot Dashboard ships a library of Blade components for building admin and websi
 Components are plain Blade tags. Pass props as attributes, and prefix any value that is a PHP expression with `:`.
 
 ```blade
-<x-input name="title" :title="__('Title')" :value="old('title', $post?->title)" validation="required" />
+<x-input name="title" :title="__('Title')" :value="$post?->title" validation="required" />
 ```
 
 - Plain attributes pass a literal string: `type="email"`.
@@ -20,9 +20,13 @@ Most form inputs (`<x-input>`, `<x-select>`, `<x-textarea>`, `<x-date-picker>`, 
 
 - **`name`** — the field name submitted with the form.
 - **`title`** — label text shown above the field (a localized string).
-- **`value`** — the initial value; pair with `old()` to preserve input on validation errors.
+- **`value`** — the initial value, such as the model's current attribute.
 - **`hint`** — small helper text shown beneath the field.
-- **`validation`** — client-side validation rules (e.g. `required`, `required|email`). If the rules contain `required`, the label shows a required marker. See [RedotValidator](/frontend/plugins/redot-validator).
+- **`validation`** — client-side validation rules (e.g. `required`, `required|email`). If the rules include `required`, the label shows a required marker. See [RedotValidator](/frontend/plugins/redot-validator).
+
+After a failed validation redirect, form fields refill themselves from the submitted input, so you don't need to wrap `value` in `old()`. This works for array names too (`tags[]`, `title[en]`).
+
+To give a custom control the same label, hint, and required marker, wrap it in [`<x-field>`](/components/field).
 
 Components that wrap a JavaScript widget (date pickers, selects, the rich editor, uploader, …) light up automatically through the [asset & init system](/frontend/asset-system) — you don't wire up any JS yourself.
 
@@ -33,6 +37,7 @@ Components that wrap a JavaScript widget (date pickers, selects, the rich editor
 - [Input](/components/input) — `<x-input>`
 - [Textarea](/components/textarea) — `<x-textarea>`
 - [Select](/components/select) — `<x-select>`
+- [Select Remote](/components/select-remote) — `<x-select-remote>`
 - [Checkboxes](/components/checkboxes) — `<x-checkboxes>`
 - [Radios](/components/radios) / [Radios Colored](/components/radios-colored)
 - [Toggle](/components/toggle) — `<x-toggle>`
@@ -47,6 +52,7 @@ Components that wrap a JavaScript widget (date pickers, selects, the rich editor
 - [Query Builder](/components/query-builder) — `<x-query-builder>`
 - [Repeater](/components/repeater) / [Repeater Card](/components/repeater-card)
 - [Captcha](/components/captcha) — `<x-captcha>`
+- [Field](/components/field) — `<x-field>`, the label + hint frame for custom controls
 - [Label](/components/label), [Hint](/components/hint), [File Hint](/components/file-hint)
 
 ### Layout & structure
@@ -61,11 +67,13 @@ Components that wrap a JavaScript widget (date pickers, selects, the rich editor
 ### Display
 
 - [Alert](/components/alert) — `<x-alert>`
+- [Apex Chart](/components/apex-chart) — `<x-apex-chart>`
 - [Avatar](/components/avatar) — `<x-avatar>`
 - [Status](/components/status) — flash-message alert
 - [Icon](/components/icon) — `<x-icon>`
 - [Flag](/components/flag) / [Countries](/components/countries)
-- [Logo](/components/logo), [Social Icon](/components/social-icon)
+- [Logo](/components/logo), [Favicon](/components/favicon), [Social Icon](/components/social-icon)
+- [Toasts](/components/toasts) — renders flashed toast notifications
 
 ### Integrations
 

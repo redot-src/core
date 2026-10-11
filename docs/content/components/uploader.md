@@ -5,7 +5,7 @@
 ## Usage
 
 ```blade
-<x-uploader name="attachments" :title="__('Attachments')" :value="old('attachments', $post?->attachments)" directory="posts" />
+<x-uploader name="attachments" :title="__('Attachments')" :value="$post?->attachments" directory="posts" />
 ```
 
 It shares the [common form-field attributes](/components/overview#shared-form-field-conventions) (`name`, `title`, `value`, `hint`, `validation`), and initializes itself through the [asset & init system](/frontend/asset-system). Seed `value` with the same shape the uploader stored previously.
@@ -27,7 +27,7 @@ It shares the [common form-field attributes](/components/overview#shared-form-fi
 ### Files attached to a record
 
 ```blade
-<x-uploader name="attachments" :title="__('Attachments')" :value="old('attachments', $post?->attachments)" directory="posts" />
+<x-uploader name="attachments" :title="__('Attachments')" :value="$post?->attachments" directory="posts" />
 ```
 
 ### Restricted types with a hint

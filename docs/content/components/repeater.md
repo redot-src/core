@@ -5,7 +5,7 @@
 ## Usage
 
 ```blade
-<x-repeater id="links" name="links" :title="__('Links')" :value="old('links', $post?->links)">
+<x-repeater id="links" name="links" :title="__('Links')" :value="$post?->links">
     <div class="row g-2">
         <div class="col"><x-input name="label" :placeholder="__('Label')" /></div>
         <div class="col"><x-input name="url" :placeholder="__('URL')" /></div>
