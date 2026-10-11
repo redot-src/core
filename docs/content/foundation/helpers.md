@@ -140,7 +140,7 @@ See the [Asset & Init System](/frontend/asset-system) for the bigger picture.
   search_model(Post::query(), ['title', 'body', 'category.name'], 'laravel');
   ```
 
-- **`component('name', $data)`** — render a Blade component to a string from PHP, outside the usual `<x-...>` syntax. Useful inside Datatable column getters.
+- **`component('name', $data)`** — render a Blade component to a string from PHP, the same way `<x-name>` would. The name is a tag name (`avatar`, `select.remote`, `layouts::app`), not a class name. Keys matching constructor parameters become props, the rest become attributes. Useful inside Datatable column getters.
 
   ```php
   ->getter(fn ($value, User $user) => component('avatar', [

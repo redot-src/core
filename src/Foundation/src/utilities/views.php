@@ -1,26 +1,17 @@
 <?php
 
 use Illuminate\Support\Facades\Blade;
-use Illuminate\View\View;
+use Illuminate\View\ComponentAttributeBag;
 
 /**
- * Render the given component.
+ * Render the given component, the same way `<x-name>` would.
  */
-function component(string $name, array $data = []): string|View
+function component(string $name, array $data = []): string
 {
-    // Define the base namespace for components
-    $baseNamespace = app()->getNamespace() . 'View\\Components\\';
-
-    // Convert the name to a fully qualified class name
-    $className = class_exists($name) ? $name : $baseNamespace . str_replace(' ', '\\', ucwords(str_replace('.', ' ', $name)));
-
-    if (! class_exists($className)) {
-        // If the class does not exist, render the view as an inline component
-        return view("components.$name", $data);
-    }
-
-    // Create a new component instance and render it
-    return Blade::renderComponent(app()->make($className, $data));
+    return Blade::render(
+        '<x-dynamic-component :component="$componentName" :attributes="new \\' . ComponentAttributeBag::class . '($componentData)" />',
+        ['componentName' => $name, 'componentData' => $data],
+    );
 }
 
 /**
