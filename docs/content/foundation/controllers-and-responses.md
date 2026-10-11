@@ -1,6 +1,6 @@
 # Controllers & API Responses
 
-Extend the Redot base controller in your dashboard controllers to get two ready-made response styles: redirect-with-flash helpers for server-rendered (Blade) flows, and consistent JSON envelopes for API endpoints. Authorization (`$this->authorize(...)`) and validation (`$this->validate(...)`) are wired in too, so your controllers stay thin.
+Extend the Redot base controller in your dashboard controllers to get two ready-made response styles: redirect-with-flash helpers for server-rendered (Blade) flows, and consistent JSON envelopes for API endpoints. It can also reply to a parent window when a page runs inside a lightbox. Authorization (`$this->authorize(...)`) and validation (`$this->validate(...)`) are wired in too, so your controllers stay thin.
 
 ## Usage
 
@@ -50,6 +50,30 @@ For API endpoints, two helpers emit a consistent envelope (`code`, `success`, `m
 
 Any exception thrown from an `api/*` route (or a request that expects JSON) is automatically converted into this same envelope — including the one thrown by `fail()`. Validation errors surface as a `422` with the field errors in `payload`; not-found as `404`, auth failures as `401`/`403`, and so on. You rarely call the underlying converter yourself.
 
+## Replying to a parent window
+
+When a page is opened inside a lightbox iframe — for example, a create form launched from [`<x-select-remote>`](/components/select-remote) — you usually want the save to update the page underneath instead of redirecting inside the iframe. `dispatchBrowserEvent` returns a tiny page that posts a message to the parent window:
+
+```php
+return $this->dispatchBrowserEvent('category-created', ['id' => $category->id]);
+```
+
+- **`key`** — the message name the parent listens for.
+- **`data`** — the payload, encoded as JSON. Pass an array or model; a plain string is inserted as raw JavaScript, so only pass one that is already valid JSON.
+- **`code`** — the HTTP status (`200` by default).
+
+The parent receives `{ key, data }` through the browser's `message` event:
+
+```js
+window.addEventListener('message', (event) => {
+    if (event.data?.key !== 'category-created') return;
+
+    console.log(event.data.data.id);
+});
+```
+
+The message is posted to any origin, so don't send sensitive data through it.
+
 ## Examples
 
 ### Resource controller (HTML flows)
@@ -96,7 +120,22 @@ return $this->respond($request->user());
 return $this->respond(message: __('Created successfully.'));
 ```
 
+### Selecting a record created from a remote select
+
+`<x-select-remote>` opens its `create` route with a `from-select` query value holding the select's id. Reply with that id as the key and the new record's key as `value`; the select closes the lightbox and selects it:
+
+```php
+if ($request->has('from-select')) {
+    return $this->dispatchBrowserEvent($request->query('from-select'), [
+        'value' => $category->id,
+    ]);
+}
+
+return $this->created(__('Category'), 'categories.index');
+```
+
 ## Related
 
+- [Select Remote](/components/select-remote) — inline creation through a lightbox.
 - [Toastify](/packages/toastify) — the JS toast layer driven by flash messages.
 - [Localization](/foundation/localization) — locale-aware routing and redirects.

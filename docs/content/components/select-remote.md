@@ -51,7 +51,7 @@ Add `create` with the route of the resource's create page:
 <x-select-remote name="role" :title="__('Role')" :query="\Spatie\Permission\Models\Role::class" key="name" create="dashboard.roles.create" />
 ```
 
-The create page opens in a lightbox with a `from-select` query value. In that resource's `store` action, check for it and send the new record's key back to the select instead of redirecting:
+The create page opens in a lightbox with a `from-select` query value. In that resource's `store` action, check for it and send the new record's key back to the select with [`dispatchBrowserEvent`](/foundation/controllers-and-responses#replying-to-a-parent-window) instead of redirecting:
 
 ```php
 if ($request->has('from-select')) {
