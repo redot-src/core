@@ -20,7 +20,6 @@ use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Js;
 use Illuminate\Support\ServiceProvider;
 use Redot\Auth\RedotAuthServiceProvider;
 use Redot\Commands\BuildDependenciesCommand;
@@ -187,16 +186,15 @@ class RedotServiceProvider extends ServiceProvider
         Blade::componentNamespace('App\\View\\Layouts', 'layouts');
 
         Blade::directive('themer', function ($expression = 'theme') {
-            $path = hashed_asset('assets/js/themer.js');
             $expression = str_replace(['"', "'", '`'], '', $expression);
-            $config = Js::encode(setting('theme'));
 
+            // Resolve the asset URL and theme per request so compiled views don't freeze the compiling host.
             return Blade::compileString(
                 <<<EOT
                     @push('pre-content')
                         <script>window.themerKey = '$expression';</script>
-                        <script>window.themeConfig = $config;</script>
-                        <script src="$path"></script>
+                        <script>window.themeConfig = {{ \Illuminate\Support\Js::from(setting('theme')) }};</script>
+                        <script src="{{ hashed_asset('assets/js/themer.js') }}"></script>
                     @endpush
                 EOT
             );

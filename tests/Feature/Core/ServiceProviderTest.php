@@ -3,6 +3,7 @@
 use Illuminate\Database\Eloquent\Casts\Json;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Blade;
+use Illuminate\Support\Facades\URL;
 use Redot\RedotServiceProvider;
 
 it('merges the package configuration without overriding host overrides', function () {
@@ -26,6 +27,21 @@ it('compiles the themer Blade directive into a script tag with the configured th
         ->toContain("window.themerKey = 'custom'")
         ->toContain('window.themeConfig =')
         ->toContain('themer.js');
+});
+
+it('resolves the themer script URL when the view renders instead of when it compiles', function () {
+    URL::forceRootUrl('http://compiled.test');
+    $compiled = Blade::compileString("@themer(custom)@stack('pre-content')");
+
+    URL::forceRootUrl('http://rendered.test');
+    $__env = app('view');
+    ob_start();
+    eval('?>' . $compiled);
+    $html = ob_get_clean();
+
+    expect($html)
+        ->toContain('http://rendered.test/assets/js/themer.js')
+        ->not->toContain('compiled.test');
 });
 
 it('encodes arrays through the configured JSON cast without escaping slashes', function () {
