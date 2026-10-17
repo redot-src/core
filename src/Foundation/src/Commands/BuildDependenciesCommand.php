@@ -75,6 +75,10 @@ class BuildDependenciesCommand extends Command
             $this->dependsOnFile($path);
         }
 
+        if (File::isDirectory(lang_path($locale))) {
+            $this->dependsOnDirectory(lang_path($locale));
+        }
+
         foreach (glob(lang_path($locale . '/*.php')) as $file) {
             // Push path to the dependencies array.
             $this->dependsOnFile($file);
