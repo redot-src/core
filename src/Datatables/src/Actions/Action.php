@@ -5,6 +5,7 @@ namespace Redot\Datatables\Actions;
 use Closure;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Traits\Macroable;
+use Illuminate\Support\Uri;
 use InvalidArgumentException;
 use Redot\Datatables\Traits\BuildAttributes;
 
@@ -446,36 +447,45 @@ class Action
             ]);
         }
 
-        if ($this->route) {
-            $parameters = $this->parameters;
-            foreach ($parameters as $key => $value) {
-                $parameters[$key] = $this->evaluate($value, $row);
-            }
-
-            if ($this->bounded) {
-                array_unshift($parameters, $row);
-            }
-
+        if ($this->route || $this->href) {
             $body = $this->body;
             foreach ($body as $key => $value) {
                 $body[$key] = $this->evaluate($value, $row);
             }
 
-            // If the method is GET, we need to append the body to query string
-            if ($this->method === 'get') {
-                $parameters = array_merge($parameters, $body);
-            } else {
-                $this->attribute('request-body', base64_encode(json_encode($body, JSON_UNESCAPED_UNICODE)));
+            if ($this->route) {
+                $parameters = $this->parameters;
+                foreach ($parameters as $key => $value) {
+                    $parameters[$key] = $this->evaluate($value, $row);
+                }
+
+                if ($this->bounded) {
+                    array_unshift($parameters, $row);
+                }
+
+                // If the method is GET, we need to append the body to query string
+                if ($this->method === 'get') {
+                    $parameters = array_merge($parameters, $body);
+                }
+
+                $this->attribute('href', route($this->route, $parameters));
             }
 
-            $this->attributes([
-                'href' => route($this->route, $parameters),
-                'method' => $this->method,
-            ]);
-        }
+            if ($this->href) {
+                $href = $this->evaluate($this->href, $row);
 
-        if ($this->href) {
-            $this->attribute('href', $this->evaluate($this->href, $row));
+                if ($this->method === 'get' && $body !== []) {
+                    $href = (string) Uri::of($href)->withQuery($body);
+                }
+
+                $this->attribute('href', $href);
+            }
+
+            $this->attribute('method', $this->method);
+
+            if ($this->method !== 'get') {
+                $this->attribute('request-body', base64_encode(json_encode($body)));
+            }
         }
 
         if ($this->newTab) {

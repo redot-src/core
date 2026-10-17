@@ -474,7 +474,7 @@ abstract class Datatable extends Component
     /**
      * Get the view parameters.
      */
-    public function viewData(): array
+    protected function viewData(): array
     {
         if ($this->perPage !== $this->defaultPerPage && ! in_array($this->perPage, $this->perPageOptions, true)) {
             $this->perPage = $this->defaultPerPage;
