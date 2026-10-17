@@ -195,3 +195,38 @@ it('only applies route authorization to urls on the application host', function 
         ->and(url_allowed('http://localhost/protected'))->toBeFalse()
         ->and(url_allowed('/protected'))->toBeFalse();
 });
+
+it('goes back to previous urls that belong to the application', function (string $appUrl, string $previous) {
+    Route::get('/fallback', fn () => 'fallback')->name('fallback');
+    Route::getRoutes()->refreshNameLookups();
+    config()->set('app.url', $appUrl);
+    url()->forceRootUrl($appUrl);
+    request()->headers->set('referer', $previous);
+
+    expect(back_or_route('fallback'))->toBe($previous);
+})->with([
+    'same origin' => ['https://app.com', 'https://app.com/users'],
+    'mixed case with default port' => ['https://app.com', 'HTTPS://APP.com:443/users'],
+    'inside the base path' => ['https://app.com/admin', 'https://app.com/admin/users'],
+    'the base path itself' => ['https://app.com/admin', 'https://app.com/admin'],
+    'base path with trailing slash' => ['https://app.com/admin/', 'https://app.com/admin/users'],
+]);
+
+it('falls back to the route for previous urls outside the application', function (string $appUrl, string $previous) {
+    Route::get('/fallback', fn () => 'fallback')->name('fallback');
+    Route::getRoutes()->refreshNameLookups();
+    config()->set('app.url', $appUrl);
+    url()->forceRootUrl($appUrl);
+    request()->headers->set('referer', $previous);
+
+    expect(back_or_route('fallback'))->toBe(route('fallback'));
+})->with([
+    'look-alike host' => ['https://app.com', 'https://app.com.evil.com/users'],
+    'different scheme' => ['https://app.com', 'http://app.com/users'],
+    'different port' => ['https://app.com', 'https://app.com:8443/users'],
+    'scheme-relative url' => ['https://app.com', '//app.com/users'],
+    'javascript url' => ['https://app.com', 'javascript:alert(1)'],
+    'malformed url' => ['https://app.com', 'http://[bad'],
+    'path sharing the base prefix' => ['https://app.com/admin', 'https://app.com/administrator'],
+    'path outside the base path' => ['https://app.com/admin', 'https://app.com/other'],
+]);
