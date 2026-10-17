@@ -4,6 +4,7 @@ use Illuminate\Auth\AuthenticationException;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Image;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\URL;
 use Illuminate\Validation\ValidationException;
 use Redot\Http\Middleware\RoutePermission;
 use Redot\Models\Setting;
@@ -199,8 +200,10 @@ it('only applies route authorization to urls on the application host', function 
 it('goes back to previous urls that belong to the application', function (string $appUrl, string $previous) {
     Route::get('/fallback', fn () => 'fallback')->name('fallback');
     Route::getRoutes()->refreshNameLookups();
+
     config()->set('app.url', $appUrl);
-    url()->forceRootUrl($appUrl);
+    URL::useOrigin($appUrl);
+
     request()->headers->set('referer', $previous);
 
     expect(back_or_route('fallback'))->toBe($previous);
@@ -215,8 +218,10 @@ it('goes back to previous urls that belong to the application', function (string
 it('falls back to the route for previous urls outside the application', function (string $appUrl, string $previous) {
     Route::get('/fallback', fn () => 'fallback')->name('fallback');
     Route::getRoutes()->refreshNameLookups();
+
     config()->set('app.url', $appUrl);
-    url()->forceRootUrl($appUrl);
+    URL::useOrigin($appUrl);
+
     request()->headers->set('referer', $previous);
 
     expect(back_or_route('fallback'))->toBe(route('fallback'));
