@@ -86,3 +86,9 @@ it('skips the error restoration script when there are no errors', function () {
         ->toContain('window.ErrorsBag')
         ->not->toContain('appendErrorsToForm');
 });
+
+it('loads the toasts plugin before initializing it when nested components push scripts first', function () {
+    $html = Blade::render("<x-uploader name=\"files\" /><x-redot-scripts />@stack('plugins-scripts')");
+
+    expect(strpos($html, '/vendor/redot/plugins/redot-toasts.js'))->toBeLessThan(strpos($html, 'new RedotToasts('));
+});

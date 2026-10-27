@@ -1,4 +1,7 @@
-<x-assets.redot-toasts />
+{{-- Pushed here rather than through <x-assets.redot-toasts>: stacks keep pushes in order only within the same view depth --}}
+@pushOnce('plugins-scripts', 'redot-toasts-scripts')
+    <script src="{{ hashed_asset('/vendor/redot/plugins/redot-toasts.js') }}"></script>
+@endPushOnce
 
 @pushOnce('plugins-scripts', 'redot-toasts-init')
     <script>
