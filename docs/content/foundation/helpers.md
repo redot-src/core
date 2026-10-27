@@ -42,6 +42,8 @@
   <a href="{{ back_or_route($back, $backParams) }}" class="btn">{{ __('Back') }}</a>
   ```
 
+- **`is_dashboard_request()`** — whether the current request belongs to the dashboard, including unmatched URLs (such as 404s) under the dashboard prefix. Useful in shared views like error pages.
+
 ## Requests & API responses
 
 - **`throw_api_exception($e)`** — turn any caught exception into the standard JSON error envelope (mapping common exceptions to the right HTTP status). You rarely call this directly — it is wired in as the global JSON exception renderer. See [Controllers & API Responses](/foundation/controllers-and-responses).
@@ -53,6 +55,8 @@
       return throw_api_exception($e);
   }
   ```
+
+- **`current_sessions('admins')`** — the active browser sessions of the account signed in on the given guard, newest first. Returns an empty collection unless the `database` session driver is used.
 
 - **`is_mobile()` / `is_desktop()`** — detect the device from the request's user agent. Both return `false` safely when there is no request (e.g. console).
 

@@ -38,3 +38,20 @@ function back_or_route(string $route, mixed $parameters = [], bool $absolute = t
 
     return $sameOrigin && $insideApp ? $url : $route;
 }
+
+/**
+ * Determine whether the current request belongs to the dashboard scope.
+ */
+function is_dashboard_request(): bool
+{
+    if (request()->routeIs('dashboard.*')) {
+        return true;
+    }
+
+    // Unmatched requests (e.g. 404s) carry no dashboard route, so compare the
+    // URL against the dashboard root, which already reflects the configured
+    // prefix and the current locale.
+    $root = route('dashboard.index');
+
+    return url()->current() === $root || str_starts_with(url()->current(), "{$root}/");
+}

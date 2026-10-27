@@ -33,7 +33,10 @@ it('enables features for shared tests unless opted out and respects them outside
         expect(app()->runningUnitTests())->toBe($environment === 'testing')
             ->and(config("redot.features.{$feature}.enabled"))->toBe($expected)
             ->and(Route::has($route))->toBe($expected)
-            ->and(Route::has('global.index'))->toBeTrue();
+            ->and(Route::has('global.index'))->toBeTrue()
+            ->and(Route::has('global.select.search'))->toBeTrue()
+            ->and(Route::has('global.uploader.upload'))->toBeTrue()
+            ->and(Route::has('global.hugerte.upload'))->toBeTrue();
     } finally {
         $this->app['env'] = $originalEnvironment;
         Container::setInstance($this->app);

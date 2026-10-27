@@ -2,6 +2,7 @@
 
 use Illuminate\Auth\Middleware\Authenticate;
 use Illuminate\Routing\Route as RoutingRoute;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Route;
@@ -77,4 +78,18 @@ function url_allowed(string $url, ?string $guard = null): bool
     }
 
     return route_allowed(route_from_url($url) ?: '', $guard);
+}
+
+/**
+ * Get the active browser sessions for the current account on the given guard.
+ */
+function current_sessions(string $guard): Collection
+{
+    if (config('session.driver') !== 'database' || ! $user = auth($guard)->user()) {
+        return collect();
+    }
+
+    return $user->sessions()->wherePivot('guard', $guard)
+        ->where('last_activity', '>=', now()->subMinutes(config('session.lifetime'))->timestamp)
+        ->orderByDesc('last_activity')->get();
 }

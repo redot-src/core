@@ -44,8 +44,10 @@ class Application extends LaravelApplication
                     }
                 });
 
-                // Load the global routes
-                Route::as('global.')->middleware(['web', Localization::class . ':website'])->group(base_path('routes/global.php'));
+                // Load the package and application global routes, so the application can override package routes
+                foreach ([__DIR__ . '/../routes/global.php', base_path('routes/global.php')] as $routes) {
+                    Route::as('global.')->middleware(['web', Localization::class . ':website'])->group($routes);
+                }
 
                 // Load the website and dashboard routes
                 $group = Route::middleware('web');
