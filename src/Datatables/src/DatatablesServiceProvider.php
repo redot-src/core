@@ -4,7 +4,6 @@ namespace Redot\Datatables;
 
 use Illuminate\Support\ServiceProvider;
 use Redot\Datatables\Commands\DatatableMakeCommand;
-use Redot\Datatables\Commands\DatatablesLinkCommand;
 
 class DatatablesServiceProvider extends ServiceProvider
 {
@@ -31,7 +30,6 @@ class DatatablesServiceProvider extends ServiceProvider
 
         $this->commands([
             DatatableMakeCommand::class,
-            DatatablesLinkCommand::class,
         ]);
     }
 
@@ -71,7 +69,7 @@ class DatatablesServiceProvider extends ServiceProvider
     protected function assets(): void
     {
         $this->publishes([
-            __DIR__ . '/../public' => public_path('vendor/datatables'),
-        ], 'datatables::assets');
+            __DIR__ . '/../public' => public_path('vendor/redot/datatables'),
+        ], 'redot::assets');
     }
 }

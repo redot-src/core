@@ -18,8 +18,8 @@ return [
     */
 
     'assets' => [
-        'css' => 'vendor/datatables/datatables.css',
-        'js' => 'vendor/datatables/datatables.js',
+        'css' => 'vendor/redot/datatables/datatables.css',
+        'js' => 'vendor/redot/datatables/datatables.js',
     ],
 
     'export' => [

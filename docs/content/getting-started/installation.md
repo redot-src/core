@@ -55,7 +55,7 @@ php artisan migrate
 
 The bundled packages expose their own tags, all following the `package::resource` convention. Their config, views, lang, and routes load automatically; publish only to override.
 
-- **Datatables** — `datatables::config`, `datatables::views`, `datatables::lang`, `datatables::assets`. Run `php artisan datatables:link` (or publish `datatables::assets`) so CSS/JS are available under `public/vendor/datatables`. See [Datatables](/packages/datatables/overview).
+- **Datatables** — `datatables::config`, `datatables::views`, `datatables::lang`. Its CSS/JS are published with the rest of the Redot assets by `php artisan redot:publish`. See [Datatables](/packages/datatables/overview).
 - **Toastify** — `toastify::config`. See [Toastify](/packages/toastify).
 - **Auth, Sidebar, LangExtractor** — nothing to publish; they are wired up for you.
 

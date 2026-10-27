@@ -69,24 +69,7 @@ A datatable is a Livewire component, so mount it with Livewire's tag syntax. Pub
 
 ## Assets
 
-The package ships plain JS and CSS under `public/vendor/datatables` — there's no build step or `npm` publish. Link them once (like `storage:link`), then the table injects them automatically the first time one renders:
-
-```bash
-php artisan datatables:link
-php artisan datatables:link --force
-php artisan datatables:link --relative
-```
-
-- **`--force`** — recreate the symlink if it already exists.
-- **`--relative`** — create a relative symlink (useful in some deploy layouts).
-
-Prefer a copy instead of a symlink? Publish the assets:
-
-```bash
-php artisan vendor:publish --tag=datatables::assets --force
-```
-
-Re-run the link (or publish with `--force`) after upgrading `redot/core` so CSS/JS stay current. The scripts expect the dashboard's globals: jQuery, Bootstrap dropdowns, Livewire, and the helpers from `functions.js` — confirmable [actions](/packages/datatables/actions) prompt through `warnBeforeAction`, and non-GET actions submit through `formRequest` (which reads the CSRF token from the layout's `csrf-token` meta tag). See the [Asset & Init System](/frontend/asset-system) for how front-end assets are served.
+The package ships plain JS and CSS — there's no build step or `npm` publish. [`redot:publish`](/commands/overview) copies them to `public/vendor/redot/datatables` with the rest of the Redot assets, and the table injects them automatically the first time one renders. The scripts expect the dashboard's globals: jQuery, Bootstrap dropdowns, Livewire, and the helpers from `functions.js` — confirmable [actions](/packages/datatables/actions) prompt through `warnBeforeAction`, and non-GET actions submit through `formRequest` (which reads the CSRF token from the layout's `csrf-token` meta tag). See the [Asset & Init System](/frontend/asset-system) for how front-end assets are served.
 
 The script exposes its helpers as `window.Datatables` — the package views consume them (the Alpine components behind the root card, the select-page checkbox, and the action click handling) instead of inlining the logic. If you publish and customize the views, reuse the same helpers: `Datatables.table()` and `Datatables.pageSelection()` for the Alpine state, and `Datatables.confirmed()` / `Datatables.submit()` / `Datatables.url()` / `Datatables.invoke()` for action behavior.
 

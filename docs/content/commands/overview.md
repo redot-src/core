@@ -42,18 +42,13 @@ Creates a symbolic link from the framework's `public/` directory to a sibling di
 
 - **`--name`** — the name of the link to create (defaults to `public_html`).
 
-## `datatables:link`
+## `redot:publish`
 
 ```bash
-php artisan datatables:link
-php artisan datatables:link --force
-php artisan datatables:link --relative
+php artisan redot:publish
 ```
 
-Creates a symbolic link from `public/vendor/datatables` to the Datatables package assets. Required once per install (and again after upgrades) so the table's CSS/JS are served statically. Prefer `vendor:publish --tag=datatables::assets` if symlinks are unavailable.
-
-- **`--force`** — recreate the symlink if it already exists.
-- **`--relative`** — create a relative symlink.
+Publishes the Redot front-end assets — the shared runtime, plugins, styles, Datatables assets, and the third-party libraries they use — to `public/vendor/redot`. It replaces the whole directory, so files removed from the package don't linger. The starter kit runs it from Composer's `post-update-cmd`, so assets stay current after every `redot/core` upgrade.
 
 ## `permissions:sync`
 

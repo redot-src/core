@@ -109,19 +109,26 @@ class BuildDependenciesCommand extends Command
     protected function buildInitFiles()
     {
         $inits = [];
-        foreach (glob(public_path('assets/inits/*.js')) as $file) {
-            $inits[] = $file;
+
+        // Application inits override the package inits with the same name.
+        foreach ([dirname(__DIR__, 2) . '/resources/inits', public_path('assets/inits')] as $directory) {
+            if (! File::isDirectory($directory)) continue;
+
+            // Push path to the dependencies array.
+            $this->dependsOnDirectory($directory);
+
+            foreach (glob($directory . '/*.js') as $file) {
+                $inits[basename($file, '.js')] = $file;
+            }
         }
 
-        // Push path to the dependencies array.
-        $this->dependsOnDirectory(public_path('assets/inits'));
-        $this->dependsOnFile(...$inits);
+        $this->dependsOnFile(...array_values($inits));
 
         $javascriptFile = 'window.__inits = {};' . "\n";
-        foreach ($inits as $file) {
+        foreach ($inits as $name => $file) {
             $javascriptFile .= sprintf(
                 'window.__inits["%s"] = (() => { %s })();',
-                basename($file, '.js'),
+                $name,
                 File::get($file)
             );
         }

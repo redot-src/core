@@ -32,6 +32,8 @@ class ExtractLanguageTokens implements ShouldQueue
             database_path('seeders'),
             public_path('assets'),
             resource_path(),
+            dirname(__DIR__, 2) . '/public',
+            dirname(__DIR__, 2) . '/resources',
         ];
 
         $extractor = new LangExtractor;

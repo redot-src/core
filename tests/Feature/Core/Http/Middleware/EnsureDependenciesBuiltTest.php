@@ -119,6 +119,32 @@ it('rebuilds dependencies when a tracked source file is modified', function () {
     expect($response->getContent())->toBe('next');
 });
 
+it('does not rebuild when a tracked file outside the application is current', function () {
+    $source = sys_get_temp_dir() . '/redot-outside-' . uniqid() . '.js';
+    File::put($source, 'return () => {};');
+
+    File::put(dist_path('lock.json'), json_encode([
+        'files' => [
+            $source => filemtime($source),
+        ],
+        'directories' => [],
+    ]));
+
+    Cache::shouldReceive('lock')->never();
+    $artisan = Mockery::mock();
+    $artisan->shouldReceive('call')->never();
+    Artisan::swap($artisan);
+
+    try {
+        (new EnsureDependenciesBuilt)->handle(
+            Request::create('/'),
+            fn () => new Response('next')
+        );
+    } finally {
+        File::delete($source);
+    }
+});
+
 it('clears the build output when a dependencies build is triggered', function () {
     File::ensureDirectoryExists(dist_path('translations'));
     File::put(dist_path('lock.json'), '{}');

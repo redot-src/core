@@ -40,7 +40,7 @@ it('resolves the themer script URL when the view renders instead of when it comp
     $html = ob_get_clean();
 
     expect($html)
-        ->toContain('http://rendered.test/assets/js/themer.js')
+        ->toContain('http://rendered.test/vendor/redot/js/themer.js')
         ->not->toContain('compiled.test');
 });
 
