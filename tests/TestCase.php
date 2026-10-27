@@ -19,8 +19,30 @@ abstract class TestCase extends Orchestra
     {
         parent::setUp();
 
-        File::ensureDirectoryExists($this->app['config']->get('view.compiled'));
-        File::ensureDirectoryExists(dist_path());
+        // Parallel workers create the same directories at once, so tolerate one that already exists.
+        File::makeDirectory($this->app['config']->get('view.compiled'), 0755, true, true);
+        File::makeDirectory(dist_path(), 0755, true, true);
+    }
+
+    /**
+     * Resolve the application with a public directory private to the current test process.
+     *
+     * Tests build, publish, and upload into the public directory, and the package
+     * registers its publish paths before the environment is defined.
+     */
+    protected function resolveApplication()
+    {
+        return tap(parent::resolveApplication(), fn ($app) => $app->usePublicPath(static::processPath('public')));
+    }
+
+    /**
+     * Get a scratch directory private to the current test process.
+     */
+    protected static function processPath(string $path): string
+    {
+        $token = $_SERVER['TEST_TOKEN'] ?? getenv('TEST_TOKEN') ?: 'serial';
+
+        return sys_get_temp_dir() . "/redot-core-tests/{$token}/{$path}";
     }
 
     /**
@@ -57,7 +79,7 @@ abstract class TestCase extends Orchestra
         $app['config']->set('permission.testing', true);
         $app['config']->set('queue.default', 'sync');
         $app['config']->set('session.driver', 'array');
-        $app['config']->set('view.compiled', sys_get_temp_dir() . '/redot-core-tests/views');
+        $app['config']->set('view.compiled', static::processPath('views'));
 
         $app['config']->set('auth.guards.admins', ['driver' => 'session', 'provider' => 'admins']);
         $app['config']->set('auth.providers.admins', ['driver' => 'eloquent', 'model' => User::class]);
