@@ -27,6 +27,9 @@ return async (selector, options = {}) => {
         '--tblr-primary',
     ]);
 
+    // Uploads go to the URL the component passes; without one, image uploads are off.
+    const uploadUrl = $(selector).attr('hugerte-upload-url');
+
     options = Object.assign({}, options, {
         selector: '#' + $(selector).attr('id'),
         language: document.documentElement.lang,
@@ -42,12 +45,12 @@ return async (selector, options = {}) => {
             'undo redo | styles | bold italic underline forecolor backcolor | alignleft aligncenter alignright alignjustify outdent indent ltr rtl | bullist numlist | table image',
         toolbar_mode: 'sliding',
         image_title: true,
-        automatic_uploads: true,
+        automatic_uploads: Boolean(uploadUrl),
         images_upload_handler: (blobInfo, progress) =>
             new Promise((resolve, reject) => {
                 const xhr = new XMLHttpRequest();
                 xhr.withCredentials = false;
-                xhr.open('POST', '/hugerte/upload');
+                xhr.open('POST', uploadUrl);
                 xhr.setRequestHeader('X-CSRF-TOKEN', $('meta[name="csrf-token"]').attr('content'));
 
                 xhr.upload.onprogress = (e) => {
@@ -84,7 +87,7 @@ return async (selector, options = {}) => {
 
                 xhr.send(formData);
             }),
-        file_picker_types: 'image',
+        file_picker_types: uploadUrl ? 'image' : '',
         file_picker_callback: (cb, value, meta) => {
             const input = document.createElement('input');
             input.setAttribute('type', 'file');

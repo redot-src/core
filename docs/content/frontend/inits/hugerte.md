@@ -21,7 +21,7 @@ See [Asset & Init System](/frontend/asset-system) for how the `init` attribute i
 
 ## Options
 
-The toolbar, plugins, and height come preconfigured, and the editor reads its language, direction, and skin from the page — so there is little to set per field. Images pasted or picked in the editor upload automatically through the configured upload endpoint.
+The toolbar, plugins, and height come preconfigured, and the editor reads its language, direction, and skin from the page — so there is little to set per field. Images pasted or picked in the editor upload automatically to the URL in the field's `hugerte-upload-url` attribute, which `<x-rich-editor>` fills in from the `global.hugerte.upload` route. Without that attribute (for example when `redot.components.hugerte.enabled` is off), image uploads are turned off.
 
 The field must have an `id` (the component generates one if you omit it). When the user toggles light/dark, the editor rebuilds to pick up the new skin.
 

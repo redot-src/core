@@ -8,7 +8,7 @@
             </span>
 
             <input type="text" id="{{ $id }}" autocomplete="off"
-                {{ $attributes->class(['form-control'])->merge(['init' => 'icon-picker']) }} />
+                {{ $attributes->class(['form-control'])->merge(['init' => 'icon-picker', 'iconpicker-source' => hashed_asset('vendor/redot/libraries/tabler-icons/tabler-icons.json')]) }} />
         </div>
 
         <div class="col-auto">

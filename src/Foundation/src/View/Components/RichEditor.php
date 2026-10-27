@@ -2,6 +2,7 @@
 
 namespace Redot\View\Components;
 
+use Illuminate\Support\Facades\Route;
 use Illuminate\View\ComponentAttributeBag;
 
 class RichEditor extends Textarea
@@ -17,7 +18,11 @@ class RichEditor extends Textarea
     protected function prepare(array $data): array
     {
         $this->attributes(function (ComponentAttributeBag $attributes) {
-            return $attributes->merge(['init' => 'hugerte']);
+            return $attributes->merge([
+                'init' => 'hugerte',
+                // Image uploads are offered only while the package endpoints are enabled.
+                'hugerte-upload-url' => Route::has('global.hugerte.upload') ? route('global.hugerte.upload') : null,
+            ]);
         });
 
         return [];

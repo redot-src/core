@@ -1,7 +1,10 @@
 <?php
 
+use Illuminate\Routing\RouteCollection;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\MessageBag;
 use Illuminate\Support\ServiceProvider;
@@ -91,4 +94,21 @@ it('loads the toasts plugin before initializing it when nested components push s
     $html = Blade::render("<x-uploader name=\"files\" /><x-redot-scripts />@stack('plugins-scripts')");
 
     expect(strpos($html, '/vendor/redot/plugins/redot-toasts.js'))->toBeLessThan(strpos($html, 'new RedotToasts('));
+});
+
+it('passes the endpoint and asset urls to the scripts so subdirectory installs work', function () {
+    URL::forceRootUrl('http://example.test/panel');
+
+    expect(Blade::render('<x-uploader name="files" />'))->toContain('uploader-endpoint="http://example.test/panel/uploader/upload"')
+        ->and(Blade::render('<x-rich-editor name="body" />'))->toContain('hugerte-upload-url="http://example.test/panel/hugerte/upload"')
+        ->and(Blade::render('<x-icon-picker name="icon" />'))->toContain('iconpicker-source="http://example.test/panel/vendor/redot/libraries/tabler-icons/tabler-icons.json');
+});
+
+it('turns off rich editor uploads when the hugerte endpoint is disabled', function () {
+    config(['redot.components.hugerte.enabled' => false]);
+    Route::setRoutes(new RouteCollection);
+    $this->defineRoutes(app('router'));
+    Route::getRoutes()->refreshNameLookups();
+
+    expect(Blade::render('<x-rich-editor name="body" />'))->toContain('init="hugerte"')->not->toContain('hugerte-upload-url');
 });

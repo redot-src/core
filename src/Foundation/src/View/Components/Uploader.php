@@ -42,6 +42,7 @@ class Uploader extends FormField
                 'init' => 'uploader',
                 'uploader-accept' => $this->accept,
                 'uploader-config' => $this->getUploaderConfig(),
+                'uploader-endpoint' => route('global.uploader.upload'),
             ]);
         });
 
