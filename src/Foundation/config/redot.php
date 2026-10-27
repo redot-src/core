@@ -108,6 +108,35 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Components
+    |--------------------------------------------------------------------------
+    |
+    | The endpoints behind <x-select-remote>, <x-uploader>, and the image
+    | uploads of <x-rich-editor>. Disable the ones the application doesn't
+    | use, and add middleware (such as auth) to limit who can call them. The
+    | rich editor still works without its endpoint, minus image uploads.
+    |
+    */
+
+    'components' => [
+        'select' => [
+            'enabled' => true,
+            'middleware' => ['throttle:120,1'],
+        ],
+
+        'uploader' => [
+            'enabled' => true,
+            'middleware' => ['throttle:120,1'],
+        ],
+
+        'hugerte' => [
+            'enabled' => true,
+            'middleware' => ['throttle:120,1'],
+        ],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Permissions
     |--------------------------------------------------------------------------
     |

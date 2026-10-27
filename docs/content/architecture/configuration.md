@@ -52,6 +52,13 @@ Once languages exist in the database, the active locale list is built from them,
 
 When you change one path, copy the whole `paths` block into your config: Laravel merges package config only at the top level, so a partial block leaves the other paths undefined.
 
+## Components
+
+`redot.components` controls the routes behind three components: `select` (the search endpoint of `<x-select-remote>`), `uploader` (the upload endpoint of `<x-uploader>`), and `hugerte` (image uploads in `<x-rich-editor>`). Each takes:
+
+- **`enabled`** — registers the routes. Turn it off when the application doesn't use the component; the rich editor keeps working without image uploads.
+- **`middleware`** — middleware added to those routes, `throttle:120,1` by default. Add `auth:admins` (or another guard) to limit who can call them.
+
 ## Datatables
 
 `redot.datatables` configures the [Datatables](/packages/datatables/overview) package: `assets` holds the CSS/JS paths the table loads, and `export` lists each export format with its `enabled` flag and exporter class (plus the template, adapter, and engine options for [PDF](/packages/datatables/export)).

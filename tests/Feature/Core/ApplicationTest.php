@@ -81,3 +81,49 @@ it('loads the application route files from the configured paths', function () {
         RouteServiceProvider::loadRoutesUsing($original);
     }
 });
+
+it('registers each package endpoint with its own middleware unless disabled', function (string $endpoint, array $routeNames) {
+    $basePath = $this->app->basePath();
+    $routes = Route::getRoutes();
+    $property = new ReflectionProperty(RouteServiceProvider::class, 'alwaysLoadRoutesUsing');
+    $original = $property->getValue();
+
+    try {
+        Application::configure(dirname(__DIR__, 2) . '/Fixtures/Application');
+        $registerRoutes = $property->getValue();
+        Container::setInstance($this->app);
+        $this->app->setBasePath(dirname(__DIR__, 2) . '/Fixtures/Application');
+        Route::setRoutes(new RouteCollection);
+        config(["redot.components.{$endpoint}.middleware" => ['throttle:5,1']]);
+
+        $registerRoutes();
+        Route::getRoutes()->refreshNameLookups();
+
+        foreach ($routeNames as $name) {
+            expect(Route::getRoutes()->getByName($name)->middleware())->toContain('throttle:5,1');
+        }
+
+        expect(Route::getRoutes()->getByName('global.index')->middleware())->not->toContain('throttle:5,1');
+
+        Route::setRoutes(new RouteCollection);
+        config(["redot.components.{$endpoint}.enabled" => false]);
+
+        $registerRoutes();
+        Route::getRoutes()->refreshNameLookups();
+
+        foreach ($routeNames as $name) {
+            expect(Route::has($name))->toBeFalse();
+        }
+
+        expect(Route::has('global.index'))->toBeTrue();
+    } finally {
+        Container::setInstance($this->app);
+        $this->app->setBasePath($basePath);
+        Route::setRoutes($routes);
+        RouteServiceProvider::loadRoutesUsing($original);
+    }
+})->with([
+    'select' => ['select', ['global.select.search', 'global.select.fetch']],
+    'uploader' => ['uploader', ['global.uploader.upload']],
+    'hugerte' => ['hugerte', ['global.hugerte.upload']],
+]);

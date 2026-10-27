@@ -87,6 +87,14 @@ abstract class TestCase extends Orchestra
     }
 
     /**
+     * Register the package endpoints the way Redot\Application does.
+     */
+    protected function defineRoutes($router): void
+    {
+        $router->as('global.')->middleware('web')->group(dirname(__DIR__) . '/src/Foundation/routes/global.php');
+    }
+
+    /**
      * Load the database migrations for the testbench application.
      */
     protected function defineDatabaseMigrations(): void
