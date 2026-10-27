@@ -9,7 +9,7 @@ class StringFilter extends OperatorFilter
     /**
      * The filter's view.
      */
-    public string $view = 'datatables::filters.string';
+    public string $view = 'redot::datatables.filters.string';
 
     /**
      * Initialize the filter.
@@ -17,14 +17,14 @@ class StringFilter extends OperatorFilter
     protected function init(): void
     {
         $this->operators = [
-            'equals' => __('datatables::datatable.filters.string.equals'),
-            'not_equals' => __('datatables::datatable.filters.string.not_equals'),
-            'contains' => __('datatables::datatable.filters.string.contains'),
-            'not_contains' => __('datatables::datatable.filters.string.not_contains'),
-            'starts_with' => __('datatables::datatable.filters.string.starts_with'),
-            'not_starts_with' => __('datatables::datatable.filters.string.not_starts_with'),
-            'ends_with' => __('datatables::datatable.filters.string.ends_with'),
-            'not_ends_with' => __('datatables::datatable.filters.string.not_ends_with'),
+            'equals' => __('redot::datatables.filters.string.equals'),
+            'not_equals' => __('redot::datatables.filters.string.not_equals'),
+            'contains' => __('redot::datatables.filters.string.contains'),
+            'not_contains' => __('redot::datatables.filters.string.not_contains'),
+            'starts_with' => __('redot::datatables.filters.string.starts_with'),
+            'not_starts_with' => __('redot::datatables.filters.string.not_starts_with'),
+            'ends_with' => __('redot::datatables.filters.string.ends_with'),
+            'not_ends_with' => __('redot::datatables.filters.string.not_ends_with'),
         ];
     }
 

@@ -78,10 +78,10 @@ The script exposes its helpers as `window.Datatables` — the package views cons
 Publish the package's views or translations to override them:
 
 ```bash
-# Blade views -> resources/views/vendor/datatables
+# Blade views -> resources/views/vendor/redot/datatables
 php artisan vendor:publish --tag=redot::datatables-views
 
-# Translations -> lang/vendor/datatables
+# Translations -> lang/vendor/redot
 php artisan vendor:publish --tag=redot::datatables-lang
 ```
 

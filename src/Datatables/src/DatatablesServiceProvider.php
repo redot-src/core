@@ -28,11 +28,11 @@ class DatatablesServiceProvider extends ServiceProvider
     {
         $this->loadViewsFrom(
             __DIR__ . '/../resources/views',
-            'datatables'
+            'redot'
         );
 
         $this->publishes([
-            __DIR__ . '/../resources/views' => resource_path('views/vendor/datatables'),
+            __DIR__ . '/../resources/views/datatables' => resource_path('views/vendor/redot/datatables'),
         ], 'redot::datatables-views');
     }
 
@@ -43,11 +43,11 @@ class DatatablesServiceProvider extends ServiceProvider
     {
         $this->loadTranslationsFrom(
             __DIR__ . '/../lang',
-            'datatables'
+            'redot'
         );
 
         $this->publishes([
-            __DIR__ . '/../lang' => lang_path('vendor/datatables'),
+            __DIR__ . '/../lang' => lang_path('vendor/redot'),
         ], 'redot::datatables-lang');
     }
 

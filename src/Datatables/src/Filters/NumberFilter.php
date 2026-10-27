@@ -9,7 +9,7 @@ class NumberFilter extends OperatorFilter
     /**
      * The filter's view.
      */
-    public string $view = 'datatables::filters.number';
+    public string $view = 'redot::datatables.filters.number';
 
     /**
      * Initialize the filter.
@@ -17,12 +17,12 @@ class NumberFilter extends OperatorFilter
     protected function init(): void
     {
         $this->operators = [
-            'equals' => __('datatables::datatable.filters.number.equals'),
-            'not_equals' => __('datatables::datatable.filters.number.not_equals'),
-            'greater_than' => __('datatables::datatable.filters.number.greater_than'),
-            'greater_than_or_equals' => __('datatables::datatable.filters.number.greater_than_or_equals'),
-            'less_than' => __('datatables::datatable.filters.number.less_than'),
-            'less_than_or_equals' => __('datatables::datatable.filters.number.less_than_or_equals'),
+            'equals' => __('redot::datatables.filters.number.equals'),
+            'not_equals' => __('redot::datatables.filters.number.not_equals'),
+            'greater_than' => __('redot::datatables.filters.number.greater_than'),
+            'greater_than_or_equals' => __('redot::datatables.filters.number.greater_than_or_equals'),
+            'less_than' => __('redot::datatables.filters.number.less_than'),
+            'less_than_or_equals' => __('redot::datatables.filters.number.less_than_or_equals'),
         ];
     }
 

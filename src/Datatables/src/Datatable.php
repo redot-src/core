@@ -143,7 +143,7 @@ abstract class Datatable extends Component
     public function __construct()
     {
         $this->id ??= uniqid('datatable-');
-        $this->emptyMessage ??= __('datatables::datatable.empty');
+        $this->emptyMessage ??= __('redot::datatables.empty');
         $this->defaultPerPage = $this->perPage;
 
         // Set the PDF adapter and options
@@ -231,7 +231,7 @@ abstract class Datatable extends Component
      */
     public function paginationView(): string
     {
-        return 'datatables::pagination.default';
+        return 'redot::datatables.pagination.default';
     }
 
     /**
@@ -468,7 +468,7 @@ abstract class Datatable extends Component
      */
     public function render(): View
     {
-        return view('datatables::datatable', $this->viewData());
+        return view('redot::datatables.datatable', $this->viewData());
     }
 
     /**

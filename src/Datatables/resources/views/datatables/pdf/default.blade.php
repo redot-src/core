@@ -10,7 +10,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>@lang('datatables::datatable.export') {{ date('Y-m-d H:i:s') }}</title>
+    <title>@lang('redot::datatables.export') {{ date('Y-m-d H:i:s') }}</title>
 
     <style>
         body {
@@ -101,7 +101,7 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="{{ count($headings) }}">@lang('datatables::datatable.empty')</td>
+                        <td colspan="{{ count($headings) }}">@lang('redot::datatables.empty')</td>
                     </tr>
                 @endforelse
             </tbody>

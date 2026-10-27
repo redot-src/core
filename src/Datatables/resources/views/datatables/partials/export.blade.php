@@ -11,7 +11,7 @@
                 </span>
 
                 <span class="dropdown-item-title">
-                    @lang('datatables::datatable.exports.pdf')
+                    @lang('redot::datatables.exports.pdf')
                 </span>
             </a>
         @endif 
@@ -23,7 +23,7 @@
                 </span>
 
                 <span class="dropdown-item-title">
-                    @lang('datatables::datatable.exports.excel')
+                    @lang('redot::datatables.exports.excel')
                 </span>
             </a>
         @endif 
@@ -35,7 +35,7 @@
                 </span>
 
                 <span class="dropdown-item-title">
-                    @lang('datatables::datatable.exports.csv')
+                    @lang('redot::datatables.exports.csv')
                 </span>
             </a>
         @endif 
@@ -47,7 +47,7 @@
                 </span>
 
                 <span class="dropdown-item-title">
-                    @lang('datatables::datatable.exports.json')
+                    @lang('redot::datatables.exports.json')
                 </span>
             </a>
         @endif 

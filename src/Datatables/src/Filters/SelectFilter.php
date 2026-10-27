@@ -20,14 +20,14 @@ class SelectFilter extends Filter
     /**
      * The filter's view.
      */
-    public string $view = 'datatables::filters.select';
+    public string $view = 'redot::datatables.filters.select';
 
     /**
      * Initialize the filter.
      */
     protected function init(): void
     {
-        $this->placeholder = __('datatables::datatable.filters.select.placeholder');
+        $this->placeholder = __('redot::datatables.filters.select.placeholder');
     }
 
     /**

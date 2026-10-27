@@ -176,7 +176,7 @@ return [
             'pdf' => [
                 'enabled' => true,
                 'exporter' => PdfExporter::class,
-                'template' => 'datatables::pdf.default',
+                'template' => 'redot::datatables.pdf.default',
                 'adapter' => LaravelMpdf::class,
                 'options' => [
                     'format' => 'A4',

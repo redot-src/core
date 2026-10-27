@@ -12,7 +12,7 @@
     <div class="dropdown-menu">
         @foreach ($action->actions as $action)
             @if ($action->shouldRender($row))
-                @include('datatables::partials.action', [
+                @include('redot::datatables.partials.action', [
                     'action' => $action,
                     'row' => $row,
                 ])

@@ -4,7 +4,7 @@
             <ul class="pagination m-0">
                 {{-- Previous Page Link --}}
                 @if ($paginator->onFirstPage())
-                    <li class="page-item d-none d-md-block disabled" aria-disabled="true" aria-label="@lang('datatables::datatable.pagination.previous')">
+                    <li class="page-item d-none d-md-block disabled" aria-disabled="true" aria-label="@lang('redot::datatables.pagination.previous')">
                         <span class="page-link" aria-hidden="true">&lsaquo;</span>
                     </li>
                 @else
@@ -12,7 +12,7 @@
                         <button type="button"
                             dusk="previousPage{{ $paginator->getPageName() == 'page' ? '' : '.' . $paginator->getPageName() }}"
                             class="page-link" wire:click="previousPage('{{ $paginator->getPageName() }}')"
-                            wire:loading.attr="disabled" rel="prev" aria-label="@lang('datatables::datatable.pagination.previous')">&lsaquo;</button>
+                            wire:loading.attr="disabled" rel="prev" aria-label="@lang('redot::datatables.pagination.previous')">&lsaquo;</button>
                     </li>
                 @endif
 
@@ -48,10 +48,10 @@
                         <button type="button"
                             dusk="nextPage{{ $paginator->getPageName() == 'page' ? '' : '.' . $paginator->getPageName() }}"
                             class="page-link" wire:click="nextPage('{{ $paginator->getPageName() }}')"
-                            wire:loading.attr="disabled" rel="next" aria-label="@lang('datatables::datatable.pagination.next')">&rsaquo;</button>
+                            wire:loading.attr="disabled" rel="next" aria-label="@lang('redot::datatables.pagination.next')">&rsaquo;</button>
                     </li>
                 @else
-                    <li class="page-item d-none d-md-block disabled" aria-disabled="true" aria-label="@lang('datatables::datatable.pagination.next')">
+                    <li class="page-item d-none d-md-block disabled" aria-disabled="true" aria-label="@lang('redot::datatables.pagination.next')">
                         <span class="page-link" aria-hidden="true">&rsaquo;</span>
                     </li>
                 @endif

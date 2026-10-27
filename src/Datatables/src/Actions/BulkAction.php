@@ -27,9 +27,9 @@ class BulkAction extends Action
      */
     public static function delete(?string $route = null, array $parameters = []): static
     {
-        $action = static::preset(__('datatables::datatable.actions.delete'), 'ti ti-trash', $route, $parameters)
+        $action = static::preset(__('redot::datatables.actions.delete'), 'ti ti-trash', $route, $parameters)
             ->method('delete')
-            ->confirmable(message: __('datatables::datatable.bulk.confirm'));
+            ->confirmable(message: __('redot::datatables.bulk.confirm'));
 
         return $route ? $action : $action->action('delete', fn (Collection $records) => $records->each->delete());
     }
@@ -39,9 +39,9 @@ class BulkAction extends Action
      */
     public static function restore(?string $route = null, array $parameters = []): static
     {
-        $action = static::preset(__('datatables::datatable.actions.restore'), 'ti ti-restore', $route, $parameters)
+        $action = static::preset(__('redot::datatables.actions.restore'), 'ti ti-restore', $route, $parameters)
             ->method('post')
-            ->confirmable(message: __('datatables::datatable.bulk.confirm'));
+            ->confirmable(message: __('redot::datatables.bulk.confirm'));
 
         return $route ? $action : $action->action('restore', fn (Collection $records) => $records->each->restore());
     }

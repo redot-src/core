@@ -13,7 +13,7 @@
                         <th class="w-1 datatable-select" wire:key="{{ $id }}-select-page-{{ md5($pageKeys->implode(',')) }}"
                             x-data="Datatables.pageSelection(@js($pageKeys))">
                             <input type="checkbox" class="form-check-input m-0 align-middle"
-                                aria-label="@lang('datatables::datatable.bulk.select_page')"
+                                aria-label="@lang('redot::datatables.bulk.select_page')"
                                 x-bind:checked="allSelected" x-bind:indeterminate="indeterminate"
                                 x-on:click="toggle()" />
                         </th>
@@ -59,7 +59,7 @@
                     @if ($selectable)
                         <td class="datatable-select">
                             <input type="checkbox" class="form-check-input m-0 align-middle"
-                                aria-label="@lang('datatables::datatable.bulk.select_row')" value="{{ $row->getKey() }}"
+                                aria-label="@lang('redot::datatables.bulk.select_row')" value="{{ $row->getKey() }}"
                                 x-model="selected" />
                         </td>
                     @endif
@@ -76,9 +76,9 @@
                                 @foreach ($actions as $action)
                                     @if ($action->shouldRender($row))
                                         @if ($action->isActionGroup)
-                                            @include('datatables::partials.action-group')
+                                            @include('redot::datatables.partials.action-group')
                                         @else
-                                            @include('datatables::partials.action')
+                                            @include('redot::datatables.partials.action')
                                         @endif
                                     @endif
                                 @endforeach
@@ -89,7 +89,7 @@
             @empty
                 <tr>
                     <td colspan="{{ $colspan }}" class="text-center text-muted">
-                        @include('datatables::partials.empty')
+                        @include('redot::datatables.partials.empty')
                     </td>
                 </tr>
             @endforelse

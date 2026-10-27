@@ -14,14 +14,14 @@ class TrashedFilter extends Filter
     /**
      * The filter's view.
      */
-    public string $view = 'datatables::filters.trashed';
+    public string $view = 'redot::datatables.filters.trashed';
 
     /**
      * Initialize the filter.
      */
     protected function init(): void
     {
-        $this->label ??= __('datatables::datatable.filters.trashed.label');
+        $this->label ??= __('redot::datatables.filters.trashed.label');
         $this->column ??= 'deleted_at';
     }
 

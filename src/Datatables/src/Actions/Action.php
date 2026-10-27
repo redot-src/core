@@ -160,7 +160,7 @@ class Action
      */
     public static function view(?string $route = null, array $parameters = []): static
     {
-        return static::preset(__('datatables::datatable.actions.view'), 'ti ti-eye', $route, $parameters)->lightbox();
+        return static::preset(__('redot::datatables.actions.view'), 'ti ti-eye', $route, $parameters)->lightbox();
     }
 
     /**
@@ -168,7 +168,7 @@ class Action
      */
     public static function edit(?string $route = null, array $parameters = []): static
     {
-        return static::preset(__('datatables::datatable.actions.edit'), 'ti ti-edit', $route, $parameters);
+        return static::preset(__('redot::datatables.actions.edit'), 'ti ti-edit', $route, $parameters);
     }
 
     /**
@@ -176,7 +176,7 @@ class Action
      */
     public static function delete(?string $route = null, array $parameters = []): static
     {
-        return static::preset(__('datatables::datatable.actions.delete'), 'ti ti-trash', $route, $parameters)->method('delete')->confirmable();
+        return static::preset(__('redot::datatables.actions.delete'), 'ti ti-trash', $route, $parameters)->method('delete')->confirmable();
     }
 
     /**
@@ -184,7 +184,7 @@ class Action
      */
     public static function restore(?string $route = null, array $parameters = []): static
     {
-        return static::preset(__('datatables::datatable.actions.restore'), 'ti ti-restore', $route, $parameters)->method('post')->confirmable();
+        return static::preset(__('redot::datatables.actions.restore'), 'ti ti-restore', $route, $parameters)->method('post')->confirmable();
     }
 
     /**
@@ -192,7 +192,7 @@ class Action
      */
     public static function export(?string $route = null, array $parameters = []): static
     {
-        return static::preset(__('datatables::datatable.actions.export'), 'ti ti-file-export', $route, $parameters);
+        return static::preset(__('redot::datatables.actions.export'), 'ti ti-file-export', $route, $parameters);
     }
 
     /**
@@ -500,7 +500,7 @@ class Action
         }
 
         if ($this->confirmable) {
-            $this->attribute('confirm', $this->confirmMessage ?? __('datatables::datatable.actions.confirm'));
+            $this->attribute('confirm', $this->confirmMessage ?? __('redot::datatables.actions.confirm'));
         }
 
         if ($this->label && ! $this->grouped && ! $this->expanded) {
