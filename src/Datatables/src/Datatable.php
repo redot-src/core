@@ -143,17 +143,17 @@ abstract class Datatable extends Component
     public function __construct()
     {
         $this->id ??= uniqid('datatable-');
-        $this->emptyMessage ??= __('datatables::datatable.empty');
+        $this->emptyMessage ??= __('redot::datatables.empty');
         $this->defaultPerPage = $this->perPage;
 
         // Set the PDF adapter and options
-        $this->pdfTemplate ??= config('datatables.export.pdf.template');
-        $this->pdfAdapter ??= config('datatables.export.pdf.adapter');
-        $this->pdfOptions = array_merge(config('datatables.export.pdf.options') ?? [], $this->pdfOptions);
+        $this->pdfTemplate ??= config('redot.datatables.export.pdf.template');
+        $this->pdfAdapter ??= config('redot.datatables.export.pdf.adapter');
+        $this->pdfOptions = array_merge(config('redot.datatables.export.pdf.options') ?? [], $this->pdfOptions);
 
         // Set the allowed export formats
         if (! isset($this->allowedExports)) {
-            $this->allowedExports = array_keys(array_filter(config('datatables.export') ?? [], fn ($export) => $export['enabled']));
+            $this->allowedExports = array_keys(array_filter(config('redot.datatables.export') ?? [], fn ($export) => $export['enabled']));
         }
     }
 
@@ -231,7 +231,7 @@ abstract class Datatable extends Component
      */
     public function paginationView(): string
     {
-        return 'datatables::pagination.default';
+        return 'redot::datatables.pagination.default';
     }
 
     /**
@@ -468,7 +468,7 @@ abstract class Datatable extends Component
      */
     public function render(): View
     {
-        return view('datatables::datatable', $this->viewData());
+        return view('redot::datatables.datatable', $this->viewData());
     }
 
     /**

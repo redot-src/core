@@ -39,7 +39,7 @@ class ExportManager
      */
     public function exporter(string $format, array $parameters = []): Exporter
     {
-        $exporter = config("datatables.export.$format.exporter") ?? static::DEFAULT_EXPORTERS[$format] ?? null;
+        $exporter = config("redot.datatables.export.$format.exporter") ?? static::DEFAULT_EXPORTERS[$format] ?? null;
 
         if (! $exporter || ! is_a($exporter, Exporter::class, true)) {
             throw new InvalidArgumentException(sprintf('No exporter registered for the "%s" format.', $format));

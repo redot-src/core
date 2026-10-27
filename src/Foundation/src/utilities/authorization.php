@@ -2,6 +2,7 @@
 
 use Illuminate\Auth\Middleware\Authenticate;
 use Illuminate\Routing\Route as RoutingRoute;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Route;
@@ -26,7 +27,7 @@ function route_from_url(string $url): ?string
 /**
  * Resolve the guard a route authenticates against.
  */
-function route_guard(RoutingRoute $route, string $default = 'admins'): string
+function route_guard(RoutingRoute $route, ?string $default = null): string
 {
     foreach (Route::gatherRouteMiddleware($route) as $middleware) {
         if (is_string($middleware) && str($middleware)->startsWith(Authenticate::class . ':')) {
@@ -34,7 +35,7 @@ function route_guard(RoutingRoute $route, string $default = 'admins'): string
         }
     }
 
-    return $default;
+    return $default ?? config('redot.features.dashboard.guard');
 }
 
 /**
@@ -45,7 +46,7 @@ function route_allowed(RoutingRoute|string $route, ?string $guard = null): bool
     $registeredRoute = PermissionNameResolver::route($route);
 
     // Guess the guard from the route's auth middleware when none is given
-    $guard ??= $registeredRoute ? route_guard($registeredRoute) : 'admins';
+    $guard ??= $registeredRoute ? route_guard($registeredRoute) : config('redot.features.dashboard.guard');
 
     if (! auth($guard)->check()) {
         return false;
@@ -77,4 +78,18 @@ function url_allowed(string $url, ?string $guard = null): bool
     }
 
     return route_allowed(route_from_url($url) ?: '', $guard);
+}
+
+/**
+ * Get the active browser sessions for the current account on the given guard.
+ */
+function current_sessions(string $guard): Collection
+{
+    if (config('session.driver') !== 'database' || ! $user = auth($guard)->user()) {
+        return collect();
+    }
+
+    return $user->sessions()->wherePivot('guard', $guard)
+        ->where('last_activity', '>=', now()->subMinutes(config('session.lifetime'))->timestamp)
+        ->orderByDesc('last_activity')->get();
 }

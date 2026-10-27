@@ -19,21 +19,21 @@ class Sidebar
     /**
      * Sidebar guard.
      */
-    public string $guard = 'admins';
+    public string $guard;
 
     /**
      * Create a new sidebar instance.
      */
-    public function __construct(array $items = [], string $guard = 'admins')
+    public function __construct(array $items = [], ?string $guard = null)
     {
         $this->items = $items;
-        $this->guard = $guard;
+        $this->guard = $guard ?? config('redot.features.dashboard.guard');
     }
 
     /**
      * Create a new sidebar instance statically.
      */
-    public static function make(array $items = [], string $guard = 'admins'): static
+    public static function make(array $items = [], ?string $guard = null): static
     {
         return new static($items, $guard);
     }

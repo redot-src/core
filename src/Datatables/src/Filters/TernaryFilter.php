@@ -10,7 +10,7 @@ class TernaryFilter extends Filter
     /**
      * The filter's view.
      */
-    public string $view = 'datatables::filters.ternary';
+    public string $view = 'redot::datatables.filters.ternary';
 
     /**
      * Queries that can be performed on the filter.
@@ -44,12 +44,12 @@ class TernaryFilter extends Filter
         ];
 
         $this->labels = [
-            'yes' => __('datatables::datatable.filters.ternary.yes'),
-            'no' => __('datatables::datatable.filters.ternary.no'),
-            'empty' => __('datatables::datatable.filters.ternary.empty'),
+            'yes' => __('redot::datatables.filters.ternary.yes'),
+            'no' => __('redot::datatables.filters.ternary.no'),
+            'empty' => __('redot::datatables.filters.ternary.empty'),
         ];
 
-        $this->placeholder = __('datatables::datatable.filters.ternary.placeholder');
+        $this->placeholder = __('redot::datatables.filters.ternary.placeholder');
     }
 
     /**

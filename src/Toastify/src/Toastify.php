@@ -28,7 +28,7 @@ class Toastify
      */
     public function __call(string $name, array $arguments)
     {
-        if (! array_key_exists($name, config('toastify.toastifiers', []))) {
+        if (! array_key_exists($name, config('redot.toastify.toastifiers', []))) {
             throw new BadMethodCallException(sprintf('Toast type [%s] is not defined in the toastify configuration.', $name));
         }
 

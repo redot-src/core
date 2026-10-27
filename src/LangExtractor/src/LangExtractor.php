@@ -18,6 +18,11 @@ class LangExtractor
     protected array $directories = [];
 
     /**
+     * Directories to search even when version control ignores them, such as installed packages.
+     */
+    protected array $packageDirectories = [];
+
+    /**
      * File extensions to search for.
      */
     protected array $extensions = [];
@@ -78,6 +83,20 @@ class LangExtractor
     }
 
     /**
+     * Set package directories to search regardless of version control ignore rules.
+     */
+    public function searchInPackages(string ...$directories): static
+    {
+        foreach ($directories as $directory) {
+            if (! in_array($directory, $this->packageDirectories)) {
+                $this->packageDirectories[] = $directory;
+            }
+        }
+
+        return $this;
+    }
+
+    /**
      * Set the file extensions to search for.
      */
     public function withExtensions(string ...$extensions): static
@@ -123,16 +142,19 @@ class LangExtractor
      */
     public function extract(): static
     {
-        if (count($this->directories) === 0) {
+        if (count($this->directories) === 0 && count($this->packageDirectories) === 0) {
             $this->searchIn(app_path(), resource_path(), base_path('routes'), database_path('seeders'));
         }
 
-        $directories = array_values(array_filter($this->directories, fn ($directory) => is_dir($directory)));
-
         $translations = collect();
 
-        if (count($directories) > 0) {
-            $files = Finder::create()->files()->ignoreVCSIgnored(true);
+        // Application directories honor version control ignore rules; package directories usually live in an ignored vendor directory.
+        foreach ([[$this->directories, true], [$this->packageDirectories, false]] as [$directories, $ignoreVcs]) {
+            $directories = array_values(array_filter($directories, fn ($directory) => is_dir($directory)));
+
+            if (count($directories) === 0) continue;
+
+            $files = Finder::create()->files()->ignoreVCSIgnored($ignoreVcs);
             $files->in($directories)->name(array_map(fn ($extension) => '*.' . $extension, $this->extensions));
 
             foreach ($files as $file) {

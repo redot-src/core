@@ -20,6 +20,7 @@ use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 use Redot\Auth\RedotAuthServiceProvider;
 use Redot\Commands\BuildDependenciesCommand;
@@ -29,6 +30,7 @@ use Redot\Commands\ExtractLanguageTokensCommand;
 use Redot\Commands\LintCommand;
 use Redot\Commands\ModelPopulateCommand;
 use Redot\Commands\PublicLinkCommand;
+use Redot\Commands\PublishAssetsCommand;
 use Redot\Commands\PublishLanguageTokensCommand;
 use Redot\Commands\RevertLanguageTokensCommand;
 use Redot\Commands\SyncLanguageTokensCommand;
@@ -42,14 +44,51 @@ use Redot\Session\DatabaseSessionHandler;
 use Redot\Sidebar\Sidebar;
 use Redot\Support\PermissionNameResolver;
 use Redot\Toastify\LaravelToastifyServiceProvider;
+use Redot\View\Components;
 
 class RedotServiceProvider extends ServiceProvider
 {
+    /**
+     * The package Blade components.
+     *
+     * @var array<string, class-string>
+     */
+    protected array $components = [
+        'alert' => Components\Alert::class,
+        'apex-chart' => Components\ApexChart::class,
+        'attachments' => Components\Attachments::class,
+        'avatar' => Components\Avatar::class,
+        'captcha' => Components\Captcha::class,
+        'checkboxes' => Components\Checkboxes::class,
+        'color-picker' => Components\ColorPicker::class,
+        'date-picker' => Components\DatePicker::class,
+        'file-hint' => Components\FileHint::class,
+        'form' => Components\Form::class,
+        'form-card' => Components\FormCard::class,
+        'icon-picker' => Components\IconPicker::class,
+        'input' => Components\Input::class,
+        'query-builder' => Components\QueryBuilder::class,
+        'radios' => Components\Radios::class,
+        'radios-colored' => Components\RadiosColored::class,
+        'rating' => Components\Rating::class,
+        'repeater' => Components\Repeater::class,
+        'rich-editor' => Components\RichEditor::class,
+        'select' => Components\Select::class,
+        'select-remote' => Components\SelectRemote::class,
+        'status' => Components\Status::class,
+        'textarea' => Components\Textarea::class,
+        'toasts' => Components\Toasts::class,
+        'toggle' => Components\Toggle::class,
+        'translatable' => Components\Translatable::class,
+        'uploader' => Components\Uploader::class,
+    ];
+
     public function register(): void
     {
         $this->config();
         $this->stubs();
         $this->migrations();
+        $this->assets();
 
         $this->commands([
             BuildDependenciesCommand::class,
@@ -59,6 +98,7 @@ class RedotServiceProvider extends ServiceProvider
             LintCommand::class,
             ModelPopulateCommand::class,
             PublicLinkCommand::class,
+            PublishAssetsCommand::class,
             PublishLanguageTokensCommand::class,
             RevertLanguageTokensCommand::class,
             SyncLanguageTokensCommand::class,
@@ -104,6 +144,16 @@ class RedotServiceProvider extends ServiceProvider
         $this->publishesMigrations([
             __DIR__ . '/../database/migrations/' => database_path('migrations/'),
         ], 'redot::migrations');
+    }
+
+    /**
+     * Register the package public assets and the third-party libraries they use.
+     */
+    protected function assets(): void
+    {
+        $this->publishes([
+            __DIR__ . '/../public' => public_path('vendor/redot'),
+        ], 'redot::assets');
     }
 
     /**
@@ -182,8 +232,18 @@ class RedotServiceProvider extends ServiceProvider
      */
     protected function configureBlade(): void
     {
-        Blade::anonymousComponentPath(resource_path('layouts'), 'layouts');
-        Blade::componentNamespace('App\\View\\Layouts', 'layouts');
+        Blade::anonymousComponentPath(base_path(config('redot.paths.layouts.path')), 'layouts');
+        Blade::componentNamespace(config('redot.paths.layouts.namespace'), 'layouts');
+
+        // Package views resolve after the application's, so a same-named view overrides them.
+        View::addLocation(__DIR__ . '/../resources');
+
+        // An application component class with the same name takes precedence over the package one.
+        foreach ($this->components as $alias => $component) {
+            if (class_exists($this->app->getNamespace() . 'View\\Components\\' . class_basename($component))) continue;
+
+            Blade::component($alias, $component);
+        }
 
         Blade::directive('themer', function ($expression = 'theme') {
             $expression = str_replace(['"', "'", '`'], '', $expression);
@@ -194,7 +254,7 @@ class RedotServiceProvider extends ServiceProvider
                     @push('pre-content')
                         <script>window.themerKey = '$expression';</script>
                         <script>window.themeConfig = {{ \Illuminate\Support\Js::from(setting('theme')) }};</script>
-                        <script src="{{ hashed_asset('assets/js/themer.js') }}"></script>
+                        <script src="{{ hashed_asset('vendor/redot/js/themer.js') }}"></script>
                     @endpush
                 EOT
             );

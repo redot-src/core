@@ -49,7 +49,8 @@ class EnsureDependenciesBuilt
 
         foreach (['files', 'directories'] as $type) {
             foreach ($lock[$type] as $path => $timestamp) {
-                $path = base_path($path);
+                // Paths outside the application, such as a symlinked package, are stored as absolute paths.
+                $path = file_exists(base_path($path)) ? base_path($path) : $path;
 
                 if (! file_exists($path) || $timestamp !== filemtime($path)) {
                     return true;

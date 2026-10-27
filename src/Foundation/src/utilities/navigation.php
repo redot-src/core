@@ -38,3 +38,21 @@ function back_or_route(string $route, mixed $parameters = [], bool $absolute = t
 
     return $sameOrigin && $insideApp ? $url : $route;
 }
+
+/**
+ * Determine whether the current request belongs to the dashboard scope.
+ */
+function is_dashboard_request(): bool
+{
+    if (request()->routeIs('dashboard.*')) {
+        return true;
+    }
+
+    // Unmatched requests (e.g. 404s) carry no dashboard route, so compare the
+    // URL against the dashboard root built from the configured prefix and,
+    // when locales are part of the URL, the current locale.
+    $prefix = config('redot.features.dashboard.prefix');
+    $root = url(config('redot.routing.append_locale_to_url') ? app()->getLocale() . '/' . $prefix : $prefix);
+
+    return url()->current() === $root || str_starts_with(url()->current(), "{$root}/");
+}

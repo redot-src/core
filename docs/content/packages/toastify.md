@@ -76,10 +76,10 @@ toastify().success('Saved', 'Your changes were saved.', { delay: 5000 });
 
 ## Customizing toast types
 
-The available types and their styling live in `config/toastify.php`. Publish it to add or restyle types:
+The available types and their styling live under the `toastify` key of `config/redot.php`. Publish the Redot config if you haven't already, then add or restyle types there:
 
 ```bash
-php artisan vendor:publish --tag=toastify::config
+php artisan vendor:publish --tag=redot::config
 ```
 
 - **`toastifiers`** — the map of toast types. Out of the box: `toast`, `error`, `success`, `info`, and `warning`, each with an icon and optional icon color. Add a key here to create a new type — it becomes callable as `toastify()->yourType(...)` and from JavaScript.

@@ -9,7 +9,7 @@ class DateFilter extends Filter
     /**
      * The filter's view.
      */
-    public string $view = 'datatables::filters.date';
+    public string $view = 'redot::datatables.filters.date';
 
     /**
      * Apply the filter to the given query.

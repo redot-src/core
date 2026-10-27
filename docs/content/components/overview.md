@@ -30,6 +30,17 @@ To give a custom control the same label, hint, and required marker, wrap it in [
 
 Components that wrap a JavaScript widget (date pickers, selects, the rich editor, uploader, …) light up automatically through the [asset & init system](/frontend/asset-system) — you don't wire up any JS yourself.
 
+## Overriding a component
+
+The components on this page ship inside the `redot/core` package, so they update with `composer update`. Only the branding and integration components ([Logo](/components/logo), [Favicon](/components/favicon), [Page Loader](/components/page-loader), [Countries](/components/countries), [Facebook Pixel](/components/facebook-pixel), and [Google Analytics](/components/google-analytics)) live in your application. You can still replace a package component in your application without renaming it:
+
+- **Markup** — add a view with the same name under `resources/components`, such as `resources/components/toasts.blade.php`. Your view is used instead of the package's.
+- **Behavior** — add a class with the same name under `App\View\Components`, such as `App\View\Components\Toasts`. Extend the package class (`Redot\View\Components\Toasts`) to change only what you need.
+
+A markup override of a component that has a class still runs the package class, so your view receives the same props and data as the package view. To add, remove, or rename props, override the class as well.
+
+The JavaScript and CSS these components load ship with core, along with the third-party libraries they use (jQuery, Tabler, Tom Select, HugeRTE, Coloris, …). `php artisan redot:publish` copies them to `public/vendor/redot` and runs after every `composer install` and `composer update`, so don't edit them there.
+
 ## Component index
 
 ### Form inputs
@@ -61,6 +72,7 @@ Components that wrap a JavaScript widget (date pickers, selects, the rich editor
 - [Form Card](/components/form-card) — `<x-form-card>`
 - [Page Header](/components/page-header), [Page Loader](/components/page-loader)
 - [Pagination](/components/pagination)
+- [Redot Styles & Scripts](/frontend/asset-system#loading-the-runtime) — `<x-redot-styles>` / `<x-redot-scripts>`, the shared runtime for a layout
 - [Empty](/components/empty) — empty-state placeholder
 - [Layouts](/layouts/overview) — page shells (`<x-layouts::dashboard>`, …)
 

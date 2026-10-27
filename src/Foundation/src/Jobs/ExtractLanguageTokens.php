@@ -35,7 +35,9 @@ class ExtractLanguageTokens implements ShouldQueue
         ];
 
         $extractor = new LangExtractor;
-        $extractor->searchIn(...$directories)->withExtensions('php', 'js');
+        $extractor->searchIn(...$directories)
+            ->searchInPackages(dirname(__DIR__, 2) . '/public', dirname(__DIR__, 2) . '/resources')
+            ->withExtensions('php', 'js');
         $translations = $extractor->extract()->all();
 
         foreach ($translations as $key => $value) {

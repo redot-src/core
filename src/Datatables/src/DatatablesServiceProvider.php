@@ -4,34 +4,20 @@ namespace Redot\Datatables;
 
 use Illuminate\Support\ServiceProvider;
 use Redot\Datatables\Commands\DatatableMakeCommand;
-use Redot\Datatables\Commands\DatatablesLinkCommand;
 
 class DatatablesServiceProvider extends ServiceProvider
 {
-    /**
-     * Register the application services.
-     */
-    public function register(): void
-    {
-        $this->mergeConfigFrom(__DIR__ . '/../config/datatables.php', 'datatables');
-    }
-
     /**
      * Bootstrap the application services.
      */
     public function boot(): void
     {
-        $this->publishes([
-            __DIR__ . '/../config/datatables.php' => config_path('datatables.php'),
-        ], 'datatables::config');
-
         $this->views();
         $this->lang();
         $this->assets();
 
         $this->commands([
             DatatableMakeCommand::class,
-            DatatablesLinkCommand::class,
         ]);
     }
 
@@ -42,12 +28,12 @@ class DatatablesServiceProvider extends ServiceProvider
     {
         $this->loadViewsFrom(
             __DIR__ . '/../resources/views',
-            'datatables'
+            'redot'
         );
 
         $this->publishes([
-            __DIR__ . '/../resources/views' => resource_path('views/vendor/datatables'),
-        ], 'datatables::views');
+            __DIR__ . '/../resources/views/datatables' => resource_path('views/vendor/redot/datatables'),
+        ], 'redot::datatables-views');
     }
 
     /**
@@ -57,12 +43,12 @@ class DatatablesServiceProvider extends ServiceProvider
     {
         $this->loadTranslationsFrom(
             __DIR__ . '/../lang',
-            'datatables'
+            'redot'
         );
 
         $this->publishes([
-            __DIR__ . '/../lang' => lang_path('vendor/datatables'),
-        ], 'datatables::lang');
+            __DIR__ . '/../lang' => lang_path('vendor/redot'),
+        ], 'redot::datatables-lang');
     }
 
     /**
@@ -71,7 +57,7 @@ class DatatablesServiceProvider extends ServiceProvider
     protected function assets(): void
     {
         $this->publishes([
-            __DIR__ . '/../public' => public_path('vendor/datatables'),
-        ], 'datatables::assets');
+            __DIR__ . '/../public' => public_path('vendor/redot/datatables'),
+        ], 'redot::assets');
     }
 }

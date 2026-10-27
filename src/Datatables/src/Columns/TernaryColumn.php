@@ -51,8 +51,8 @@ class TernaryColumn extends Column
      */
     public function init(): void
     {
-        $this->true ??= __('datatables::datatable.yes');
-        $this->false ??= __('datatables::datatable.no');
+        $this->true ??= __('redot::datatables.yes');
+        $this->false ??= __('redot::datatables.no');
     }
 
     /**

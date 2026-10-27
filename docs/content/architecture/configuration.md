@@ -1,6 +1,6 @@
 # Configuration
 
-`config/redot.php` is the single configuration file for `redot/core`. It controls which application surfaces are mounted, the locales the app supports, and locale-aware routing. Its values are available as `config('redot.*')` out of the box. Runtime-editable settings are defined separately in `app/settings.php`.
+`config/redot.php` is the single configuration file for `redot/core`. It controls which application surfaces are mounted, the locales the app supports, locale-aware routing, and the bundled packages (Datatables and Toastify). Its values are available as `config('redot.*')` out of the box. Runtime-editable settings are defined separately in `app/settings.php`.
 
 ## Publishing the config
 
@@ -15,7 +15,7 @@ The config is merged at runtime, so every key is readable without publishing. Pu
 `redot.features` toggles the four mountable surfaces and, where relevant, their URL prefix. The package reads these flags both when registering routes and to conditionally render UI (e.g. hiding a "Preview website" link).
 
 - **`website`** — mounts the public website routes. Set `enabled` to turn it on or off.
-- **`dashboard`** — mounts the back-office routes. `enabled` toggles it; `prefix` sets the URL segment it lives under (default `dashboard`).
+- **`dashboard`** — mounts the back-office routes. `enabled` toggles it; `prefix` sets the URL segment it lives under (default `dashboard`); `guard` names the auth guard dashboard users sign in with (default `admins`). The sidebar, `route_allowed()`, and `permissions:sync` fall back to this guard when a route doesn't name one.
 - **`website-api`** — mounts the public website API routes under `api/`. Set `enabled` to toggle it.
 - **`dashboard-api`** — mounts the dashboard API routes. `enabled` toggles it; `prefix` sets the segment under `api/` (default `dashboard`).
 
@@ -42,6 +42,30 @@ Once languages exist in the database, the active locale list is built from them,
 
 - **`append_locale_to_url`** — when on, the website/dashboard routes are prefixed with a two-letter `{locale}` segment. Turn it off to serve those routes without a locale segment.
 - **`redirect_non_locale_urls`** — when on, a request to a non-prefixed URL is redirected to its locale-prefixed equivalent (preserving the query string). When off, such URLs return a 404 instead.
+
+## Paths
+
+`redot.paths` tells core where your application keeps the files it loads by convention. Paths are relative to the application base path.
+
+- **`routes`** — the `global`, `website`, `dashboard`, `website-api`, and `dashboard-api` route files. Core registers its own global routes (select search, uploads) before yours, so a route in your global file with the same URI and name replaces the package one.
+- **`layouts.path`** / **`layouts.namespace`** — where `<x-layouts::…>` finds anonymous layout views and layout classes.
+
+When you change one path, copy the whole `paths` block into your config: Laravel merges package config only at the top level, so a partial block leaves the other paths undefined.
+
+## Components
+
+`redot.components` controls the routes behind three components: `select` (the search endpoint of `<x-select-remote>`), `uploader` (the upload endpoint of `<x-uploader>`), and `hugerte` (image uploads in `<x-rich-editor>`). Each takes:
+
+- **`enabled`** — registers the routes. Turn it off when the application doesn't use the component; the rich editor keeps working without image uploads.
+- **`middleware`** — middleware added to those routes, `throttle:120,1` by default. Add `auth:admins` (or another guard) to limit who can call them.
+
+## Datatables
+
+`redot.datatables` configures the [Datatables](/packages/datatables/overview) package: `assets` holds the CSS/JS paths the table loads, and `export` lists each export format with its `enabled` flag and exporter class (plus the template, adapter, and engine options for [PDF](/packages/datatables/export)).
+
+## Toastify
+
+`redot.toastify` configures [Toastify](/packages/toastify): `toastifiers` maps each toast type to its icon and color, and `defaults` sets the position, delay, and close button applied to every toast.
 
 ## Permissions
 
