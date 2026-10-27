@@ -37,7 +37,9 @@ The components on this page ship inside the `redot/core` package, so they update
 - **Markup** — add a view with the same name under `resources/components`, such as `resources/components/toasts.blade.php`. Your view is used instead of the package's.
 - **Behavior** — add a class with the same name under `App\View\Components`, such as `App\View\Components\Toasts`. Extend the package class (`Redot\View\Components\Toasts`) to change only what you need.
 
-The JavaScript and CSS these components load ship with core, along with the third-party libraries they use (jQuery, Tabler, Tom Select, HugeRTE, Coloris, …). `php artisan redot:publish` copies them to `public/vendor/redot` and runs on every `composer update`, so don't edit them there.
+A markup override of a component that has a class still runs the package class, so your view receives the same props and data as the package view. To add, remove, or rename props, override the class as well.
+
+The JavaScript and CSS these components load ship with core, along with the third-party libraries they use (jQuery, Tabler, Tom Select, HugeRTE, Coloris, …). `php artisan redot:publish` copies them to `public/vendor/redot` and runs after every `composer install` and `composer update`, so don't edit them there.
 
 ## Component index
 

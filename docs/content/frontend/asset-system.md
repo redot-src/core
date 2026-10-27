@@ -125,7 +125,7 @@ The built-in initializers ship with `redot/core`. To change one, add a file with
 ## Gotchas
 
 - **Never edit `public/assets/dist/*` by hand** — it is regenerated. Edit the source `public/assets/inits/*.js` and `lang/*` files instead.
-- **Never edit `public/vendor/redot/*`** — `redot:publish` replaces it on every `composer update`. Override a component or initializer in your application instead.
+- **Never edit `public/vendor/redot/*`** — `redot:publish` replaces it after every `composer install` and `composer update`. Override a component or initializer in your application instead.
 - An element is initialized only once. If you re-render it and need it re-initialized, render fresh markup rather than reusing an already-initialized element.
 
 ## Related

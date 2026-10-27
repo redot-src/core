@@ -48,7 +48,7 @@ Creates a symbolic link from the framework's `public/` directory to a sibling di
 php artisan redot:publish
 ```
 
-Publishes the Redot front-end assets — the shared runtime, plugins, styles, Datatables assets, and the third-party libraries they use — to `public/vendor/redot`. It replaces the whole directory, so files removed from the package don't linger. The starter kit runs it from Composer's `post-update-cmd`, so assets stay current after every `redot/core` upgrade.
+Publishes the Redot front-end assets — the shared runtime, plugins, styles, Datatables assets, and the third-party libraries they use — to `public/vendor/redot`. It replaces the whole directory, so files removed from the package don't linger. The starter kit runs it from Composer's `post-install-cmd` and `post-update-cmd`, so the published assets always match the installed `redot/core`.
 
 ## `permissions:sync`
 
