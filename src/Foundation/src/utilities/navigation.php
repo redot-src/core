@@ -49,9 +49,10 @@ function is_dashboard_request(): bool
     }
 
     // Unmatched requests (e.g. 404s) carry no dashboard route, so compare the
-    // URL against the dashboard root, which already reflects the configured
-    // prefix and the current locale.
-    $root = route('dashboard.index');
+    // URL against the dashboard root built from the configured prefix and,
+    // when locales are part of the URL, the current locale.
+    $prefix = config('redot.features.dashboard.prefix');
+    $root = url(config('redot.routing.append_locale_to_url') ? app()->getLocale() . '/' . $prefix : $prefix);
 
     return url()->current() === $root || str_starts_with(url()->current(), "{$root}/");
 }

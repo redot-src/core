@@ -232,8 +232,8 @@ class RedotServiceProvider extends ServiceProvider
      */
     protected function configureBlade(): void
     {
-        Blade::anonymousComponentPath(resource_path('layouts'), 'layouts');
-        Blade::componentNamespace('App\\View\\Layouts', 'layouts');
+        Blade::anonymousComponentPath(base_path(config('redot.paths.layouts.path')), 'layouts');
+        Blade::componentNamespace(config('redot.paths.layouts.namespace'), 'layouts');
 
         // Package views resolve after the application's, so a same-named view overrides them.
         View::addLocation(__DIR__ . '/../resources');

@@ -33,6 +33,7 @@ return [
         'dashboard' => [
             'enabled' => true,
             'prefix' => 'dashboard',
+            'guard' => 'admins',
         ],
     ],
 
@@ -71,6 +72,32 @@ return [
     'routing' => [
         'append_locale_to_url' => true,
         'redirect_non_locale_urls' => true,
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Paths
+    |--------------------------------------------------------------------------
+    |
+    | Application files Redot loads by convention. Route files and the layouts
+    | path are relative to the application base path. When overriding, copy
+    | the whole block so no path is left undefined.
+    |
+    */
+
+    'paths' => [
+        'routes' => [
+            'global' => 'routes/global.php',
+            'website' => 'routes/website.php',
+            'dashboard' => 'routes/dashboard.php',
+            'website-api' => 'routes/api/website.php',
+            'dashboard-api' => 'routes/api/dashboard.php',
+        ],
+
+        'layouts' => [
+            'path' => 'resources/layouts',
+            'namespace' => 'App\\View\\Layouts',
+        ],
     ],
 
     /*

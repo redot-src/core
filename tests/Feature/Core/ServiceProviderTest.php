@@ -16,6 +16,19 @@ it('merges the package configuration without overriding host overrides', functio
         ->and(config('redot.locales'))->toHaveCount(2);
 });
 
+it('registers layout components from the configured path and namespace', function () {
+    app()->setBasePath(dirname(__DIR__, 3));
+    config()->set('redot.paths.layouts', [
+        'path' => 'tests/Fixtures/layouts',
+        'namespace' => 'Tests\\Fixtures\\Layouts',
+    ]);
+
+    app()->register(RedotServiceProvider::class, force: true);
+
+    expect(Blade::render('<x-layouts::fixture />'))->toContain('fixture layout')
+        ->and(Blade::getClassComponentNamespaces())->toHaveKey('layouts', 'Tests\\Fixtures\\Layouts');
+});
+
 it('uses the package pagination view as the paginator default', function () {
     expect(Paginator::$defaultView)->toBe('components.pagination');
 });

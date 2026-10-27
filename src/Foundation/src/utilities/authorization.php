@@ -27,7 +27,7 @@ function route_from_url(string $url): ?string
 /**
  * Resolve the guard a route authenticates against.
  */
-function route_guard(RoutingRoute $route, string $default = 'admins'): string
+function route_guard(RoutingRoute $route, ?string $default = null): string
 {
     foreach (Route::gatherRouteMiddleware($route) as $middleware) {
         if (is_string($middleware) && str($middleware)->startsWith(Authenticate::class . ':')) {
@@ -35,7 +35,7 @@ function route_guard(RoutingRoute $route, string $default = 'admins'): string
         }
     }
 
-    return $default;
+    return $default ?? config('redot.features.dashboard.guard');
 }
 
 /**
@@ -46,7 +46,7 @@ function route_allowed(RoutingRoute|string $route, ?string $guard = null): bool
     $registeredRoute = PermissionNameResolver::route($route);
 
     // Guess the guard from the route's auth middleware when none is given
-    $guard ??= $registeredRoute ? route_guard($registeredRoute) : 'admins';
+    $guard ??= $registeredRoute ? route_guard($registeredRoute) : config('redot.features.dashboard.guard');
 
     if (! auth($guard)->check()) {
         return false;

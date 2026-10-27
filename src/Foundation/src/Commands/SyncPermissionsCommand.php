@@ -171,13 +171,14 @@ class SyncPermissionsCommand extends Command
     }
 
     /**
-     * Resolve the eloquent model behind the admins guard.
+     * Resolve the eloquent model behind the dashboard guard.
      *
      * @return class-string<Model>
      */
     protected function adminModel(): string
     {
-        $provider = config('auth.guards.admins.provider', 'admins');
+        $guard = config('redot.features.dashboard.guard');
+        $provider = config("auth.guards.{$guard}.provider", $guard);
 
         return config("auth.providers.{$provider}.model");
     }

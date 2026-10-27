@@ -20,7 +20,7 @@
 
 ## URLs & routing
 
-- **`route_allowed('route.name')`** — whether the current admin may access a named route. Use it to show/hide permission-gated UI. It applies the same conventional and explicit permission aliases as route middleware. Routes that opt out of permission middleware are allowed; protected routes defer to the gate. The guard is guessed from the route's `auth` middleware (falling back to `admins`); pass one explicitly as the second argument to override. See [Datatables](/packages/datatables/overview) for the common use.
+- **`route_allowed('route.name')`** — whether the current admin may access a named route. Use it to show/hide permission-gated UI. It applies the same conventional and explicit permission aliases as route middleware. Routes that opt out of permission middleware are allowed; protected routes defer to the gate. The guard is guessed from the route's `auth` middleware (falling back to `redot.features.dashboard.guard`); pass one explicitly as the second argument to override. See [Datatables](/packages/datatables/overview) for the common use.
 
   ```php
   Action::edit('posts.edit')->visible(route_allowed('posts.edit'));

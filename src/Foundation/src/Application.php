@@ -36,16 +36,16 @@ class Application extends LaravelApplication
                 // Load the API routes for the website and dashboard
                 Route::middleware('api')->as('api.')->prefix('api')->group(function () {
                     if (config('redot.features.website-api.enabled')) {
-                        Route::as('website.')->group(base_path('routes/api/website.php'));
+                        Route::as('website.')->group(base_path(config('redot.paths.routes.website-api')));
                     }
 
                     if (config('redot.features.dashboard-api.enabled')) {
-                        Route::as('dashboard.')->prefix(config('redot.features.dashboard-api.prefix'))->middleware(RoutePermission::class)->group(base_path('routes/api/dashboard.php'));
+                        Route::as('dashboard.')->prefix(config('redot.features.dashboard-api.prefix'))->middleware(RoutePermission::class)->group(base_path(config('redot.paths.routes.dashboard-api')));
                     }
                 });
 
                 // Load the package and application global routes, so the application can override package routes
-                foreach ([__DIR__ . '/../routes/global.php', base_path('routes/global.php')] as $routes) {
+                foreach ([__DIR__ . '/../routes/global.php', base_path(config('redot.paths.routes.global'))] as $routes) {
                     Route::as('global.')->middleware(['web', Localization::class . ':website'])->group($routes);
                 }
 
@@ -61,11 +61,11 @@ class Application extends LaravelApplication
 
                 $group->group(function () {
                     if (config('redot.features.website.enabled')) {
-                        Route::as('website.')->middleware(Localization::class . ':website')->group(base_path('routes/website.php'));
+                        Route::as('website.')->middleware(Localization::class . ':website')->group(base_path(config('redot.paths.routes.website')));
                     }
 
                     if (config('redot.features.dashboard.enabled')) {
-                        Route::as('dashboard.')->prefix(config('redot.features.dashboard.prefix'))->middleware('dashboard')->group(base_path('routes/dashboard.php'));
+                        Route::as('dashboard.')->prefix(config('redot.features.dashboard.prefix'))->middleware('dashboard')->group(base_path(config('redot.paths.routes.dashboard')));
                     }
                 });
 

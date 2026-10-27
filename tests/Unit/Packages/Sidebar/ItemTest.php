@@ -110,3 +110,10 @@ it('checks route permissions with the sidebar guard', function () {
     expect($items)->toHaveCount(1)
         ->and($items[0]->title)->toBe('Website');
 });
+
+it('uses the configured dashboard guard unless one is given', function () {
+    config(['redot.features.dashboard.guard' => 'staff']);
+
+    expect(Sidebar::make()->guard)->toBe('staff')
+        ->and(Sidebar::make([], 'admins')->guard)->toBe('admins');
+});

@@ -235,3 +235,33 @@ it('falls back to the route for previous urls outside the application', function
     'path sharing the base prefix' => ['https://app.com/admin', 'https://app.com/administrator'],
     'path outside the base path' => ['https://app.com/admin', 'https://app.com/other'],
 ]);
+
+it('falls back to the configured dashboard guard for routes without auth middleware', function () {
+    config(['redot.features.dashboard.guard' => 'staff']);
+
+    $guarded = Route::get('/guard-test/guarded', fn () => 'ok')->middleware('auth:admins');
+    $open = Route::get('/guard-test/open', fn () => 'ok');
+
+    expect(route_guard($guarded))->toBe('admins')
+        ->and(route_guard($open))->toBe('staff')
+        ->and(route_guard($open, 'users'))->toBe('users');
+});
+
+it('detects unmatched dashboard urls from the configured prefix without a dashboard route', function (bool $appendLocale, string $url, bool $expected) {
+    config([
+        'redot.features.dashboard.prefix' => 'admin',
+        'redot.routing.append_locale_to_url' => $appendLocale,
+    ]);
+    app()->setLocale('en');
+
+    $this->get($url);
+
+    expect(Route::has('dashboard.index'))->toBeFalse()
+        ->and(is_dashboard_request())->toBe($expected);
+})->with([
+    'localized dashboard url' => [true, '/en/admin/missing', true],
+    'localized dashboard root' => [true, '/en/admin', true],
+    'localized website url' => [true, '/en/administrator', false],
+    'unlocalized dashboard url' => [false, '/admin/missing', true],
+    'unlocalized website url' => [false, '/missing', false],
+]);

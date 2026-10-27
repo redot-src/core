@@ -54,3 +54,30 @@ it('enables features for shared tests unless opted out and respects them outside
     'feature configuration tests' => [false, 'testing'],
     'production' => [true, 'production'],
 ]);
+
+it('loads the application route files from the configured paths', function () {
+    $basePath = $this->app->basePath();
+    $routes = Route::getRoutes();
+    $property = new ReflectionProperty(RouteServiceProvider::class, 'alwaysLoadRoutesUsing');
+    $original = $property->getValue();
+
+    try {
+        Application::configure(dirname(__DIR__, 2) . '/Fixtures/Application');
+        $registerRoutes = $property->getValue();
+        Container::setInstance($this->app);
+        $this->app->setBasePath(dirname(__DIR__, 2) . '/Fixtures/Application');
+        Route::setRoutes(new RouteCollection);
+        config(['redot.paths.routes.website' => 'routes/custom/website.php']);
+
+        $registerRoutes();
+        Route::getRoutes()->refreshNameLookups();
+
+        expect(Route::has('website.custom'))->toBeTrue()
+            ->and(Route::has('website.index'))->toBeFalse();
+    } finally {
+        Container::setInstance($this->app);
+        $this->app->setBasePath($basePath);
+        Route::setRoutes($routes);
+        RouteServiceProvider::loadRoutesUsing($original);
+    }
+});
