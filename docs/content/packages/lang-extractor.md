@@ -41,7 +41,7 @@ Arguments that are not fully literal — `__($label)` or `__('Prefix ' . $suffix
 
 Extraction deliberately skips file-based keys such as `__('validation.required')`, since those live in PHP language files rather than the editable JSON set. A string only counts as file-based when it has no whitespace and starts with the name of a PHP language file in the fallback locale, so a sentence like `__('validation.rules are strict here')` is still extracted. File-based keys enter the editor only through `lang:sync`.
 
-By default the scan covers `app`, `resources`, `routes`, `database/seeders`, and `public/assets`; directories that don't exist are ignored. Only `.php` and `.js` files are searched. Files ignored by Git are skipped.
+By default the scan covers `app`, `resources`, `routes`, `database/seeders`, and `public/assets`, plus the views and scripts shipped by `redot/core`; directories that don't exist are ignored. Only `.php` and `.js` files are searched. Files ignored by Git are skipped in your application's directories, but not in `redot/core`'s, which live under the ignored `vendor` directory.
 
 ## Limitations
 
@@ -51,7 +51,7 @@ Extraction is static pattern matching, not a full PHP or JavaScript parser:
 - **Only the listed helpers.** Calls through a translator instance (`$translator->get(...)`) or other APIs are not scanned. `Lang::get` / `Lang::choice` must appear with that `Lang::` prefix (an aliased `use` is fine; a renamed import is not).
 - **File-based PHP language keys stay out of extract.** Keys like `__('validation.required')` are filtered out; bring them into the editor with `lang:sync` instead.
 - **Empty strings are dropped.** `__('')` never becomes a token.
-- **Scan scope is fixed for the Artisan command.** `lang:extract` only walks the directories and extensions above. Other paths (packages under `vendor`, custom folders, `.vue` files, and so on) are ignored unless you drive `LangExtractor` yourself.
+- **Scan scope is fixed for the Artisan command.** `lang:extract` only walks the directories and extensions above. Other paths (other packages under `vendor`, custom folders, `.vue` files, and so on) are ignored unless you drive `LangExtractor` yourself. When you do, pass package sources to `searchInPackages()` instead of `searchIn()` so Git ignore rules don't filter them out.
 
 ## Notes
 

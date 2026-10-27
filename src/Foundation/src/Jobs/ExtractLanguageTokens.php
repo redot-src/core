@@ -32,12 +32,12 @@ class ExtractLanguageTokens implements ShouldQueue
             database_path('seeders'),
             public_path('assets'),
             resource_path(),
-            dirname(__DIR__, 2) . '/public',
-            dirname(__DIR__, 2) . '/resources',
         ];
 
         $extractor = new LangExtractor;
-        $extractor->searchIn(...$directories)->withExtensions('php', 'js');
+        $extractor->searchIn(...$directories)
+            ->searchInPackages(dirname(__DIR__, 2) . '/public', dirname(__DIR__, 2) . '/resources')
+            ->withExtensions('php', 'js');
         $translations = $extractor->extract()->all();
 
         foreach ($translations as $key => $value) {

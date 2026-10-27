@@ -412,3 +412,26 @@ it('merges extracted translations with arrays and existing json files', function
         'New key' => 'New key',
     ]);
 });
+
+it('extracts from package directories that version control ignores', function () {
+    $root = sys_get_temp_dir() . '/redot-lang-extractor-vcs';
+    $package = $root . '/vendor/redot/core/resources';
+
+    File::deleteDirectory($root);
+    File::ensureDirectoryExists($root . '/.git');
+    File::ensureDirectoryExists($root . '/app');
+    File::ensureDirectoryExists($package);
+    File::put($root . '/.gitignore', "/vendor\n");
+    File::put($root . '/app/view.blade.php', "{{ __('Application string') }}");
+    File::put($package . '/view.blade.php', "{{ __('Package string') }}");
+
+    try {
+        $ignored = (new LangExtractor)->searchIn($root . '/app', $package)->withExtensions('php')->extract()->all();
+        $packaged = (new LangExtractor)->searchIn($root . '/app')->searchInPackages($package)->withExtensions('php')->extract()->all();
+
+        expect($ignored)->toHaveKey('Application string')->not->toHaveKey('Package string')
+            ->and($packaged)->toHaveKeys(['Application string', 'Package string']);
+    } finally {
+        File::deleteDirectory($root);
+    }
+});
