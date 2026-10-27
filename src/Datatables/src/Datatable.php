@@ -147,13 +147,13 @@ abstract class Datatable extends Component
         $this->defaultPerPage = $this->perPage;
 
         // Set the PDF adapter and options
-        $this->pdfTemplate ??= config('datatables.export.pdf.template');
-        $this->pdfAdapter ??= config('datatables.export.pdf.adapter');
-        $this->pdfOptions = array_merge(config('datatables.export.pdf.options') ?? [], $this->pdfOptions);
+        $this->pdfTemplate ??= config('redot.datatables.export.pdf.template');
+        $this->pdfAdapter ??= config('redot.datatables.export.pdf.adapter');
+        $this->pdfOptions = array_merge(config('redot.datatables.export.pdf.options') ?? [], $this->pdfOptions);
 
         // Set the allowed export formats
         if (! isset($this->allowedExports)) {
-            $this->allowedExports = array_keys(array_filter(config('datatables.export') ?? [], fn ($export) => $export['enabled']));
+            $this->allowedExports = array_keys(array_filter(config('redot.datatables.export') ?? [], fn ($export) => $export['enabled']));
         }
     }
 

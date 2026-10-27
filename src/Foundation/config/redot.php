@@ -1,5 +1,11 @@
 <?php
 
+use Redot\Datatables\Adapters\PDF\LaravelMpdf;
+use Redot\Datatables\Exporters\CsvExporter;
+use Redot\Datatables\Exporters\JsonExporter;
+use Redot\Datatables\Exporters\PdfExporter;
+use Redot\Datatables\Exporters\XlsxExporter;
+
 return [
 
     /*--------------------------------------------------------------------------
@@ -132,6 +138,95 @@ return [
             'gz', 'jpeg', 'jpg', 'm4a', 'mkv', 'mov', 'mp3', 'mp4', 'mpeg', 'odp',
             'ods', 'odt', 'oga', 'ogg', 'pdf', 'png', 'ppt', 'pptx', 'rar', 'tar',
             'tif', 'tiff', 'txt', 'wav', 'webm', 'webp', 'xls', 'xlsx', 'zip',
+        ],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Datatables
+    |--------------------------------------------------------------------------
+    |
+    | Assets and export formats for Livewire datatables. Each export format
+    | can be disabled or given its own exporter class.
+    |
+    */
+
+    'datatables' => [
+        'assets' => [
+            'css' => 'vendor/redot/datatables/datatables.css',
+            'js' => 'vendor/redot/datatables/datatables.js',
+        ],
+
+        'export' => [
+            'xlsx' => [
+                'enabled' => true,
+                'exporter' => XlsxExporter::class,
+            ],
+
+            'csv' => [
+                'enabled' => true,
+                'exporter' => CsvExporter::class,
+            ],
+
+            'json' => [
+                'enabled' => true,
+                'exporter' => JsonExporter::class,
+            ],
+
+            'pdf' => [
+                'enabled' => true,
+                'exporter' => PdfExporter::class,
+                'template' => 'datatables::pdf.default',
+                'adapter' => LaravelMpdf::class,
+                'options' => [
+                    'format' => 'A4',
+                    'orientation' => 'P',
+                ],
+            ],
+        ],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Toastify
+    |--------------------------------------------------------------------------
+    |
+    | The toast types available to toastify() and their default display
+    | options.
+    |
+    */
+
+    'toastify' => [
+        'toastifiers' => [
+            'toast' => [
+                'icon' => 'ti ti-bell',
+                'color' => 'var(--tblr-secondary)',
+            ],
+            'error' => [
+                'icon' => 'ti ti-circle-x',
+                'color' => 'var(--tblr-danger)',
+            ],
+            'success' => [
+                'icon' => 'ti ti-circle-check',
+                'color' => 'var(--tblr-success)',
+            ],
+            'info' => [
+                'icon' => 'ti ti-info-circle',
+                'color' => 'var(--tblr-info)',
+            ],
+            'warning' => [
+                'icon' => 'ti ti-alert-triangle',
+                'color' => 'var(--tblr-warning)',
+            ],
+        ],
+
+        // The default values for the toastifiers.
+
+        'defaults' => [
+            'position' => 'bottom-right',
+            'close' => true,
+            'autohide' => true,
+            'delay' => 5000,
         ],
     ],
 

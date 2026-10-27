@@ -27,7 +27,7 @@ class Toasts extends Component
      */
     public function __construct()
     {
-        $this->config = config('toastify', []);
+        $this->config = config('redot.toastify', []);
         $this->messages = session()->pull('toastify', []);
     }
 

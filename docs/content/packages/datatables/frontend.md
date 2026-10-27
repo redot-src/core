@@ -79,10 +79,10 @@ Publish the package's views or translations to override them:
 
 ```bash
 # Blade views -> resources/views/vendor/datatables
-php artisan vendor:publish --tag=datatables::views
+php artisan vendor:publish --tag=redot::datatables-views
 
 # Translations -> lang/vendor/datatables
-php artisan vendor:publish --tag=datatables::lang
+php artisan vendor:publish --tag=redot::datatables-lang
 ```
 
 All built-in labels, placeholders, and messages are localizable through the published translation files.

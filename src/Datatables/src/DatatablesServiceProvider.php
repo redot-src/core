@@ -8,22 +8,10 @@ use Redot\Datatables\Commands\DatatableMakeCommand;
 class DatatablesServiceProvider extends ServiceProvider
 {
     /**
-     * Register the application services.
-     */
-    public function register(): void
-    {
-        $this->mergeConfigFrom(__DIR__ . '/../config/datatables.php', 'datatables');
-    }
-
-    /**
      * Bootstrap the application services.
      */
     public function boot(): void
     {
-        $this->publishes([
-            __DIR__ . '/../config/datatables.php' => config_path('datatables.php'),
-        ], 'datatables::config');
-
         $this->views();
         $this->lang();
         $this->assets();
@@ -45,7 +33,7 @@ class DatatablesServiceProvider extends ServiceProvider
 
         $this->publishes([
             __DIR__ . '/../resources/views' => resource_path('views/vendor/datatables'),
-        ], 'datatables::views');
+        ], 'redot::datatables-views');
     }
 
     /**
@@ -60,7 +48,7 @@ class DatatablesServiceProvider extends ServiceProvider
 
         $this->publishes([
             __DIR__ . '/../lang' => lang_path('vendor/datatables'),
-        ], 'datatables::lang');
+        ], 'redot::datatables-lang');
     }
 
     /**

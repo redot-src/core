@@ -1,6 +1,6 @@
 # Configuration
 
-`config/redot.php` is the single configuration file for `redot/core`. It controls which application surfaces are mounted, the locales the app supports, and locale-aware routing. Its values are available as `config('redot.*')` out of the box. Runtime-editable settings are defined separately in `app/settings.php`.
+`config/redot.php` is the single configuration file for `redot/core`. It controls which application surfaces are mounted, the locales the app supports, locale-aware routing, and the bundled packages (Datatables and Toastify). Its values are available as `config('redot.*')` out of the box. Runtime-editable settings are defined separately in `app/settings.php`.
 
 ## Publishing the config
 
@@ -51,6 +51,14 @@ Once languages exist in the database, the active locale list is built from them,
 - **`layouts.path`** / **`layouts.namespace`** — where `<x-layouts::…>` finds anonymous layout views and layout classes.
 
 When you change one path, copy the whole `paths` block into your config: Laravel merges package config only at the top level, so a partial block leaves the other paths undefined.
+
+## Datatables
+
+`redot.datatables` configures the [Datatables](/packages/datatables/overview) package: `assets` holds the CSS/JS paths the table loads, and `export` lists each export format with its `enabled` flag and exporter class (plus the template, adapter, and engine options for [PDF](/packages/datatables/export)).
+
+## Toastify
+
+`redot.toastify` configures [Toastify](/packages/toastify): `toastifiers` maps each toast type to its icon and color, and `defaults` sets the position, delay, and close button applied to every toast.
 
 ## Permissions
 

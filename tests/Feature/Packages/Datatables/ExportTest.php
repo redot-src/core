@@ -109,3 +109,15 @@ it('prevents the client from mutating export settings', function (string $proper
     'allowed formats' => ['allowedExports', ['xlsx', 'csv', 'json', 'pdf']],
     'pdf adapter class' => ['pdfAdapter', 'App\\Evil'],
 ]);
+
+it('reads export formats and pdf settings from the redot config', function () {
+    config([
+        'redot.datatables.export.csv.enabled' => false,
+        'redot.datatables.export.pdf.template' => 'custom.pdf.template',
+    ]);
+
+    $datatable = new RunActionDatatable;
+
+    expect($datatable->allowedExports)->toBe(['xlsx', 'json', 'pdf'])
+        ->and($datatable->pdfTemplate)->toBe('custom.pdf.template');
+});

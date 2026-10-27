@@ -17,3 +17,11 @@ it('rejects toast types that are not defined in the configuration', function () 
 it('requires a title when pushing a toast', function () {
     toastify()->success();
 })->throws(InvalidArgumentException::class);
+
+it('accepts toast types defined in the redot config', function () {
+    config(['redot.toastify.toastifiers.notice' => ['icon' => 'ti ti-bell']]);
+
+    toastify()->notice('Heads up');
+
+    expect(session('toastify.0.type'))->toBe('notice');
+});

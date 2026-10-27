@@ -4,10 +4,10 @@ Every datatable can offer an export menu so users download the current dataset. 
 
 ## Enabling PDF export
 
-PDF is configured in `config/datatables.php` under the `export` block. Publish the config first:
+PDF is configured under `datatables.export` in `config/redot.php`. Publish the Redot config first if you haven't:
 
 ```bash
-php artisan vendor:publish --tag=datatables::config
+php artisan vendor:publish --tag=redot::config
 ```
 
 PDF export needs a rendering library installed. The default uses mPDF — install it and you're done:
@@ -20,7 +20,7 @@ If the export menu offers PDF but the library isn't installed, the export fails 
 
 ## Options
 
-Configure these under `export.pdf` in `config/datatables.php`:
+Configure these under `datatables.export.pdf` in `config/redot.php`:
 
 - **`enabled`** — whether PDF appears among the table's export choices.
 - **`template`** — the Blade view rendered into the PDF. Defaults to the packaged template; point it at your own for a custom layout.
@@ -38,7 +38,7 @@ composer require barryvdh/laravel-dompdf
 ```
 
 ```php
-// config/datatables.php
+// config/redot.php — datatables.export.pdf
 'adapter' => \Redot\Datatables\Adapters\PDF\DomPdf::class,
 ```
 
@@ -76,14 +76,14 @@ Set `template` to your own Blade view. Your template receives `$headings` (an ar
 ```
 
 ```php
-// config/datatables.php
+// config/redot.php — datatables.export.pdf
 'template' => 'templates.pdf.datatable',
 ```
 
 To tweak the packaged template instead of replacing it, publish the views and edit your copy:
 
 ```bash
-php artisan vendor:publish --tag=datatables::views
+php artisan vendor:publish --tag=redot::datatables-views
 ```
 
 ### Per-table overrides

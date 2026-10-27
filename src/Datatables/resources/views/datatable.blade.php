@@ -1,6 +1,6 @@
 @assets
-    <link rel="stylesheet" href="{{ hashed_asset(config('datatables.assets.css')) }}" />
-    <script src="{{ hashed_asset(config('datatables.assets.js')) }}" defer></script>
+    <link rel="stylesheet" href="{{ hashed_asset(config('redot.datatables.assets.css')) }}" />
+    <script src="{{ hashed_asset(config('redot.datatables.assets.js')) }}" defer></script>
 @endassets
 
 <div class="card datatable" @style(['max-height: ' . $height]) id="{{ $id }}" wire:ignore.self x-data="Datatables.table({ filtersOpen: @js((bool) $filtersOpen) })">

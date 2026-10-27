@@ -53,11 +53,10 @@ php artisan migrate
 
 ## Sub-package publish tags
 
-The bundled packages expose their own tags, all following the `package::resource` convention. Their config, views, lang, and routes load automatically; publish only to override.
+The bundled packages share the Redot configuration and publish tags: their settings live in `config/redot.php` (under `datatables` and `toastify`), and their assets are published by `php artisan redot:publish`. Views and translations load automatically; publish only to override.
 
-- **Datatables** — `datatables::config`, `datatables::views`, `datatables::lang`. Its CSS/JS are published with the rest of the Redot assets by `php artisan redot:publish`. See [Datatables](/packages/datatables/overview).
-- **Toastify** — `toastify::config`. See [Toastify](/packages/toastify).
-- **Auth, Sidebar, LangExtractor** — nothing to publish; they are wired up for you.
+- **Datatables** — `redot::datatables-views`, `redot::datatables-lang`. See [Datatables](/packages/datatables/overview).
+- **Toastify, Auth, Sidebar, LangExtractor** — nothing extra to publish; they are wired up for you.
 
 ## Publish everything at once
 
