@@ -16,6 +16,15 @@ a:not(.text-reset):not([class*='text-decoration-']) {
     justify-content: center;
 }
 
+/* The validator prepends a spinner to submitting buttons; icon-only buttons swap their icon for it */
+.btn-icon > .spinner-border {
+    margin: 0 !important;
+}
+
+.btn-icon > .spinner-border ~ * {
+    display: none;
+}
+
 /* ---------------------------------
  * Global Utilities
  * --------------------------------- */
