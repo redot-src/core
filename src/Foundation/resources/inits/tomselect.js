@@ -188,7 +188,8 @@ return (selector, options = {}) => {
         if (!message || message.key !== $select.attr('id')) return;
 
         // If a lightbox is still open, close the last opened lightbox.
-        Glare.close();
+        // Lightboxes are delegated to the top window, so close it there.
+        (window.top.Glare ?? Glare).close();
 
         const value = _.get(message, 'data.value');
         if (value === undefined || value === null || value === '') return;

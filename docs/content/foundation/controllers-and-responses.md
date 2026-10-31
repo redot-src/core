@@ -72,6 +72,8 @@ window.addEventListener('message', (event) => {
 });
 ```
 
+Lightboxes always open in the top window, even when triggered from inside an iframe. The top window passes the message on to the window that opened the lightbox.
+
 The message is posted to any origin, so don't send sensitive data through it.
 
 ## Examples

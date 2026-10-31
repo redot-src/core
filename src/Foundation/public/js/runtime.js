@@ -61,6 +61,20 @@ bootbox.setDefaults({
  * Glare
  * --------------------------------- */
 
+// Open lightboxes in the top window, so a lightbox
+// opened from inside an iframe covers the whole page.
+Glare.defaults.delegate = window.top;
+
+// Pages inside a lightbox post their messages to the top window,
+// so pass them on to the window that opened the lightbox.
+window.addEventListener('message', (event) => {
+    const opener = Glare.getInstance()?.current?.$trigger?.ownerDocument.defaultView;
+
+    if (event.data?.key && opener && opener !== window) {
+        opener.postMessage(event.data, '*');
+    }
+});
+
 $(document).on('click', '[data-lightbox]', (event) => {
     if (event.isDefaultPrevented()) return;
     if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
