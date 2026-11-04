@@ -2,7 +2,7 @@
 
 namespace Redot\Auth\Responses;
 
-use Illuminate\Support\Uri;
+use Redot\Auth\Features\EmailVerification;
 use Redot\Auth\Panel;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -14,11 +14,12 @@ class EmailVerifiedResponse extends AuthResponse
     public function __construct(public bool $alreadyVerified) {}
 
     /**
-     * Send the user home with a verified flag.
+     * Send the user where they were headed, or to the feature's redirect, with a success message.
      */
     protected function web(Panel $panel): Response
     {
-        return redirect()->intended(Uri::of($panel->homeUrl())->withQuery(['verified' => 1])->value());
+        return redirect()->intended($panel->feature(EmailVerification::class)->getRedirectUrl($panel))
+            ->with('success', __('Your email address has been verified.'));
     }
 
     /**

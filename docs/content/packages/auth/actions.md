@@ -59,10 +59,12 @@ Set these options when one panel needs different values. Otherwise the app-wide 
 ## Email verification
 
 ```php
-EmailVerification::make()
+EmailVerification::make()->redirectTo('onboarding')
 ```
 
-Shows the "verify your email" prompt, handles the signed verification link, and resends the email on request (rate-limited). Users who are already verified are sent home. Adds `verification.notice` (web only), `verification.verify`, and `verification.send`.
+Shows the "verify your email" prompt, handles the signed verification link, and resends the email on request (rate-limited). Once verified, web panels send the user where they were headed, or home, with a `success` message. Users who are already verified are sent on the same way. Adds `verification.notice` (web only), `verification.verify`, and `verification.send`.
+
+- **`redirectTo`** — a route name, or a callback that receives the panel and returns a URL, to send verified users to instead of the panel's home.
 
 ## Logout
 

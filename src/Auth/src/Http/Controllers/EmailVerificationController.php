@@ -6,6 +6,7 @@ use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
+use Redot\Auth\Features\EmailVerification;
 use Redot\Auth\Panel;
 use Redot\Auth\Responses\EmailVerifiedResponse;
 use Redot\Auth\Responses\VerificationLinkSentResponse;
@@ -15,12 +16,12 @@ use Symfony\Component\HttpFoundation\Response;
 class EmailVerificationController extends Controller
 {
     /**
-     * Show the verification prompt, or continue home when already verified.
+     * Show the verification prompt, or continue to the feature's redirect when already verified.
      */
     public function notice(Request $request, Panel $panel): View|RedirectResponse
     {
         if ($request->user()->hasVerifiedEmail()) {
-            return redirect()->intended($panel->homeUrl());
+            return redirect()->intended($panel->feature(EmailVerification::class)->getRedirectUrl($panel));
         }
 
         return $panel->view('verify-email');

@@ -2,12 +2,40 @@
 
 namespace Redot\Auth\Features;
 
+use Closure;
 use Illuminate\Support\Facades\Route;
 use Redot\Auth\Http\Controllers\EmailVerificationController;
 use Redot\Auth\Panel;
 
 class EmailVerification extends Feature
 {
+    /**
+     * The route name or callback that resolves where verified users are sent.
+     */
+    protected string|Closure|null $redirectTo = null;
+
+    /**
+     * Send verified users to the given route name or callback's URL instead of the panel's home.
+     */
+    public function redirectTo(string|Closure $redirectTo): static
+    {
+        $this->redirectTo = $redirectTo;
+
+        return $this;
+    }
+
+    /**
+     * Get the URL verified users are sent to when they weren't headed anywhere.
+     */
+    public function getRedirectUrl(Panel $panel): string
+    {
+        if ($this->redirectTo instanceof Closure) {
+            return ($this->redirectTo)($panel);
+        }
+
+        return $this->redirectTo === null ? $panel->homeUrl() : route($this->redirectTo);
+    }
+
     /**
      * Register the email verification prompt, confirmation, and resend routes.
      */
