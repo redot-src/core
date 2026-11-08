@@ -153,6 +153,24 @@ a:not(.text-reset):not([class*='text-decoration-']) {
 }
 
 /* ---------------------------------
+ * Date Picker Component
+ * --------------------------------- */
+
+/* Tempus Dominus compiles its range and focus ring in blue, so they are tinted from the brand primary */
+:root {
+    --td-range-bg: color-mix(in srgb, var(--tblr-primary) 12%, var(--tblr-bg-surface));
+    --td-dark-range-bg: color-mix(in srgb, var(--tblr-primary) 24%, var(--tblr-bg-surface));
+}
+
+.tempus-dominus-widget:is(.light, .dark) .date-container-days div.range-in:not(.no-highlight) {
+    color: var(--tblr-body-color);
+}
+
+.tempus-dominus-widget :focus {
+    box-shadow: 0 0 0 0.25rem rgba(var(--tblr-primary-rgb), 0.25);
+}
+
+/* ---------------------------------
  * Translatable Component
  * --------------------------------- */
 
